@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace App\Controller\Routes;
 
 use Attribute;
+use config\Env;
 
 #[Attribute(Attribute::TARGET_CLASS|Attribute::TARGET_METHOD|Attribute::TARGET_PROPERTY|Attribute::TARGET_CLASS_CONSTANT|Attribute::IS_REPEATABLE)]
 /**
@@ -13,6 +14,7 @@ readonly class Param
     public function __construct(
         private ParamTypes $type,
         private string     $name,
+        private string     $config  = Env::class,
         private int        $filter  = FILTER_DEFAULT,
         private int        $flags   = 0,
         private array      $options = [],
@@ -26,8 +28,12 @@ readonly class Param
     public function getArgument(): array
     {
         $argument = [
-            'type' => $this->type->value,
+            'type' => $this->type->getEquivalent(),
         ];
+
+        if ($this->type === ParamTypes::CONFIG) {
+            $argument[$this->type->value] = $this->config;
+        }
 
         if (!($this->flags || $this->options)) {
            $argument['param'] = [

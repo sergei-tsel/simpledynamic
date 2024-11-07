@@ -2,6 +2,8 @@
 declare(strict_types=1);
 namespace App\Controller\Routes;
 
+use config\Config;
+use config\Routes;
 use ReflectionAttribute;
 use ReflectionClass;
 
@@ -41,7 +43,11 @@ class ParamsFilter
 
             $argument = $instance->getArgument();
 
-            $this->options[$argument['type']] = $argument['param'];
+            if ($argument['type'] === ParamTypes::CONFIG->getEquivalent()) {
+                $this->options[$argument['type']][$argument['config']][] = $argument['param'];
+            } else {
+                $this->options[$argument['type']][] = $argument['param'];
+            }
         }
 
         return $this;
@@ -73,9 +79,29 @@ class ParamsFilter
                 INPUT_SERVER                         => filter_input_array($type, $rules, false),
                 ParamTypes::FILES->getEquivalent()   => filter_var_array($_FILES, $rules, false),
                 ParamTypes::SESSION->getEquivalent() => filter_var_array($_SESSION, $rules, false),
+                ParamTypes::PATH->getEquivalent()    => filter_var_array(Routes::getPathParams(), $rules, false),
+                ParamTypes::CONFIG->getEquivalent()  => $this->filterConfigs($rules),
             };
         }
 
         return $params;
+    }
+
+    /**
+     * Получить отфильтрованные данные из конфигов
+     */
+    private function filterConfigs(array $configs): array
+    {
+        $params = [];
+
+        foreach ($configs as $config => $rules) {
+            /** @var Config::class $config */
+            if (class_exists($config)) {
+                $params[$config] = filter_var_array($config::getConfig(), $rules, false);
+            }
+        }
+
+        return $params;
+
     }
 }
