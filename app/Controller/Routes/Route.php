@@ -74,7 +74,7 @@ readonly class Route
         $handledParams = [];
 
         foreach ($this->middlewares as $name) {
-            $handledParams = $this->callMiddleware($name, $handledParams);
+            $handledParams = array_merge($handledParams, $this->callMiddleware($name, $handledParams));
         }
 
         return $handledParams;

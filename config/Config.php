@@ -13,7 +13,7 @@ class Config
     /**
      * Получить конфигурацию
      */
-    protected static function getConfig(): array
+    public static function getConfig(): array
     {
         if (static::$filename) {
             return array_merge(
@@ -28,7 +28,11 @@ class Config
     /**
      * Установить конфигурацию
      */
-    protected static function setConfig(callable $firstMethod, array $parts = []): void
+    protected static function setConfig(
+        callable $firstMethod,
+        array $parts = [],
+        array $groups = [],
+    ): void
     {
         $local = static::getConfig();
 
@@ -39,8 +43,12 @@ class Config
         }
 
         foreach ($parts as $part => $method) {
-            foreach ($local[$part] as $key => $value) {
-                $method($key, $value);
+            if (in_array($part, $groups)) {
+                $method($local[$part]);
+            } else {
+                foreach ($local[$part] as $key => $value) {
+                    $method($key, $value);
+                }
             }
         }
     }

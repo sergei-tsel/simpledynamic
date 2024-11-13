@@ -7,7 +7,9 @@ namespace config;
  */
 class Session extends Config
 {
-    protected static array  $local    = [];
+    protected static array  $local    = [
+        'options' => [],
+    ];
     protected static string $filename = '';
     protected static string $options  = '';
 
@@ -34,18 +36,20 @@ class Session extends Config
     /**
      * Установить переменные сессии
      */
-    public static function setSession(): void
+    public static function setSession(?string $login = null): void
     {
-        self::setConfig(function (string $key, string $value) {},  [
+        self::setConfig(function (string $key, string $value) {}, [
             'cookies' => SessionCookies::getSetMethod(),
-            'options' => function (string $key, string $value) {
-                session_start([
-                    $key => $value,
-                ]);
+            'options' => function (array $options) {
+                session_start($options);
             },
-            'local'   => function (string $key, string $value) {
+            'params' => function (string $key, string $value) {
                 $_SESSION[$key] = $value;
             },
-        ]);
+        ], ['options']);
+
+        if ($login) {
+            $_SESSION['login'] = $login;
+        }
     }
 }
