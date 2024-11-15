@@ -7,5 +7,5 @@ namespace App\Model\Builders;
  */
 interface BuilderInterface
 {
-    public function createRepository($entity);
+    public function createRepository(string $entity);
 }

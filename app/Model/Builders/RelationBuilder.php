@@ -9,8 +9,8 @@ use App\Model\Builders\BuilderInterface;
  */
 class RelationBuilder implements BuilderInterface
 {
-    public function createRepository($entity)
+    public function createRepository(string $entity): object
     {
-        // TODO: Implement createRepository() method.
+        return new $entity();
     }
 }
