@@ -2,15 +2,20 @@
 declare(strict_types=1);
 namespace App\Model\Builders;
 
-use App\Model\Builders\BuilderInterface;
+use config\ODM;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
  * Создатель репозитрия для ODM
  */
 class DocumentBuilder implements BuilderInterface
 {
-    public function createRepository($entity)
+    public function createRepository(string $entity): object
     {
-        // TODO: Implement createRepository() method.
+        $config = ODM::createMongoDBConfig();
+
+        $documentManager = DocumentManager::create(config: $config);
+
+        return new $entity($documentManager);
     }
 }

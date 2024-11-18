@@ -23,7 +23,8 @@
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/database/factories/",
-            "Database\\Seeders\\": "database/database/seeds/"
+            "Database\\Seeders\\": "database/database/seeds/",
+            "config\\": "config/"
         }
     }
 }

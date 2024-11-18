@@ -52,7 +52,7 @@ class Routes extends Config
             $recursion($value, $key);
         }
 
-        for ($i = 1; count($groups[$i - 1]) > 0; $i++) {
+        for ($i = 1; count($groups[$i - 1] ?? []) > 0; $i++) {
             foreach ($groups[$i - 1] as $name => $group) {
                 $recursion($group, $name, $i);
             }
