@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace config;
 
+use App\Controller\Controllers\PageController;
 use App\Controller\Routes\Route;
 
 /**
@@ -9,7 +10,16 @@ use App\Controller\Routes\Route;
  */
 class Routes extends Config
 {
-    protected static array $local     = [];
+    protected static array  $local    = [
+        'welcome' => [
+            'method'     => 'GET',
+            'path'       => '/',
+            'controller' => PageController::class,
+            'action'     => 'welcome',
+            'name'       => 'welcome',
+        ],
+    ];
+
     protected static string $filename = '';
 
     /**
@@ -38,27 +48,59 @@ class Routes extends Config
         $routes = [];
         $groups = [];
 
-        $recursion = function (Route|array $value, string $key, int $level = 0) use (&$routes, &$groups) {
-            if (is_array($value)) {
-                foreach ($value as $name => $item) {
-                    $groups[$level][$key . '.' . $name] = $item;
-                }
-            } elseif ($value instanceof Route && !array_key_exists($key, $routes)) {
-                $routes[$value->getName()] = $value;
-            }
-        };
-
         foreach ($config as $key => $value) {
-            $recursion($value, $key);
+            self::dotRoute(
+                $value,
+                $key,
+                $routes,
+                $groups,
+            );
         }
 
         for ($i = 1; count($groups[$i - 1] ?? []) > 0; $i++) {
             foreach ($groups[$i - 1] as $name => $group) {
-                $recursion($group, $name, $i);
+                self::dotRoute(
+                    $group,
+                    $name,
+                    $routes,
+                    $groups,
+                    $i,
+                );
             }
-        };
+        }
 
         return $routes;
+    }
+
+    /**
+     * Создать уровень роутов в точечной нотации
+     */
+    private static function dotRoute(
+        array  $value,
+        string $key,
+        array  &$routes,
+        array  &$groups,
+        int    $level = 0
+    ): void
+    {
+        if (array_key_exists('path', $value)) {
+            $value = new Route(
+                $value['method'],
+                $value['path'],
+                $value['controller'],
+                $value['action'],
+                $value['name'],
+                $value['middlewares'] ?? [],
+            );
+        }
+
+        if (is_array($value)) {
+            foreach ($value as $name => $item) {
+                $groups[$level][$key . '.' . $name] = $item;
+            }
+        } elseif ($value instanceof Route && !array_key_exists($key, $routes)) {
+            $routes[$value->getName()] = $value;
+        }
     }
 
     /**

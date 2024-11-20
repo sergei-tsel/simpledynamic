@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace App\View\Views;
 
+use config\App;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -37,6 +38,9 @@ class TwigView extends View
      */
     public function render(array $data = [], ?string $blockName = null): string
     {
+        $appConfig      = App::getConfig();
+        $data['locale'] = $appConfig['locale'];
+
         $template = $this->twig->load($this->template);
 
         if ($blockName === null) {

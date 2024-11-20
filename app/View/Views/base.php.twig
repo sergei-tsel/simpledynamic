@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="{{ locale }}">
+    <header>
+        <meta charset="utf-8">
+        <meta
+            name="viewport"
+            content="with=device-with, initial-scale=1"
+        >
+        <title>{% block title %}{% endblock %}</title>
+        <link
+            rel="stylesheet"
+            href="base.css.php"
+        >
+        {% block style %}
+        {% endblock %}
+    </header>
+    <body class="grid-container">
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>
