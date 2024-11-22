@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\Model\ODM\Documents;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
@@ -16,8 +18,7 @@ class User
     public string $id;
 
     public function __construct(
-       #[Field(type: 'string')] public string $login,
-    )
-    {
+        #[Field(type: 'string')] public string $login,
+    ) {
     }
 }

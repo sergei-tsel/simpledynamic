@@ -1,11 +1,13 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\Controller\Routes;
 
 use Attribute;
 use config\Env;
 
-#[Attribute(Attribute::TARGET_CLASS|Attribute::TARGET_METHOD|Attribute::TARGET_PROPERTY|Attribute::TARGET_CLASS_CONSTANT|Attribute::IS_REPEATABLE)]
+#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD | Attribute::TARGET_PROPERTY | Attribute::TARGET_CLASS_CONSTANT | Attribute::IS_REPEATABLE)]
 /**
  * Фильтруемый параметр
  */
@@ -18,8 +20,7 @@ readonly class Param
         private int        $filter  = FILTER_DEFAULT,
         private int        $flags   = 0,
         private array      $options = [],
-    )
-    {
+    ) {
     }
 
     /**
@@ -35,12 +36,12 @@ readonly class Param
             $argument[$this->type->value] = $this->config;
         }
 
-        if (!($this->flags || $this->options)) {
-           $argument['param'] = [
-               $this->name => $this->filter,
-           ];
+        if (! ($this->flags || $this->options)) {
+            $argument['param'] = [
+                $this->name => $this->filter,
+            ];
 
-           return $argument;
+            return $argument;
         }
 
         $argument['param'] = [

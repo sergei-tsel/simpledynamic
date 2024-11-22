@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\Controller\Middlewares;
 
 use App\Controller\Routes\Param;
@@ -49,8 +51,8 @@ class FormAuth
      */
     protected function checkPassword(string $login, #[\SensitiveParameter] string $password): bool
     {
-        $hash = (new UserRepository())->getPasswordByLogin($login);
+        $hash = new UserRepository()->getPasswordByLogin($login);
 
-        return password_verify($password, $hash);
+        return password_verify($password, (string) $hash);
     }
 }

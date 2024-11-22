@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\Controller\Routes;
 
 use config\Config;
@@ -14,8 +16,7 @@ class ParamsFilter
 {
     public function __construct(
         private array $options = [],
-    )
-    {
+    ) {
     }
 
     /**

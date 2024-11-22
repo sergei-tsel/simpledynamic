@@ -1,8 +1,8 @@
 <?php
-declare(strict_types=1);
-namespace App\View\Resources;
 
-use App\View\Resources\ResourceInterface;
+declare(strict_types=1);
+
+namespace App\View\Resources;
 
 /**
  * JSON ресурс
@@ -12,6 +12,7 @@ class JsonResource implements ResourceInterface
     /**
      * Сереализовать
      */
+    #[\Override]
     public function serialize(object|array|string $data): string
     {
         return json_encode($data);
@@ -20,6 +21,7 @@ class JsonResource implements ResourceInterface
     /**
      * Добавить в данные
      */
+    #[\Override]
     public function embed(string $resourceData, array $data): array
     {
         if (json_validate($resourceData)) {

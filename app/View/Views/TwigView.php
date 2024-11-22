@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\View\Views;
 
 use config\App;
@@ -16,8 +18,7 @@ class TwigView extends View
         protected Environment $twig      = new Environment(new FilesystemLoader(__DIR__)),
         protected array       $options   = [],
         protected string      $path      = __DIR__,
-    )
-    {
+    ) {
         if ($options !== [] || $path !== __DIR__) {
             $this->twig = new Environment(new FilesystemLoader($path), $options);
         }
@@ -28,6 +29,7 @@ class TwigView extends View
     /**
      * Проверить существование шаблона Twig
      */
+    #[\Override]
     public function exists(): ?View
     {
         return $this->twig->getLoader()->exists($this->template) ? $this : null;
@@ -36,6 +38,7 @@ class TwigView extends View
     /**
      * Загрузить и интерполировать шаблон Twig
      */
+    #[\Override]
     public function render(array $data = [], ?string $blockName = null): string
     {
         $appConfig      = App::getConfig();

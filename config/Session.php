@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace config;
 
 /**
@@ -16,6 +18,7 @@ class Session extends Config
     /**
      * Получить переменные сессии
      */
+    #[\Override]
     public static function getConfig(): array
     {
         if (self::$filename) {
@@ -38,12 +41,12 @@ class Session extends Config
      */
     public static function setSession(?string $login = null): void
     {
-        self::setConfig(function (string $key, string $value) {}, [
+        self::setConfig(function (string $key, string $value): void {}, [
             'cookies' => SessionCookies::getSetMethod(),
-            'options' => function (array $options) {
+            'options' => function (array $options): void {
                 session_start($options);
             },
-            'params' => function (string $key, string $value) {
+            'params' => function (string $key, string $value): void {
                 $_SESSION[$key] = $value;
             },
         ], ['options']);

@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace config;
 
 /**
@@ -15,7 +17,7 @@ class Headers extends Config
      */
     public static function setHeaders(): void
     {
-        self::setConfig(function (string|int $key, string|array $value) {
+        self::setConfig(function (string|int $key, string|array $value): void {
             if (is_string($value)) {
                 is_string($key)
                     ? header($key . ': ' . $value)

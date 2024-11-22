@@ -1,5 +1,5 @@
 <?php
-    header("Content-type: text/css; charset: UTF-8");
+header("Content-type: text/css; charset: UTF-8");
 ?>
 
 .grid-container {

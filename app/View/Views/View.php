@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\View\Views;
 
 /**
@@ -9,8 +11,7 @@ class View
 {
     public function __construct(
         protected string $template,
-    )
-    {
+    ) {
     }
 
     /**

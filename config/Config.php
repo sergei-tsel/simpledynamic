@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace config;
 
 /**
@@ -32,8 +34,7 @@ class Config
         callable $firstMethod,
         array $parts = [],
         array $groups = [],
-    ): void
-    {
+    ): void {
         $local = static::getConfig();
 
         foreach ($local as $key => $value) {

@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\View\Services;
 
 /**
@@ -15,17 +17,16 @@ class StreamContext
         string $url,
         array  $data,
         array  $headers = [],
-    ): void
-    {
-       $options = [
-           'http' => [
-               'method' => $method,
-               'header' => implode("\r\n", $headers),
-           ],
-       ];
+    ): void {
+        $options = [
+            'http' => [
+                'method' => $method,
+                'header' => implode("\r\n", $headers),
+            ],
+        ];
 
-       $context = stream_context_create($options);
+        $context = stream_context_create($options);
 
-       file_put_contents($url, $data, LOCK_EX, $context);
+        file_put_contents($url, $data, LOCK_EX, $context);
     }
 }

@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\Controller\Middlewares;
 
 use App\Controller\Routes\Param;
@@ -20,7 +22,7 @@ class BrowserAuth
 {
     public function handle(array $params): array
     {
-        $url  = parse_url($params['server']['REQUEST_URI']);
+        $url  = parse_url((string) $params['server']['REQUEST_URI']);
         $path = explode('/', $url['path']);
 
         $clientRealm = mb_ucfirst($path[1]);
@@ -28,7 +30,7 @@ class BrowserAuth
 
         $realm = in_array($clientRealm, $realms) ? $clientRealm : $realms[0];
 
-        if (!isset($_SERVER['PHP_AUTH_USER'])) {
+        if (! isset($_SERVER['PHP_AUTH_USER'])) {
             header("HTTP/1.1 401 Unauthorized");
             header("WWW-Authenticate: Basic realm=\"$realm\"");
         }
@@ -49,8 +51,8 @@ class BrowserAuth
      */
     protected function checkPassword(string $login, #[\SensitiveParameter] string $password): bool
     {
-        $hash = (new UserRepository())->getPasswordByLogin($login);
+        $hash = new UserRepository()->getPasswordByLogin($login);
 
-        return password_verify($password, $hash);
+        return password_verify($password, (string) $hash);
     }
 }

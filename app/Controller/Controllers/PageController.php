@@ -1,8 +1,9 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\Controller\Controllers;
 
-use App\Controller\Controllers\Controller;
 use App\View\Views\TwigView;
 
 /**

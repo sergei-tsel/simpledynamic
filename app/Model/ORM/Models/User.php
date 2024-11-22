@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\Model\ORM\Models;
 
 use App\Models\User as EloquentUser;
@@ -15,7 +17,6 @@ class User
 
     public function __construct(
         public Model|Collection|null $resource = null,
-    )
-    {
+    ) {
     }
 }

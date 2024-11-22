@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace config;
 
 use Random\Engine\Secure;
@@ -35,7 +37,7 @@ class Auth extends Config
         ],
         'secrets'  => [
         ],
-        ''
+        '',
     ];
     protected static string $filename = '';
     /**
@@ -46,8 +48,7 @@ class Auth extends Config
         #[\SensitiveParameter] string $data,
         string                        $secret = '',
         string                        $info   = '',
-    ): string
-    {
+    ): string {
         $auth = self::getConfig();
         $algo = $auth['hash']['algo'];
 
@@ -56,13 +57,13 @@ class Auth extends Config
         }
 
         return match ($type) {
-            'base'     => hash($algo, $data),
+            'base'     => hash((string) $algo, $data),
             'file'     => hash_file($algo, $data),
             'nkdf'     => hash_hkdf($algo, $key, $auth['hash']['length'], $info, (new Secure())->generate()),
-            'hmac'     => hash_hmac($algo, $data, $key),
+            'hmac'     => hash_hmac((string) $algo, $data, (string) $key),
             'hmacFile' => hash_hmac_file($algo, $data, $key),
-            'pbkdf2'   => hash_pbkdf2($algo, $data, (new Secure())->generate(), $auth['hash']['iterations'], $auth['hash']['length']),
-        };
+            'pbkdf2'   => hash_pbkdf2((string) $algo, $data, (new Secure())->generate(), $auth['hash']['iterations'], $auth['hash']['length']),
+        } ?: '';
     }
 
     /**

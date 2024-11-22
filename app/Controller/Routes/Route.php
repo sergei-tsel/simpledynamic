@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\Controller\Routes;
 
 use ReflectionMethod;
@@ -16,8 +18,7 @@ readonly class Route
         private string       $action,
         private string       $name,
         private string|array $middlewares = [],
-    )
-    {
+    ) {
     }
 
     /**
@@ -49,7 +50,7 @@ readonly class Route
      */
     public function callAction(): void
     {
-        $params = (new ParamsFilter())
+        $params = new ParamsFilter()
             ->readAttributes($this->controller, $this->action)
             ->getFilteredData();
 
@@ -85,7 +86,7 @@ readonly class Route
      */
     private function callMiddleware(string $name, array $handledParams = []): array
     {
-        $params = (new ParamsFilter())
+        $params = new ParamsFilter()
             ->readAttributes($name)
             ->getFilteredData();
         $params['handled'] = $handledParams;

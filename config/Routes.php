@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace config;
 
 use App\Controller\Controllers\PageController;
@@ -25,6 +27,7 @@ class Routes extends Config
     /**
      * Получить роуты
      */
+    #[\Override]
     public static function getConfig(): array
     {
         if (self::$filename) {
@@ -37,7 +40,7 @@ class Routes extends Config
             $config = self::$local;
         }
 
-       return self::dot($config);
+        return self::dot($config);
     }
 
     /**
@@ -81,8 +84,7 @@ class Routes extends Config
         array  &$routes,
         array  &$groups,
         int    $level = 0
-    ): void
-    {
+    ): void {
         if (array_key_exists('path', $value)) {
             $value = new Route(
                 $value['method'],
@@ -98,7 +100,7 @@ class Routes extends Config
             foreach ($value as $name => $item) {
                 $groups[$level][$key . '.' . $name] = $item;
             }
-        } elseif ($value instanceof Route && !array_key_exists($key, $routes)) {
+        } elseif ($value instanceof Route && ! array_key_exists($key, $routes)) {
             $routes[$value->getName()] = $value;
         }
     }
@@ -106,7 +108,7 @@ class Routes extends Config
     /**
      * Получить параметры пути
      */
-    public static function getPathParams(): array
+    public static function getPathParams(): array|null
     {
         $route = self::getByPath();
 
@@ -115,7 +117,7 @@ class Routes extends Config
 
         $params = [];
 
-        $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
         mb_ereg($routePath, $path, $params);
 
         return $params;
@@ -132,9 +134,9 @@ class Routes extends Config
             $routePath = preg_replace('#\{/d+}#u', '\d+', $route->getPath());
             $routePath = '#^' . $routePath . '$#';
 
-            $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 
-            return mb_ereg_match($routePath, $path) && $route->getMethod() === $_SERVER['REQUEST_METHOD'];
+            return mb_ereg_match($routePath, $path) && $route->getMethod() === $_SERVER['REQUEST_METHOD'] ?? 'GET';
         });
 
         return $routes[0] ?? null;
@@ -145,8 +147,8 @@ class Routes extends Config
      */
     public static function getByName(string $name): Route|null
     {
-          $routes = self::getConfig();
+        $routes = self::getConfig();
 
-          return $routes[$name] ?? null;
+        return $routes[$name] ?? null;
     }
 }

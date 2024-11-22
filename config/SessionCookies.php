@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace config;
 
 /**
@@ -15,7 +17,7 @@ class SessionCookies extends Session
      */
     protected static function getSetMethod(): callable
     {
-        return function (string|int $key, array $value) {
+        return function (string|int $key, array $value): void {
             if ($key === 'options') {
                 session_set_cookie_params($value);
             } else {

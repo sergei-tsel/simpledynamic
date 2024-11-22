@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\Model\ODM\Repositories;
 
 use App\Model\ODM\Documents\User;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Iterator\Iterator;
 
 /**
  * Репозиторий для документа сущности "Пользователь"
@@ -15,11 +16,10 @@ class UserRepository
 
     public function __construct(
         public DocumentManager $documentManager,
-    )
-    {
+    ) {
     }
 
-    public function getAllByLogin(string $login, ?string $document = self::DOCUMENT): Iterator
+    public function getAllByLogin(string $login, ?string $document = self::DOCUMENT): array|object|int|null
     {
         $builder = $this->documentManager->createQueryBuilder($document)
             ->field('login')

@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace config;
 
 /**
@@ -19,7 +21,7 @@ class Cookies extends Config
             setcookie('session', Auth::hash('base', $session));
         }
 
-        self::setConfig(function (string|int $key, string|array $value) {
+        self::setConfig(function (string|int $key, string|array $value): void {
             if (is_string($value)) {
                 setcookie($key, $value);
             } elseif (is_array($value)) {

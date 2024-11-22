@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace config;
 
 /**
@@ -15,7 +17,7 @@ class Env extends Config
      */
     public static function setEnv(): void
     {
-        self::setConfig(function (string|int $key, string $value) {
+        self::setConfig(function (string|int $key, string $value): void {
             if (is_string($key)) {
                 putenv($key . ':' . $value);
             } else {

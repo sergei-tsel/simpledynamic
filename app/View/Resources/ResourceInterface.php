@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace App\View\Resources;
 
 /**
@@ -7,7 +9,7 @@ namespace App\View\Resources;
  */
 interface ResourceInterface
 {
-     public function serialize(string $data);
+    public function serialize(string $data);
 
-     public function embed(string $resourceData, array $data);
+    public function embed(string $resourceData, array $data);
 }
