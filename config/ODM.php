@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 
 /**
- * Конфигурация поключения к базе данных для ODM
+ * Конфигурация подключения к базе данных для ODM
  */
 class ODM extends Config
 {
@@ -27,7 +27,7 @@ class ODM extends Config
     protected static string $filename = '';
 
     /**
-     * Создать конфигурвцию для поключния к базе данных MongoDB
+     * Создать конфигурацию для подключения к базе данных MongoDB
      */
     public static function createMongoDBConfig(): Configuration
     {

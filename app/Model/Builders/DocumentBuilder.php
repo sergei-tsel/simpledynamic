@@ -8,7 +8,7 @@ use config\ODM;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
 /**
- * Создатель репозитрия для ODM
+ * Создатель репозитория для ODM
  */
 class DocumentBuilder implements BuilderInterface
 {

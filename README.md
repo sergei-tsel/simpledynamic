@@ -12,7 +12,7 @@
 
 ## Интеграция
 
-- laravel/database 8.83
+- illuminate/database 12.11
 - doctrine/mongodb-odm 2.7
 - twig/twig 3.14
 - guzzlehttp/guzzle 7.9
