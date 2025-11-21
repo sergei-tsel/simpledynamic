@@ -23,7 +23,7 @@ class TwigView extends View
             $this->twig = new Environment(new FilesystemLoader($path), $options);
         }
 
-        parent::__construct($path . '\\' . $template);
+        parent::__construct($template);
     }
 
     /**

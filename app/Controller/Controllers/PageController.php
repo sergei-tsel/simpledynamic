@@ -13,6 +13,6 @@ class PageController extends Controller
 {
     protected function welcome(): void
     {
-        echo (new TwigView('welcome.twig'))->render();
+        echo (new TwigView('welcome.php.twig'))->render();
     }
 }

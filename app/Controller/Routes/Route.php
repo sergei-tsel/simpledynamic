@@ -60,7 +60,12 @@ readonly class Route
         }
 
         $reflectionMethod = new ReflectionMethod($this->controller, $this->action);
-        $reflectionMethod->invokeArgs(new $this->controller(), [$params, ...$params['path']]);
+
+        $params = array_key_exists('path', $params)
+            ? [$params, ...$params['path']]
+            : $params;
+
+        $reflectionMethod->invokeArgs(new $this->controller(), $params);
     }
 
     /**

@@ -113,7 +113,7 @@ class Routes extends Config
         $route = self::getByPath();
 
         $routePath = preg_filter(['#\{/u', '/}#u'], ['(?P<', '>\d+)'], $route->getPath());
-        $routePath = '#^' . $routePath . '$#';
+        $routePath = '^' . $routePath . '$';
 
         $params = [];
 
@@ -132,14 +132,14 @@ class Routes extends Config
 
         $routes = array_filter($config, function (Route $route) {
             $routePath = preg_replace('#\{/d+}#u', '\d+', $route->getPath());
-            $routePath = '#^' . $routePath . '$#';
+            $routePath = '^' . $routePath . '$';
 
             $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 
             return mb_ereg_match($routePath, $path) && $route->getMethod() === $_SERVER['REQUEST_METHOD'] ?? 'GET';
         });
 
-        return $routes[0] ?? null;
+        return $routes[array_key_first($routes)] ?? null;
     }
 
     /**

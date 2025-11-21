@@ -9,6 +9,7 @@
 - simplexml 
 - yaml 
 - mbstring
+- fileinfo
 
 ## Интеграция
 

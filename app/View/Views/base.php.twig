@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="{{ locale }}">
-    <header>
+    <head>
         <meta charset="utf-8">
         <meta
             name="viewport"
-            content="with=device-with, initial-scale=1"
+            content="width=device-width, initial-scale=1"
         >
         <title>{% block title %}{% endblock %}</title>
         <link
@@ -13,8 +13,8 @@
         >
         {% block style %}
         {% endblock %}
-    </header>
-    <body class="grid-container">
+    </head>
+    <body>
         {% block content %}
         {% endblock %}
     </body>
