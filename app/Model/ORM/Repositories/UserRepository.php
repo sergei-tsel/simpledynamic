@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Model\ORM\Repositories;
 
 use App\Model\ORM\Models\User;
-use App\Models\User as EloquentUser;
 
 /**
  * Репозиторий сущности "Пользователь"
@@ -16,16 +15,10 @@ class UserRepository
 
     public function getPasswordByLogin(string $login): ?string
     {
-        /** @var User $user */
-        $user = new (self::MODEL)();
-
-        /** @var EloquentUser $eloquentUser */
-        $eloquentUser = new ($user::RESOURCE)();
-
-        $resource = $eloquentUser::query()
+        $user = self::MODEL::query()
             ->where(['login' => $login])
             ->first();
 
-        return $resource?->password;
+        return $user?->password;
     }
 }

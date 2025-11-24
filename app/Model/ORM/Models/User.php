@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Model\ORM\Models;
 
-use App\Models\User as EloquentUser;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -22,7 +21,7 @@ use Illuminate\Support\Carbon;
  */
 class User extends Model
 {
-    public const string RESOURCE = EloquentUser::class;
+    public const string RESOURCE = User::class;
 
     protected $table = 'users';
 

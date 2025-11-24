@@ -26,7 +26,7 @@ class ORM extends Config
     /**
      * Создать конфигурацию подключения к базе данных для Eloquent
      */
-    public static function createEloquentConfig(): void
+    public static function createEloquentConfig(): Capsule
     {
         $eloquent = self::getConfig();
 
@@ -35,5 +35,7 @@ class ORM extends Config
         $capsule->addConnection($eloquent);
 
         $capsule->bootEloquent();
+
+        return $capsule;
     }
 }
