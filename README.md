@@ -3,7 +3,7 @@
 Лёгкий и гибкий фреймворк, написанный на PHP
 
 ## Конфигурация
-Версия PHP: 8.4
+Версия PHP: 8.5
 
 Необходимые расширения PHP: 
 - simplexml 
@@ -13,10 +13,10 @@
 
 ## Интеграция
 
-- illuminate/database 12.11
-- doctrine/mongodb-odm 2.7
-- twig/twig 3.14
-- guzzlehttp/guzzle 7.9
+- illuminate/database 12.53
+- doctrine/mongodb-odm 2.16
+- twig/twig 3.23
+- guzzlehttp/guzzle 7.10
 
 ## Реализация
 

@@ -5,20 +5,20 @@
     "keywords": ["simple", "dynamic", "framework"],
     "license": "MIT",
     "require-dev": {
-        "vimeo/psalm": "^6.0.0",
+        "vimeo/psalm": "^6.15.0",
         "symplify/easy-coding-standard": "^13.0.0",
-        "rector/rector": "^2.0.0"
+        "rector/rector": "^2.3.5"
     },
     "require": {
-        "php": "^8.4",
+        "php": "^8.5",
         "ext-simplexml": "*",
         "ext-yaml": "*",
         "ext-mbstring": "*",
         "ext-fileinfo": "*",
-        "illuminate/database": "^v12.11.0",
-        "doctrine/mongodb-odm": "^2.7",
-        "twig/twig": "^3.14",
-        "guzzlehttp/guzzle": "^7.9"
+        "illuminate/database": "^12.53.0",
+        "doctrine/mongodb-odm": "^2.16.0",
+        "twig/twig": "^3.23",
+        "guzzlehttp/guzzle": "^7.10"
     },
     "autoload": {
         "psr-4": {
