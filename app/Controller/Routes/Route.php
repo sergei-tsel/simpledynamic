@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Routes;
 
-use ReflectionMethod;
+use App\Framework\Services\Reflection\MethodReflectionManager;
 
 /**
  * Роут
@@ -59,13 +59,12 @@ readonly class Route
             $params['handled'] = $handledParams;
         }
 
-        $reflectionMethod = new ReflectionMethod($this->controller, $this->action);
-
         $params = array_key_exists('path', $params)
             ? [$params, ...$params['path']]
             : $params;
 
-        $reflectionMethod->invokeArgs(new $this->controller(), $params);
+        new MethodReflectionManager()
+            ->invoke($this->action, $this->controller, $params);
     }
 
     /**

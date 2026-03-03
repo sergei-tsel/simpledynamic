@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Routes;
 
+use App\Framework\Services\Reflection\ReflectionAttributeManager;
 use config\Config;
 use config\Routes;
-use ReflectionAttribute;
-use ReflectionClass;
 
 /**
  * Фильтр параметров
@@ -22,27 +21,19 @@ class ParamsFilter
     /**
      * Прочитать атрибуты
      */
-    public function readAttributes(object|string $class, ?string $name = null): ParamsFilter
+    public function readAttributes(object|string $class, ?string $methodName = null): ParamsFilter
     {
-        $reflectionClass = new ReflectionClass($class);
-
-        $reflection = match (true) {
-            $name === null                       => $reflectionClass,
-            $reflectionClass->hasMethod($name)   => $reflectionClass->getMethod($name),
-            $reflectionClass->hasProperty($name) => $reflectionClass->getProperty($name),
-            $reflectionClass->hasConstant($name) => $reflectionClass->getReflectionConstant($name),
-        };
-
-        $attributes = $reflection->getAttributes(Param::class);
+        if ($methodName === null) {
+            $attributes = new ReflectionAttributeManager()->readClass(class: $class, attributeName: Param::class);
+        } else {
+            $attributes = new ReflectionAttributeManager()->readClassMember(class: $class, memberName: $methodName, attributeName: Param::class);
+        }
 
         foreach ($attributes as $attribute) {
             /**
-             * @var ReflectionAttribute $attribute
-             * @var Param               $instance
+             * @var Param $attribute
              */
-            $instance = $attribute->newInstance();
-
-            $argument = $instance->getArgument();
+            $argument = $attribute->getArgument();
 
             if ($argument['type'] === ParamTypes::CONFIG->getEquivalent()) {
                 $this->options[$argument['type']][$argument['config']][] = $argument['param'];
