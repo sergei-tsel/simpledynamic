@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Routes;
 
 use App\Framework\Services\Reflection\MethodReflectionManager;
+use App\Infrastructure\Container\ProviderManager;
 
 /**
  * Роут
@@ -63,8 +64,10 @@ readonly class Route
             ? [$params, ...$params['path']]
             : $params;
 
+        $container = new ProviderManager()->buildContainer();
+
         new MethodReflectionManager()
-            ->invoke($this->action, $this->controller, $params);
+            ->invoke($this->action, $container->resolve($this->controller), $params);
     }
 
     /**
