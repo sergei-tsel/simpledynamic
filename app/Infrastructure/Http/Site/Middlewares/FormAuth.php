@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Middlewares;
+namespace App\Infrastructure\Http\Site\Middlewares;
 
-use App\Controller\Routes\Param;
-use App\Controller\Routes\ParamTypes;
+use App\Framework\Services\Routing\Param;
+use App\Framework\Services\Routing\ParamTypes;
 use App\Model\ORM\Repositories\UserRepository;
 use config\Auth;
 use config\Cookies;
 use config\Session;
-use Exception;
 
 /**
  * Базовая аутентификация и авторизация через форму
@@ -42,7 +41,7 @@ class FormAuth
             ];
         }
 
-        throw new Exception("403" . PHP_EOL . "Логин или пароль неправильный");
+        throw new \Exception("403" . PHP_EOL . "Логин или пароль неправильный");
     }
 
 

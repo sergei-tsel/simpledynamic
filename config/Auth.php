@@ -40,6 +40,7 @@ class Auth extends Config
         '',
     ];
     protected static string $filename = '';
+
     /**
      * Хешировать, применяя конфигурацию
      */
@@ -59,10 +60,10 @@ class Auth extends Config
         return match ($type) {
             'base'     => hash((string) $algo, $data),
             'file'     => hash_file($algo, $data),
-            'nkdf'     => hash_hkdf($algo, $key, $auth['hash']['length'], $info, (new Secure())->generate()),
+            'nkdf'     => hash_hkdf($algo, $key, $auth['hash']['length'], $info, new Secure()->generate()),
             'hmac'     => hash_hmac((string) $algo, $data, (string) $key),
             'hmacFile' => hash_hmac_file($algo, $data, $key),
-            'pbkdf2'   => hash_pbkdf2((string) $algo, $data, (new Secure())->generate(), $auth['hash']['iterations'], $auth['hash']['length']),
+            'pbkdf2'   => hash_pbkdf2((string) $algo, $data, new Secure()->generate(), $auth['hash']['iterations'], $auth['hash']['length']),
         } ?: '';
     }
 

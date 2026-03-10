@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Routes;
+namespace App\Framework\Services\Routing;
 
 use App\Framework\Services\Reflection\MethodReflectionManager;
 use App\Infrastructure\Container\ProviderManager;
@@ -20,6 +20,37 @@ readonly class Route
         private string       $name,
         private string|array $middlewares = [],
     ) {
+    }
+
+    /**
+     * Создать массив роутов из двухуровневого вложенного массива
+     *
+     * @return Route[]
+     */
+    public static function instanceMany(array $data): array
+    {
+        if ($data === []) {
+            return [];
+        }
+
+        $routes = [];
+
+        foreach ($data as $key => $value) {
+            if (!is_array($value) || $value === []) {
+                continue;
+            }
+
+            $routes[$key] = new self(
+                $value['method'],
+                $value['path'],
+                $value['action'][0],
+                $value['action'][1],
+                $value['name'],
+                $value['middlewares'] ?? [],
+            );
+        }
+
+        return $routes;
     }
 
     /**

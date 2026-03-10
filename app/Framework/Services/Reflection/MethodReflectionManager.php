@@ -40,6 +40,10 @@ class MethodReflectionManager
 
         if ($methodName === null) {
             $method = $reflectionClass->getConstructor();
+
+            if ($method === null) {
+                return [];
+            }
         } elseif ($reflectionClass->hasMethod($methodName)) {
             $method = $reflectionClass->getMethod($methodName);
         } else {

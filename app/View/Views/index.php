@@ -2,7 +2,7 @@
 
 require __DIR__ . '/../../../vendor/autoload.php';
 
-use App\Controller\Routes\Router;
+use App\Framework\Services\Routing\Router;
 
 $filePath = __DIR__ . $_SERVER['REQUEST_URI'];;
 

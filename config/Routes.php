@@ -4,28 +4,26 @@ declare(strict_types=1);
 
 namespace config;
 
-use App\Controller\Controllers\PageController;
-use App\Controller\Routes\Route;
+use App\Framework\Services\Arrays\DotNotationManager;
+use App\Framework\Services\Routing\Route;
 
 /**
  * Конфигурация роутов
  */
 class Routes extends Config
 {
-    protected static array  $local    = [
-        'welcome' => [
-            'method'     => 'GET',
-            'path'       => '/',
-            'controller' => PageController::class,
-            'action'     => 'welcome',
-            'name'       => 'welcome',
-        ],
-    ];
+    protected static array  $local    = [];
 
     protected static string $filename = '';
 
+    protected static array $routers   = [
+        'App\Infrastructure\Http\Site\Routers\Web',
+    ];
+
     /**
      * Получить роуты
+     *
+     * @return Route[]
      */
     #[\Override]
     public static function getConfig(): array
@@ -40,69 +38,22 @@ class Routes extends Config
             $config = self::$local;
         }
 
-        return self::dot($config);
-    }
+        if (self::$routers !== []) {
+            foreach (self::$routers as $router) {
+                if (!class_exists($router)) {
+                    continue;
+                }
 
-    /**
-     * Перевести глубину роутов в точечную нотацию
-     */
-    private static function dot(array $config): array
-    {
-        $routes = [];
-        $groups = [];
-
-        foreach ($config as $key => $value) {
-            self::dotRoute(
-                $value,
-                $key,
-                $routes,
-                $groups,
-            );
-        }
-
-        for ($i = 1; count($groups[$i - 1] ?? []) > 0; $i++) {
-            foreach ($groups[$i - 1] as $name => $group) {
-                self::dotRoute(
-                    $group,
-                    $name,
-                    $routes,
-                    $groups,
-                    $i,
+                $config = array_merge(
+                    $config,
+                    $router::${'routes'},
                 );
             }
         }
 
-        return $routes;
-    }
-
-    /**
-     * Создать уровень роутов в точечной нотации
-     */
-    private static function dotRoute(
-        array  $value,
-        string $key,
-        array  &$routes,
-        array  &$groups,
-        int    $level = 0
-    ): void {
-        if (array_key_exists('path', $value)) {
-            $value = new Route(
-                $value['method'],
-                $value['path'],
-                $value['controller'],
-                $value['action'],
-                $value['name'],
-                $value['middlewares'] ?? [],
-            );
-        }
-
-        if (is_array($value)) {
-            foreach ($value as $name => $item) {
-                $groups[$level][$key . '.' . $name] = $item;
-            }
-        } elseif ($value instanceof Route && ! array_key_exists($key, $routes)) {
-            $routes[$value->getName()] = $value;
-        }
+        return $config
+            |> new DotNotationManager()->fromMdsArray(...)
+            |> Route::instanceMany(...);
     }
 
     /**

@@ -27,7 +27,7 @@ class SessionCookies extends Session
     }
 
     /**
-     * Установить куки сесии
+     * Установить куки сесcии
      */
     public static function setSessionCookies(): void
     {

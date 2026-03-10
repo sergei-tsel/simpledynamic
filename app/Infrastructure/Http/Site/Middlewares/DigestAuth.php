@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Middlewares;
+namespace App\Infrastructure\Http\Site\Middlewares;
 
 use config\Auth;
-use Exception;
 
 /**
  * Базовая авторизация для обмена сообщениями
@@ -24,6 +23,6 @@ class DigestAuth
             ];
         }
 
-        throw new Exception("403" . PHP_EOL . "Секретный ключ сообщения неправильный");
+        throw new \Exception("403" . PHP_EOL . "Секретный ключ сообщения неправильный");
     }
 }

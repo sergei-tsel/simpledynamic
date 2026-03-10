@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Controllers;
+namespace App\Infrastructure\Http\Site\Controllers;
 
 use App\View\Views\TwigView;
 
@@ -13,6 +13,6 @@ class PageController extends Controller
 {
     protected function welcome(): void
     {
-        echo (new TwigView('welcome.php.twig'))->render();
+        echo new TwigView('welcome.php.twig')->render();
     }
 }

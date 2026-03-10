@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Middlewares;
+namespace App\Infrastructure\Http\Site\Middlewares;
 
-use App\Controller\Routes\Param;
-use App\Controller\Routes\ParamTypes;
+use App\Framework\Services\Routing\Param;
+use App\Framework\Services\Routing\ParamTypes;
 use App\Model\ORM\Repositories\UserRepository;
 use config\Auth;
 
@@ -30,7 +30,7 @@ class BrowserAuth
 
         $realm = in_array($clientRealm, $realms) ? $clientRealm : $realms[0];
 
-        if (! isset($_SERVER['PHP_AUTH_USER'])) {
+        if (!isset($_SERVER['PHP_AUTH_USER'])) {
             header("HTTP/1.1 401 Unauthorized");
             header("WWW-Authenticate: Basic realm=\"$realm\"");
         }

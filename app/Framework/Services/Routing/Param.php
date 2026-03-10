@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Routes;
+namespace App\Framework\Services\Routing;
 
 use Attribute;
 use config\Env;
@@ -36,7 +36,7 @@ readonly class Param
             $argument[$this->type->value] = $this->config;
         }
 
-        if (! ($this->flags || $this->options)) {
+        if (!($this->flags || $this->options)) {
             $argument['param'] = [
                 $this->name => $this->filter,
             ];

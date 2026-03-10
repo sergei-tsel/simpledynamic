@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Controllers;
+namespace App\Infrastructure\Http\Site\Controllers;
 
 /**
  * Базовый контроллер

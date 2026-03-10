@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Routes;
+namespace App\Framework\Services\Routing;
 
 use App\Framework\Services\Reflection\ReflectionAttributeManager;
 use config\Config;
