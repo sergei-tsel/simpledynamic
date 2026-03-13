@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http\Site\Middlewares;
 
+use App\Domain\User\Contracts\UserProviderInterface;
 use App\Framework\Services\Routing\Param;
 use App\Framework\Services\Routing\ParamTypes;
-use App\Model\ORM\Repositories\UserRepository;
 use config\Auth;
 use config\Cookies;
 use config\Session;
@@ -22,7 +22,7 @@ use config\Session;
 ]
 class FormAuth
 {
-    public function handle(array $params): array
+    public function handle(array $params, UserProviderInterface $userRepository): array
     {
         $hash = Auth::hash('base', session_id());
 
@@ -32,7 +32,7 @@ class FormAuth
             ];
         }
 
-        if ($this->checkPassword($params['post']['login'], $params['post']['password'])) {
+        if ($this->checkPassword($userRepository, $params['post']['login'], $params['post']['password'])) {
             Session::setSession();
             Cookies::setCookies(session_id());
 
@@ -48,10 +48,10 @@ class FormAuth
     /**
      * Проверить пароль
      */
-    protected function checkPassword(string $login, #[\SensitiveParameter] string $password): bool
+    protected function checkPassword(UserProviderInterface $userRepository, string $login, #[\SensitiveParameter] string $password): bool
     {
-        $hash = new UserRepository()->getPasswordByLogin($login);
+        $user = $userRepository->getOneByLogin($login);
 
-        return password_verify($password, (string) $hash);
+        return password_verify($password, $user->getHashedPassword());
     }
 }

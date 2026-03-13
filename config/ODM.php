@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace config;
 
 use Doctrine\ODM\MongoDB\Configuration;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 
 /**
@@ -13,10 +14,6 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 class ODM extends Config
 {
     protected static array  $local    = [
-        'proxy'       => [
-            'directory' => './app/Model/ODM/Proxies',
-            'namespace' => 'Proxies',
-        ],
         'hydrator'    => [
             'directory' => './app/Model/ODM/Hydrators',
             'namespace' => 'Hydrators',
@@ -29,19 +26,18 @@ class ODM extends Config
     /**
      * Создать конфигурацию для подключения к базе данных MongoDB
      */
-    public static function createMongoDBConfig(): Configuration
+    public static function createDoctrineMongoDB(): DocumentManager
     {
         $mongoDB = self::getConfig();
 
         $config = new Configuration();
-        $config->setProxyDir($mongoDB['proxy']['directory']);
-        $config->setProxyNamespace($mongoDB['proxy']['namespace']);
+        $config->setUseNativeLazyObject(true);
         $config->setHydratorDir($mongoDB['hydrator']['directory']);
         $config->setHydratorNamespace($mongoDB['hydrator']['namespace']);
         $config->setDefaultDB($mongoDB['default_db']);
 
         $config->setMetadataDriverImpl(AttributeDriver::create($mongoDB['driver_path']));
 
-        return $config;
+        return DocumentManager::create(config: $config);
     }
 }

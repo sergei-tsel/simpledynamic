@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http\Site\Middlewares;
 
+use App\Domain\User\Contracts\UserProviderInterface;
 use App\Framework\Services\Routing\Param;
 use App\Framework\Services\Routing\ParamTypes;
-use App\Model\ORM\Repositories\UserRepository;
 use config\Auth;
 
 /**
@@ -20,7 +20,7 @@ use config\Auth;
 ]
 class BrowserAuth
 {
-    public function handle(array $params): array
+    public function handle(array $params, UserProviderInterface $userRepository): array
     {
         $url  = parse_url((string) $params['server']['REQUEST_URI']);
         $path = explode('/', $url['path']);
@@ -35,7 +35,7 @@ class BrowserAuth
             header("WWW-Authenticate: Basic realm=\"$realm\"");
         }
 
-        if ($this->checkPassword($params['server']['PHP_AUTH_USER'], $params['server']['PHP_AUTH_PW'])) {
+        if ($this->checkPassword($userRepository, $params['server']['PHP_AUTH_USER'], $params['server']['PHP_AUTH_PW'])) {
             return [
                 'login' => $params['server']['PHP_AUTH_USER'],
             ];
@@ -49,10 +49,10 @@ class BrowserAuth
     /**
      * Проверить пароль
      */
-    protected function checkPassword(string $login, #[\SensitiveParameter] string $password): bool
+    protected function checkPassword(UserProviderInterface $userRepository, string $login, #[\SensitiveParameter] string $password): bool
     {
-        $hash = new UserRepository()->getPasswordByLogin($login);
+        $user = $userRepository->getOneByLogin($login);
 
-        return password_verify($password, (string) $hash);
+        return password_verify($password, $user->getHashedPassword());
     }
 }

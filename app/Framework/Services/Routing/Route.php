@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Framework\Services\Routing;
 
 use App\Framework\Services\Reflection\MethodReflectionManager;
+use App\Infrastructure\Container\Container;
 use App\Infrastructure\Container\ProviderManager;
 
 /**
@@ -129,7 +130,11 @@ readonly class Route
             ->getFilteredData();
         $params['handled'] = $handledParams;
 
+        $container = new ProviderManager()->buildContainer();
+        $dependencies = $container->resolveMethodDependencies($name, 'handle');
+
         $middleware = new $name();
-        return $middleware->handle($params);
+
+        return $middleware->handle($params, ...$dependencies);
     }
 }

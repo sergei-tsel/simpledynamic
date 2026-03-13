@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace config;
 
-use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Database\Capsule\Manager;
+use Illuminate\Database\DatabaseManager;
 
 /**
  * Конфигурация подключения к базе данных для ORM
  */
 class ORM extends Config
 {
-    protected static array  $local    = [
+    protected static array  $local               = [
         'driver'    => 'mysql',
         'host'      => 'localhost',
         'database'  => 'database',
@@ -21,21 +22,30 @@ class ORM extends Config
         'collation' => 'utf8_unicode_ci',
         'prefix'    => '',
     ];
-    protected static string $filename = '';
+    protected static string $filename            = '';
+
+    protected static array $migrationDirectories = [
+        __DIR__ . '/../app/Framework/Services/DB/Eloquent/Migrations',
+    ];
+
+    public static function getMigrationDirectories(): array
+    {
+        return self::$migrationDirectories;
+    }
 
     /**
      * Создать конфигурацию подключения к базе данных для Eloquent
      */
-    public static function createEloquentConfig(): Capsule
+    public static function createEloquent(): DatabaseManager
     {
         $eloquent = self::getConfig();
 
-        $capsule = new Capsule;
+        $manager = new Manager();
 
-        $capsule->addConnection($eloquent);
+        $manager->addConnection($eloquent);
 
-        $capsule->bootEloquent();
+        $manager->bootEloquent();
 
-        return $capsule;
+        return $manager->getDatabaseManager();
     }
 }

@@ -36,7 +36,6 @@ class MethodReflectionManager
     public function getParamsTypes(string $class, ?string $methodName = null): array
     {
         $reflectionClass = new ReflectionClass($class);
-        $paramsTypes = [];
 
         if ($methodName === null) {
             $method = $reflectionClass->getConstructor();
@@ -47,10 +46,12 @@ class MethodReflectionManager
         } elseif ($reflectionClass->hasMethod($methodName)) {
             $method = $reflectionClass->getMethod($methodName);
         } else {
-            return $paramsTypes;
+            return [];
         }
 
         $params = $method->getParameters();
+
+        $paramsTypes = [];
 
         foreach ($params as $param) {
             $paramsTypes[] = $param->getType()?->getName();

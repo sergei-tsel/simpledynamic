@@ -20,9 +20,9 @@ final class Container
     /**
      * Зарегистрировать новый биндинг
      */
-    public function bind(string $abstract, callable|string $concrete = '', bool $shared = false): void {
+    public function bind(string $abstract, callable|string|null $concrete = null, bool $shared = false): void {
         $this->bindings[$abstract] = [
-            'concrete' => $concrete ?: $abstract,
+            'concrete' => $concrete ?? $abstract,
             'shared'   => $shared,
         ];
     }
@@ -81,6 +81,31 @@ final class Container
     }
 
     /**
+     * Разрешить зависимости метода
+     *
+     * @throws \Exception
+     */
+    public function resolveMethodDependencies(string $className, string $methodName): array
+    {
+        $methodManager = new MethodReflectionManager();
+        $params = $methodManager->getParamsTypes($className, $methodName);
+
+        if ($params === []) {
+            return [];
+        }
+
+        $dependencies = [];
+
+        foreach ($params as $param) {
+            if ($param !== null && class_exists($param)) {
+                $dependencies[] = $this->resolveDependency($param);
+            }
+        }
+
+        return $dependencies;
+    }
+
+    /**
      * Разрешить зависимость
      */
     protected function resolveDependency(string $name): ?object
@@ -95,11 +120,9 @@ final class Container
             return $this->instances[$name];
         }
 
-        $concrete = $binding['concrete'] instanceof \Closure
-            ? $binding['concrete']()
-            : $binding['concrete'];
-
-        $instance = $this->resolve($concrete);
+        $instance = $binding['concrete'] instanceof \Closure
+            ? $binding['concrete']($this)
+            : $this->resolve($binding['concrete']);
 
         if ($binding['shared']) {
             $this->instances[$name] = $instance;

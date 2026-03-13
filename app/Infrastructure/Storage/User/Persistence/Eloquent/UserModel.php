@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Model\ORM\Models;
+namespace App\Infrastructure\Storage\User\Persistence\Eloquent;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -15,14 +15,11 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @property string $login
  * @property string $password
- * @property string $remember_token
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
-class User extends Model
+class UserModel extends Model
 {
-    public const string RESOURCE = User::class;
-
     protected $table = 'users';
 
     protected $fillable = [
