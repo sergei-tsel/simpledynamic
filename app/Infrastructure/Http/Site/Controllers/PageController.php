@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http\Site\Controllers;
 
-use App\View\Views\TwigView;
+use App\Infrastructure\Gateway\Templating\TwigView;
 
 /**
  * Контроллер для страниц, доступных без авторизации

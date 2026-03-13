@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\View\Services;
+namespace App\Infrastructure\Gateway\Clients;
 
 /**
- * Сервис отправки представления с помощью потока
+ * Клиент для отправки представления с помощью потока
  */
 class StreamContext
 {

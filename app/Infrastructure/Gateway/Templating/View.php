@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\View\Views;
+namespace App\Infrastructure\Gateway\Templating;
 
 /**
  * Представление с шаблоном PHP

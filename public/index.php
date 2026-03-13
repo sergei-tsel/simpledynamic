@@ -1,10 +1,10 @@
 <?php
 
-require __DIR__ . '/../../../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 use App\Framework\Services\Routing\Router;
 
-$filePath = __DIR__ . $_SERVER['REQUEST_URI'];;
+$filePath = __DIR__ . '/' . ltrim($_SERVER['REQUEST_URI'], '/');
 
 if (is_file($filePath)) {
     header("Content-type: " . mime_content_type($filePath) . "; charset=utf-8");

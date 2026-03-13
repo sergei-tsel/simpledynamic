@@ -2,25 +2,33 @@
 
 declare(strict_types=1);
 
-namespace App\View\Views;
+namespace App\Infrastructure\Gateway\Templating;
 
 use config\App;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
 /**
- * Представление с шаблном Twig
+ * Представление с шаблоном Twig
  */
 class TwigView extends View
 {
+    protected Environment $twig;
+    protected array $appConfig;
+
     public function __construct(
-        protected string      $template,
-        protected Environment $twig      = new Environment(new FilesystemLoader(__DIR__)),
-        protected array       $options   = [],
-        protected string      $path      = __DIR__,
+        protected string $template,
+        protected array  $options   = [],
+        protected string $path      = __DIR__ . '/../../../../public/twig',
     ) {
-        if ($options !== [] || $path !== __DIR__) {
-            $this->twig = new Environment(new FilesystemLoader($path), $options);
+        $this->twig = new Environment(new FilesystemLoader($path), $options);
+
+        $this->appConfig = App::getConfig();
+
+        if ($this->appConfig['twig_extensions'] !== []) {
+            foreach ($this->appConfig['twig_extensions'] as $extension) {
+                $this->twig->addExtension(new $extension);
+            }
         }
 
         parent::__construct($template);
@@ -41,8 +49,7 @@ class TwigView extends View
     #[\Override]
     public function render(array $data = [], ?string $blockName = null): string
     {
-        $appConfig      = App::getConfig();
-        $data['locale'] = $appConfig['locale'];
+        $data['locale'] = $this->appConfig['locale'];
 
         $template = $this->twig->load($this->template);
 

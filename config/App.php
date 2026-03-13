@@ -10,7 +10,8 @@ namespace config;
 class App extends Config
 {
     protected static array $local     = [
-        'locale' => 'en',
+        'locale'          => 'en',
+        'twig_extensions' => [],
     ];
     protected static string $filename = '';
 }

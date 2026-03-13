@@ -2,21 +2,27 @@
 
 declare(strict_types=1);
 
-namespace App\View\Resources;
+namespace App\Infrastructure\Gateway\Parsers;
 
 use SimpleXMLElement;
 
 /**
  * XML ресурс
  */
-class XmlResource implements ResourceInterface
+class XmlParser implements ParserInterface
 {
+    /**
+     * Сериализовать
+     */
     #[\Override]
     public function serialize(string $data): SimpleXMLElement|false
     {
         return simplexml_load_string($data);
     }
 
+    /**
+     * Добавить в данные
+     */
     #[\Override]
     public function embed(string $resourceData, array $data): array
     {

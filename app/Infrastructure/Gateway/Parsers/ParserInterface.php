@@ -2,12 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\View\Resources;
+namespace App\Infrastructure\Gateway\Parsers;
 
-/**
- * Интерфейс ресурса
- */
-interface ResourceInterface
+interface ParserInterface
 {
     public function serialize(string $data);
 

@@ -1,5 +1,5 @@
 start:
-	php -S localhost:8000 app/View/Views/index.php
+	php -S localhost:8000 public/index.php
 migrate:
 	php app/Framework/Services/DB/Eloquent/Migrations/run_migrations.php
 rollback:

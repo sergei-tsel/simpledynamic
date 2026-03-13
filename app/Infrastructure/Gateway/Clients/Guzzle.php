@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\View\Services;
+namespace App\Infrastructure\Gateway\Clients;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
@@ -10,7 +10,7 @@ use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Сервис отправки представления с помощью Guzzle
+ * Клиент для отправки представления с помощью Guzzle
  */
 class Guzzle
 {
@@ -20,7 +20,8 @@ class Guzzle
     }
 
     /**
-     * Отправить представление */
+     * Отправить представление
+     */
     public function send(
         string $method,
         string $url,

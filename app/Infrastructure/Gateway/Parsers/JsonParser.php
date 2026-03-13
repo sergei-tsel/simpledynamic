@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\View\Resources;
+namespace App\Infrastructure\Gateway\Parsers;
 
 /**
- * JSON ресурс
+ * Парсер JSON
  */
-class JsonResource implements ResourceInterface
+class JsonParser implements ParserInterface
 {
     /**
-     * Сереализовать
+     * Сериализовать
      */
     #[\Override]
     public function serialize(object|array|string $data): string
