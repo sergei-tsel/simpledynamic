@@ -18,13 +18,13 @@ class Command
     /**
      * Выполнить команду
      */
-    public function run(): void
+    public static function run(): void
     {
-        $this->parseCliArguments();
-
         $container = new ProviderManager()->buildContainer();
 
+        /** @var Command $command */
         $command = $container->resolve(static::class);
+        $command->parseCliArguments();
 
         $dependencies = $container->resolveMethodDependencies(static::class, 'handle');
 

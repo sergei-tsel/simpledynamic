@@ -1,6 +1,8 @@
 <?php
 
-use App\Framework\Services\FiberTasking\Command;
+require __DIR__ . '/../../../../vendor/autoload.php';
+
+use App\Framework\Services\CLI\Command;
 use config\Commands;
 
 if (PHP_SAPI !== 'cli') {
@@ -12,12 +14,12 @@ $commandName = $commands[$_SERVER['argv'][1]];
 
 if (is_array($commandName)) {
     foreach ($commandName as $name) {
-        if (class_exists($name) && is_subclass_of($commandName, Command::class)) {
-            new $commandName()->run();
+        if (class_exists($name) && is_subclass_of($name, Command::class)) {
+            $name::run();
         }
     }
 } elseif (class_exists($commandName) && is_subclass_of($commandName, Command::class)) {
-    new $commandName()->run();
+    $commandName::run();
 }
 
 exit(0);

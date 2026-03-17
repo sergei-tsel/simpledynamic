@@ -111,7 +111,7 @@ final class Container
     protected function resolveDependency(string $name): ?object
     {
         if (!isset($this->bindings[$name])) {
-            $this->resolve($name);
+            return $this->resolve($name);
         }
 
         $binding = $this->bindings[$name];

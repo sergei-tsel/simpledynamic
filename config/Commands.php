@@ -10,7 +10,9 @@ namespace config;
 class Commands extends Config
 {
     protected static array $local     = [
-        'test' => 'App\Infrastructure\Console\Test',
+        'test' => [
+            'App\Infrastructure\Console\FiberTaskingTest',
+        ],
     ];
     protected static string $filename = '';
 }

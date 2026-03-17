@@ -16,13 +16,23 @@ class FiberManager
     /**
      * Добавить новый файбер
      */
-    public function add(string $name, callable $task, array $params = []): void
+    public function add(string $name, callable $task, array $params = [], array $resumes = []): void
     {
         $this->tasks[$name] = [
             'fiber'   => new Fiber($task),
             'params'  => $params,
+            'resumes' => $resumes,
             'returns' => [],
         ];
+    }
+
+    public function getReturns(string $name): array
+    {
+        if (!isset($this->tasks[$name])) {
+            return [];
+        }
+
+        return $this->tasks[$name]['returns'];
     }
 
     /**
@@ -32,7 +42,7 @@ class FiberManager
      */
     public function start(string $name): mixed
     {
-        $task = $this->tasks[$name]['fiber'];
+        $task = $this->tasks[$name];
         /** @var Fiber $fiber */
         $fiber = $task['fiber'];
 
@@ -98,18 +108,15 @@ class FiberManager
     }
 
     /**
-     * Проверить, работает ли файбер
+     * Проверить, работает ли файбер, в котором вызов
      */
-    public function isRunning(string $name): bool
+    public function isRunning(): bool
     {
-        /** @var Fiber $fiber */
-        $fiber = $this->tasks[$name]['fiber'];
-
-        return $fiber->isRunning();
+        return Fiber::getCurrent()?->isRunning();
     }
 
     /**
-     * Проверить, запушен ли файбер
+     * Проверить, завершён ли файбер
      */
     public function isTerminated(string $name): bool
     {
@@ -129,25 +136,55 @@ class FiberManager
     }
 
     /**
+     * Выполнить задачу в файбере
+     * @param array{int: array{'args': array, 'func': callable}} $steps
+     *
+     * @throws \Throwable
+     */
+    public function performTask(array $steps): ?array
+    {
+        if ($steps === []) {
+            return null;
+        }
+
+        $taskResult = null;
+
+        for ($i = 0; $i < count($steps); $i++) {
+            $stepResult = $steps[$i]['func'](...$steps[$i]['args']);
+            $suspendParams = Fiber::getCurrent()->suspend($stepResult);
+
+            if (isset($steps[$i + 1])) {
+                if (is_array($stepResult) && $stepResult !== []) {
+                    $steps[$i + 1]['args'] = array_merge($steps[$i + 1]['args'], $stepResult);
+                }
+
+                if (is_array($suspendParams) && $suspendParams !== []) {
+                    $steps[$i + 1]['args'] = array_merge($steps[$i + 1]['args'], $suspendParams);
+                }
+            } else {
+                $taskResult = $stepResult;
+            }
+        };
+
+        return $taskResult;
+    }
+
+    /**
      * Выполнить добавленные файберы
      *
      * @throws \Throwable
      */
-    public function execute(array $resumeParams = []): void
+    public function execute(): void
     {
-        foreach ($this->tasks as $name => $task) {
-            try {
-                /** @var Fiber $fiber */
-                $fiber = $this->tasks['fiber'];
+        foreach ($this->tasks as &$task) {
+            /** @var Fiber $fiber */
+            $fiber = $task['fiber'];
 
-                $task['returns'][] = match (true) {
-                    !$fiber->isStarted()   => $fiber->start(...$task['params']),
-                    $fiber->isSuspended()  => $fiber->resume(empty($resumeParams[$name]) ? null : array_shift($resumeParams[$name])),
-                    $fiber->isTerminated() => $fiber->getReturn(),
-                };
-            } catch (\Throwable $e) {
-                $task['returns'][] = $e;
-            }
+            $task['returns'][] = match (true) {
+                !$fiber->isStarted()   => $fiber->start(...$task['params']),
+                $fiber->isSuspended()  => $fiber->resume(empty($task['resumes']) ? null : array_shift($task['resumes'])),
+                $fiber->isTerminated() => $fiber->getReturn(),
+            };
         }
     }
 
@@ -156,8 +193,8 @@ class FiberManager
      */
     public function removeCompleted(): void
     {
-        $this->tasks = array_filter($this->tasks, function ($fiber) {
-            return !$fiber->isTerminated();
+        $this->tasks = array_filter($this->tasks, function ($task) {
+            return !$task['fiber']->isTerminated();
         });
     }
 }

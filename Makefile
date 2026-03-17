@@ -4,3 +4,5 @@ migrate:
 	php app/Framework/Services/DB/Eloquent/Migrations/run_migrations.php
 rollback:
 	php app/Framework/Services/DB/Eloquent/Migrations/rollback_all_migrations.php
+test:
+	php app/Framework/Services/CLI/exec.php test
