@@ -6,19 +6,24 @@ namespace config;
 
 use App\Framework\Services\Arrays\DotNotationManager;
 use App\Framework\Services\Routing\Route;
+use Uri\Rfc3986\Uri;
 
 /**
  * Конфигурация роутов
  */
 class Routes extends Config
 {
-    protected static array  $local    = [];
+    protected static array  $local    = [
+        'base' => 'http://localhost:8000/',
+    ];
 
     protected static string $filename = '';
 
     protected static array $routers   = [
         'App\Infrastructure\Http\Site\Routers\Web',
     ];
+
+    protected static ?Uri $uri = null;
 
     /**
      * Получить роуты
@@ -57,6 +62,18 @@ class Routes extends Config
     }
 
     /**
+     * Получить Uri
+     */
+    public static function getUri(): Uri
+    {
+        if (self::$uri === null) {
+            self::$uri = new Uri(uri: $_SERVER['REQUEST_URI'], baseUrl: new Uri(self::$local['base']));
+        }
+
+        return self::$uri;
+    }
+
+    /**
      * Получить параметры пути
      */
     public static function getPathParams(): array|null
@@ -68,7 +85,7 @@ class Routes extends Config
 
         $params = [];
 
-        $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        $path = self::getUri()->getPath();
         mb_ereg($routePath, $path, $params);
 
         return $params;
@@ -79,18 +96,18 @@ class Routes extends Config
      */
     public static function getByPath(): Route|null
     {
-        $config = Routes::getConfig();
+        $config = self::getConfig();
 
         $routes = array_filter($config, function (Route $route) {
             $routePath = preg_replace('#\{/d+}#u', '\d+', $route->getPath());
             $routePath = '^' . $routePath . '$';
 
-            $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+            $path = self::getUri()->getPath();
 
             return mb_ereg_match($routePath, $path) && $route->getMethod() === $_SERVER['REQUEST_METHOD'] ?? 'GET';
         });
 
-        return $routes[array_key_first($routes)] ?? null;
+        return array_first($routes);
     }
 
     /**

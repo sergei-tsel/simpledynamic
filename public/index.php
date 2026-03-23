@@ -3,8 +3,9 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use App\Framework\Services\Routing\Router;
+use config\Routes;
 
-$filePath = __DIR__ . '/' . ltrim($_SERVER['REQUEST_URI'], '/');
+$filePath = __DIR__ . '/' . Routes::getUri()->getPath();
 
 if (is_file($filePath)) {
     header("Content-type: " . mime_content_type($filePath) . "; charset=utf-8");

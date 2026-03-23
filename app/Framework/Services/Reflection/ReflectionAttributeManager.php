@@ -8,12 +8,28 @@ use Attribute;
 use ReflectionAttribute;
 use ReflectionClass;
 
-
 /**
  * Сервис для управления атрибутами рефлексии
  */
 class ReflectionAttributeManager
 {
+    /**
+     * Прочитать атрибуты
+     *
+     * @return Attribute[]
+     * @throws \ReflectionException
+     */
+    public function read(object|string $class, ?string $memberName = null, ?string $attributeName = null, bool $isInstanceOf = false): array
+    {
+        if ($memberName === null) {
+            return new ReflectionAttributeManager()->readClass(class: $class, attributeName: $attributeName, isInstanceOf: $isInstanceOf);
+        } elseif ($memberName === '__construct') {
+            return new ReflectionAttributeManager()->readConstructor(class: $class, attributeName: $attributeName, isInstanceOf: $isInstanceOf);
+        } else {
+            return new ReflectionAttributeManager()->readClassMember(class: $class, memberName: $memberName, attributeName: $attributeName, isInstanceOf: $isInstanceOf);
+        }
+    }
+
     /**
      * Прочитать атрибуты класса
      *
@@ -63,7 +79,7 @@ class ReflectionAttributeManager
         $reflectionEntity = match (true) {
             $reflectionClass->hasMethod($memberName)                 => $reflectionClass->getMethod($memberName),
             $reflectionClass->hasProperty($memberName)               => $reflectionClass->getProperty($memberName),
-            $reflectionClass->hasConstant($memberName)               => $reflectionClass->getConstant($memberName),
+            $reflectionClass->hasConstant($memberName)               => $reflectionClass->getReflectionConstant($memberName),
             $reflectionClass->isSubclassOf($memberName),
             in_array($memberName, $reflectionClass->getTraitNames()) => new ReflectionClass($memberName),
         };

@@ -8,12 +8,12 @@ use App\Domain\User\Contracts\UserProviderInterface;
 use App\Framework\Services\Routing\Param;
 use App\Framework\Services\Routing\ParamTypes;
 use config\Auth;
+use config\Routes;
 
 /**
  * Базовая браузерная аутентификация
  */
 #[
-    Param(ParamTypes::SERVER, 'REQUEST_URI'),
     Param(ParamTypes::CONFIG, 'realms', Auth::class),
     Param(ParamTypes::SERVER, 'PHP_AUTH_USER'),
     Param(ParamTypes::SERVER, 'PHP_AUTH_PW'),
@@ -22,15 +22,14 @@ class BrowserAuth
 {
     public function handle(array $params, UserProviderInterface $userRepository): array
     {
-        $url  = parse_url((string) $params['server']['REQUEST_URI']);
-        $path = explode('/', $url['path']);
+        $path = explode('/', Routes::getUri()->getPath());
 
         $clientRealm = mb_ucfirst($path[1]);
         $realms      = $params['config']['Auth']['realms'];
 
         $realm = in_array($clientRealm, $realms) ? $clientRealm : $realms[0];
 
-        if (!isset($_SERVER['PHP_AUTH_USER'])) {
+        if (!isset($params['server']['PHP_AUTH_USER'])) {
             header("HTTP/1.1 401 Unauthorized");
             header("WWW-Authenticate: Basic realm=\"$realm\"");
         }

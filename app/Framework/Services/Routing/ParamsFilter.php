@@ -23,11 +23,7 @@ class ParamsFilter
      */
     public function readAttributes(object|string $class, ?string $methodName = null): ParamsFilter
     {
-        if ($methodName === null) {
-            $attributes = new ReflectionAttributeManager()->readClass(class: $class, attributeName: Param::class);
-        } else {
-            $attributes = new ReflectionAttributeManager()->readClassMember(class: $class, memberName: $methodName, attributeName: Param::class);
-        }
+        $attributes = new ReflectionAttributeManager()->read(class: $class, memberName: $methodName, attributeName: Param::class);
 
         foreach ($attributes as $attribute) {
             /**
