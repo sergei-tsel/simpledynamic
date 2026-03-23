@@ -13,9 +13,9 @@
 
 ## Интеграция
 
-- illuminate/database 12.53
+- illuminate/database 13.1
 - doctrine/mongodb-odm 2.16
-- twig/twig 3.23
+- twig/twig 3.24
 - guzzlehttp/guzzle 7.10
 
 ## Реализация

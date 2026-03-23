@@ -5,9 +5,9 @@
     "keywords": ["simple", "dynamic", "framework"],
     "license": "MIT",
     "require-dev": {
-        "vimeo/psalm": "^6.15.0",
-        "symplify/easy-coding-standard": "^13.0.0",
-        "rector/rector": "^2.3.5"
+        "vimeo/psalm": "^6.16.1",
+        "symplify/easy-coding-standard": "^13.0.4",
+        "rector/rector": "^2.3.9"
     },
     "require": {
         "php": "^8.5",
@@ -16,9 +16,9 @@
         "ext-mbstring": "*",
         "ext-fileinfo": "*",
         "ext-uri": "*",
-        "illuminate/database": "^12.53.0",
-        "doctrine/mongodb-odm": "^2.16.0",
-        "twig/twig": "^3.23",
+        "illuminate/database": "^13.1.1",
+        "doctrine/mongodb-odm": "^2.16.1",
+        "twig/twig": "^3.24",
         "guzzlehttp/guzzle": "^7.10"
     },
     "autoload": {

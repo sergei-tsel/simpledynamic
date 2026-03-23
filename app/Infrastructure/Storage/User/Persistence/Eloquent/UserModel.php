@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Storage\User\Persistence\Eloquent;
 
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
@@ -18,28 +20,17 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
+#[Table('users')]
+#[Fillable([
+    'name',
+    'login',
+    'password'
+])]
+#[Hidden(['password'])]
 class UserModel extends Model
 {
-    protected $table = 'users';
-
-    protected $fillable = [
-        'name',
-        'login',
-        'password',
-    ];
-
-    protected $hidden = [
-        'password',
-    ];
-
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
-
-    public function __construct(
-        public Model|Collection|null $resource = null,
-    ) {
-        parent::__construct();
-    }
 }
