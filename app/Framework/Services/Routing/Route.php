@@ -106,13 +106,13 @@ readonly class Route
      */
     private function callMiddlewares(): array
     {
-        if (is_string($this->middlewares)) {
-            return $this->callMiddleware($this->middlewares);
-        }
+        $middlewares = new MiddlewaresFilter()
+            ->readAttributes($this->controller, $this->action)
+            ->getFilteredData($this->middlewares);
 
         $handledParams = [];
 
-        foreach ($this->middlewares as $name) {
+        foreach ($middlewares as $name) {
             $handledParams = array_merge($handledParams, $this->callMiddleware($name, $handledParams));
         }
 
