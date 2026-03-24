@@ -20,12 +20,12 @@ class MigrationRunner
     public function load(Manager $capsule): void
     {
         $migrationDirectories = ORM::getMigrationDirectories();
-        
+
         foreach ($migrationDirectories as $directory) {
             $this->loadByDirectory($directory, $capsule);
         }
     }
-    
+
     /**
      * Загрузить миграции из директории
      */
@@ -34,7 +34,7 @@ class MigrationRunner
         if ($capsule === null) {
             $capsule = ORM::createEloquent();
         }
-        
+
         $files = scandir($directory);
 
         foreach ($files as $file) {
@@ -52,7 +52,7 @@ class MigrationRunner
             }
         }
     }
-    
+
     public function getMaxBatch(?Manager $capsule = null): int
     {
         if ($capsule === null) {
@@ -69,7 +69,7 @@ class MigrationRunner
     public function run(): void
     {
         $capsule = ORM::createEloquent();
-        
+
         foreach ($this->newMigrations as $migration) {
             $migration->run();
 
@@ -86,7 +86,7 @@ class MigrationRunner
     public function rollbackAll(): void
     {
         $capsule = ORM::createEloquent();
-        
+
         $migrationsToRollback = $capsule::table('migrations')
             ->orderByDesc('id')
             ->pluck('migration')

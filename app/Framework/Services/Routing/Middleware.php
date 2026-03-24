@@ -6,7 +6,7 @@ namespace App\Framework\Services\Routing;
 
 use Attribute;
 
-#[Attribute(Attribute::TARGET_CLASS|Attribute::TARGET_METHOD)]
+#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
 /**
  * Фильтруемый мидлвар
  */

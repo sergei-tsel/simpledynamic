@@ -6,3 +6,5 @@ rollback:
 	php app/Framework/Services/DB/Eloquent/Migrations/rollback_all_migrations.php
 test:
 	php app/Framework/Services/CLI/exec.php test
+ecs:
+	vendor/bin/ecs check --fix

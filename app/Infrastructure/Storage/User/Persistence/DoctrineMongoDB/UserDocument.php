@@ -18,9 +18,12 @@ class UserDocument
     public int $id;
 
     public function __construct(
-        #[Field(type: 'name')] public string $name,
-        #[Field(type: 'string')] public string $login,
-        #[Field(type: 'password')] public string $password,
+        #[Field(type: 'name')]
+        public string $name,
+        #[Field(type: 'string')]
+        public string $login,
+        #[Field(type: 'password')]
+        public string $password,
     ) {
     }
 }

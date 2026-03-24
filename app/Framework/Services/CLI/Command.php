@@ -55,7 +55,7 @@ class Command
                 $shortOpts .= substr($opt, 1);
             }
 
-            if(!str_ends_with($opt, ':')) {
+            if (!str_ends_with($opt, ':')) {
                 $optsWithoutValues[] = $opt;
             }
         }

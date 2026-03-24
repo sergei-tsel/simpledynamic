@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Infrastructure\Storage\User\Persistence\DoctrineMongoDB;
 
 use App\Domain\User\DTO\User;
-use App\Infrastructure\Storage\User\Persistence\Eloquent\UserModel;
 
 /**
  * Маппер для документа сущности "Пользователь"

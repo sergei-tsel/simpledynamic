@@ -24,7 +24,7 @@ use Illuminate\Support\Carbon;
 #[Fillable([
     'name',
     'login',
-    'password'
+    'password',
 ])]
 #[Hidden(['password'])]
 class UserModel extends Model

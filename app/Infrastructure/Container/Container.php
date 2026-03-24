@@ -20,7 +20,8 @@ final class Container
     /**
      * Зарегистрировать новый биндинг
      */
-    public function bind(string $abstract, callable|string|null $concrete = null, bool $shared = false): void {
+    public function bind(string $abstract, callable|string|null $concrete = null, bool $shared = false): void
+    {
         $this->bindings[$abstract] = [
             'concrete' => $concrete ?? $abstract,
             'shared'   => $shared,
@@ -30,7 +31,8 @@ final class Container
     /**
      * Зарегистрировать новый общий биндинг
      */
-    public function singleton(string $abstract, callable|string $concrete = ''): void {
+    public function singleton(string $abstract, callable|string $concrete = ''): void
+    {
         $this->bind($abstract, $concrete, true);
     }
 

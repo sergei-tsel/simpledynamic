@@ -54,7 +54,7 @@ class Config
 
             if (in_array($partName, $groups)) {
                 $partSetter($local[$partName]);
-            } elseif(is_array($local[$partName])) {
+            } elseif (is_array($local[$partName])) {
                 foreach ($local[$partName] as $key => $value) {
                     $partSetter($key, $value);
                 }

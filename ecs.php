@@ -12,6 +12,7 @@ return ECSConfig::configure()
     ->withPaths([
         __DIR__ . '/app',
         __DIR__ . '/config',
+        __DIR__ . '/public',
     ])->withPhpCsFixerSets(
         doctrineAnnotation: true,
         php83Migration: true,

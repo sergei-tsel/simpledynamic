@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ecs
+        name: ECS
+        entry: vendor/bin/ecs check --fix --config=ecs.php
+        language: system
+        types: [php]
+        pass_filenames: true

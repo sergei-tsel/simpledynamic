@@ -27,7 +27,7 @@ class TwigView extends View
 
         if ($this->appConfig['twig_extensions'] !== []) {
             foreach ($this->appConfig['twig_extensions'] as $extension) {
-                $this->twig->addExtension(new $extension);
+                $this->twig->addExtension(new $extension());
             }
         }
 

@@ -45,10 +45,11 @@ class Auth extends Config
      * Хешировать, применяя конфигурацию
      */
     public static function hash(
-        string                        $type,
-        #[\SensitiveParameter] string $data,
-        string                        $secret = '',
-        string                        $info   = '',
+        string $type,
+        #[\SensitiveParameter]
+        string $data,
+        string $secret = '',
+        string $info   = '',
     ): string {
         $auth = self::getConfig();
         $algo = $auth['hash']['algo'];
