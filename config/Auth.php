@@ -11,6 +11,7 @@ use Random\Engine\Secure;
  */
 class Auth extends Config
 {
+    #[\Override]
     protected static array $local = [
         'realms'   => [
             'User',
@@ -39,6 +40,7 @@ class Auth extends Config
         ],
         '',
     ];
+    #[\Override]
     protected static string $filename = '';
 
     /**

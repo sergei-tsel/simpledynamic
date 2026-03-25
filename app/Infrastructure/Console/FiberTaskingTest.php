@@ -12,7 +12,9 @@ use App\Framework\Services\FiberTasking\FiberManager;
  */
 class FiberTaskingTest extends Command
 {
+    #[\Override]
     protected string $signature = 'app/Framework/Services/CLI/exec.php test';
+    #[\Override]
     protected string $description = 'Тестирует управления файберами';
 
     public function __construct(

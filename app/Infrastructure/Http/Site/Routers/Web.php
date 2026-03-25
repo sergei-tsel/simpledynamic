@@ -10,7 +10,7 @@ class Web
         'welcome' => [
             'method' => 'GET',
             'path'   => '/',
-            'action' => ['App\Infrastructure\Http\Site\Controllers\PageController', 'welcome'],
+            'action' => [\App\Infrastructure\Http\Site\Controllers\PageController::class, 'welcome'],
             'name'   => 'welcome',
         ],
     ];

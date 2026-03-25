@@ -193,8 +193,6 @@ class FiberManager
      */
     public function removeCompleted(): void
     {
-        $this->tasks = array_filter($this->tasks, function ($task) {
-            return !$task['fiber']->isTerminated();
-        });
+        $this->tasks = array_filter($this->tasks, fn(array $task): bool => !$task['fiber']->isTerminated());
     }
 }

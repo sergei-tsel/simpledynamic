@@ -13,6 +13,7 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
  */
 class ODM extends Config
 {
+    #[\Override]
     protected static array  $local    = [
         'hydrator'    => [
             'directory' => './app/Model/ODM/Hydrators',
@@ -21,6 +22,7 @@ class ODM extends Config
         'default_db'  => 'simpledynamic_doctrine_odm',
         'driver_path' => '.\app\Model\ODM\Documents',
     ];
+    #[\Override]
     protected static string $filename = '';
 
     /**

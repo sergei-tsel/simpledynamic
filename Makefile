@@ -14,3 +14,7 @@ psalm-alter:
 	vendor/bin/psalm --alter --issues=InvalidReturnType,UnnecessaryVarAnnotation
 psalm-baseline:
 	vendor/bin/psalm --set-baseline=psalm-baseline.xml --update-baseline
+rector:
+	vendor/bin/rector process --config=rector.php
+rector-dry-run:
+	vendor/bin/rector process --dry-run --config=rector.php

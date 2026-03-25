@@ -97,8 +97,6 @@ class ReflectionAttributeManager
      */
     protected function getAttributesInstances(array $attributes): array
     {
-        return array_map(function ($attribute) {
-            return $attribute->newInstance();
-        }, $attributes);
+        return array_map(fn(\ReflectionAttribute $attribute): object => $attribute->newInstance(), $attributes);
     }
 }

@@ -9,7 +9,9 @@ namespace config;
  */
 class Headers extends Config
 {
+    #[\Override]
     protected static array  $local    = [];
+    #[\Override]
     protected static string $filename = '';
 
     /**

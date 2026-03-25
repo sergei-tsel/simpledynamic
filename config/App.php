@@ -9,9 +9,11 @@ namespace config;
  */
 class App extends Config
 {
+    #[\Override]
     protected static array $local     = [
         'locale'          => 'en',
         'twig_extensions' => [],
     ];
+    #[\Override]
     protected static string $filename = '';
 }

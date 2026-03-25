@@ -20,13 +20,9 @@ class AppServiceProvider extends ServiceProvider
     #[\Override]
     public function register(): void
     {
-        $this->app->singleton(DatabaseManager::class, function ($app) {
-            return ORM::createEloquent();
-        });
+        $this->app->singleton(DatabaseManager::class, fn($app): \Illuminate\Database\DatabaseManager => ORM::createEloquent());
 
-        $this->app->singleton(DocumentManager::class, function ($app) {
-            return ODM::createDoctrineMongoDB();
-        });
+        $this->app->singleton(DocumentManager::class, fn($app): \Doctrine\ODM\MongoDB\DocumentManager => ODM::createDoctrineMongoDB());
     }
 
     /**

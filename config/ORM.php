@@ -12,6 +12,7 @@ use Illuminate\Database\DatabaseManager;
  */
 class ORM extends Config
 {
+    #[\Override]
     protected static array  $local               = [
         'driver'    => 'mysql',
         'host'      => 'localhost',
@@ -22,6 +23,7 @@ class ORM extends Config
         'collation' => 'utf8_unicode_ci',
         'prefix'    => '',
     ];
+    #[\Override]
     protected static string $filename            = '';
 
     protected static array $migrationDirectories = [

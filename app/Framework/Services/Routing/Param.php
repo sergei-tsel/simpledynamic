@@ -17,7 +17,7 @@ readonly class Param
         private ParamTypes $type,
         private string     $name,
         private string     $config  = Env::class,
-        private int        $filter  = FILTER_DEFAULT,
+        private int        $filter  = FILTER_UNSAFE_RAW,
         private int        $flags   = 0,
         private array      $options = [],
     ) {

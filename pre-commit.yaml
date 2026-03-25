@@ -14,3 +14,10 @@ repos:
         language: system
         types: [ php ]
         pass_filenames: true
+
+      - id: rector
+        name: Rector
+        entry: vendor/bin/rector process --dry-run --config=rector.php
+        language: system
+        types: [ php ]
+        pass_filenames: true

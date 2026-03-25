@@ -13,14 +13,16 @@ use Uri\Rfc3986\Uri;
  */
 class Routes extends Config
 {
+    #[\Override]
     protected static array  $local    = [
         'base' => 'http://localhost:8000/',
     ];
 
+    #[\Override]
     protected static string $filename = '';
 
     protected static array $routers   = [
-        'App\Infrastructure\Http\Site\Routers\Web',
+        \App\Infrastructure\Http\Site\Routers\Web::class,
     ];
 
     protected static ?Uri $uri = null;
@@ -97,7 +99,7 @@ class Routes extends Config
     {
         $config = self::getConfig();
 
-        $routes = array_filter($config, function (Route $route) {
+        $routes = array_filter($config, function (Route $route): bool {
             $routePath = preg_replace('#\{/d+}#u', '\d+', $route->getPath());
             $routePath = '^' . $routePath . '$';
 

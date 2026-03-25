@@ -8,7 +8,8 @@ return RectorConfig::configure()
     ->withPaths([
         __DIR__ . '/app',
         __DIR__ . '/config',
+        __DIR__ . '/public',
     ])
     // uncomment to reach your current PHP version
     ->withPhpSets(php85: true)
-    ->withTypeCoverageLevel(0);
+    ->withTypeCoverageLevel(63);

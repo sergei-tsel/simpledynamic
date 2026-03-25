@@ -29,6 +29,7 @@ use Illuminate\Support\Carbon;
 #[Hidden(['password'])]
 class UserModel extends Model
 {
+    #[\Override]
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

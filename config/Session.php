@@ -9,9 +9,11 @@ namespace config;
  */
 class Session extends Config
 {
+    #[\Override]
     protected static array  $local    = [
         'options' => [],
     ];
+    #[\Override]
     protected static string $filename = '';
     protected static string $options  = '';
 

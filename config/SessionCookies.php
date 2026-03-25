@@ -9,7 +9,9 @@ namespace config;
  */
 class SessionCookies extends Session
 {
+    #[\Override]
     protected static array  $local    = [];
+    #[\Override]
     protected static string $filename = '';
 
     /**
