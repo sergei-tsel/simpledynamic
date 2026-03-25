@@ -8,7 +8,11 @@ use config\Routes;
 $filePath = __DIR__ . '/' . Routes::getUri()->getPath();
 
 if (is_file($filePath)) {
-    header("Content-type: " . mime_content_type($filePath) . "; charset=utf-8");
+    $contentType = mime_content_type($filePath);
+
+    if ($contentType !== false) {
+        header("Content-type: " . $contentType . "; charset=utf-8");
+    }
 
     if (str_ends_with(strtolower($filePath), ".php")) {
         include $filePath;

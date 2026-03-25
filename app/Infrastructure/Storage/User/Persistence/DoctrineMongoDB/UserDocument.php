@@ -8,10 +8,10 @@ use Doctrine\ODM\MongoDB\Mapping\Attribute\Document;
 use Doctrine\ODM\MongoDB\Mapping\Attribute\Field;
 use Doctrine\ODM\MongoDB\Mapping\Attribute\Id;
 
-#[Document]
 /**
  * Документ сущности "Пользователь"
  */
+#[Document]
 class UserDocument
 {
     #[Id(type: 'id')]

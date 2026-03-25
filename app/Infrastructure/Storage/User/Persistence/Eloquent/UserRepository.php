@@ -20,6 +20,7 @@ readonly class UserRepository implements UserProviderInterface
     /**
      * Получить пользователя по логину
      */
+    #[\Override]
     public function getOneByLogin(string $login): ?User
     {
         $model = UserModel::query()

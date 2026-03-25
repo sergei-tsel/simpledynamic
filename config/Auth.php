@@ -23,7 +23,7 @@ class Auth extends Config
             ],
         ],
         'hash'     => [
-            'type'   => [
+            'type'       => [
                 'base',
                 'file',
                 'nkdf',
@@ -31,8 +31,8 @@ class Auth extends Config
                 'hmacFile',
                 'pbkdf2',
             ],
-            'algo'   => 'sha256',
-            'length' => 0,
+            'algo'       => 'sha256',
+            'length'     => 0,
             'iterations' => 600000,
         ],
         'secrets'  => [
@@ -52,19 +52,18 @@ class Auth extends Config
         string $info   = '',
     ): string {
         $auth = self::getConfig();
+        /** @var string $algo */
         $algo = $auth['hash']['algo'];
-
-        if ($secret) {
-            $key = $auth['secrets'][$secret];
-        }
+        /** @var string $key */
+        $key = $secret ? $auth['secrets'][$secret] : '';
 
         return match ($type) {
-            'base'     => hash((string) $algo, $data),
+            'base'     => hash($algo, $data),
             'file'     => hash_file($algo, $data),
             'nkdf'     => hash_hkdf($algo, $key, $auth['hash']['length'], $info, new Secure()->generate()),
-            'hmac'     => hash_hmac((string) $algo, $data, (string) $key),
+            'hmac'     => hash_hmac($algo, $data, $key),
             'hmacFile' => hash_hmac_file($algo, $data, $key),
-            'pbkdf2'   => hash_pbkdf2((string) $algo, $data, new Secure()->generate(), $auth['hash']['iterations'], $auth['hash']['length']),
+            'pbkdf2'   => hash_pbkdf2($algo, $data, new Secure()->generate(), $auth['hash']['iterations'], $auth['hash']['length']),
         } ?: '';
     }
 

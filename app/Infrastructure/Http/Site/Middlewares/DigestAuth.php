@@ -11,6 +11,9 @@ use config\Auth;
  */
 class DigestAuth
 {
+    /**
+     * @return array{digest: mixed}
+     */
     public function handle(array $params): array
     {
         $config = Auth::getConfig();

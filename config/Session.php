@@ -17,12 +17,13 @@ class Session extends Config
 
     /**
      * Получить переменные сессии
+     *
+     * @return array<string, array>
      */
     #[\Override]
     public static function getConfig(): array
     {
         if (self::$filename) {
-            /** @var array $session */
             $session = array_merge(
                 self::$local,
                 yaml_parse_file(self::$filename),

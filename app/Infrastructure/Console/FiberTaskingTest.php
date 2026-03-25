@@ -88,6 +88,7 @@ class FiberTaskingTest extends Command
     /**
      * Вернуть полученное значение
      *
+     * @return array{secondParam: mixed}
      * @throws \Throwable
      */
     private function giveValue(): array
@@ -104,9 +105,11 @@ class FiberTaskingTest extends Command
     }
 
     /**
-     *  Вернуть отношение первого параметра к второму
+     * Вернуть отношение первого параметра к второму
+     *
+     * @return float|int
      */
-    private function divide(int $firstParam, int $secondParam): int
+    private function divide(int $firstParam, int $secondParam): int|float
     {
         return $firstParam / $secondParam;
     }

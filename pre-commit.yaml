@@ -7,3 +7,10 @@ repos:
         language: system
         types: [php]
         pass_filenames: true
+
+      - id: psalm
+        name: Psalm
+        entry: vendor/bin/psalm --config=psalm.xml --update-baseline --output-format=github
+        language: system
+        types: [ php ]
+        pass_filenames: true

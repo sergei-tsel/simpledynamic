@@ -8,3 +8,9 @@ test:
 	php app/Framework/Services/CLI/exec.php test
 ecs:
 	vendor/bin/ecs check --fix
+psalm:
+	vendor/bin/psalm --show-info=true
+psalm-alter:
+	vendor/bin/psalm --alter --issues=InvalidReturnType,UnnecessaryVarAnnotation
+psalm-baseline:
+	vendor/bin/psalm --set-baseline=psalm-baseline.xml --update-baseline

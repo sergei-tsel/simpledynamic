@@ -7,10 +7,10 @@ namespace App\Framework\Services\Routing;
 use Attribute;
 use config\Env;
 
-#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD | Attribute::TARGET_PROPERTY | Attribute::TARGET_CLASS_CONSTANT | Attribute::IS_REPEATABLE)]
 /**
  * Фильтруемый параметр
  */
+#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD | Attribute::TARGET_PROPERTY | Attribute::TARGET_CLASS_CONSTANT | Attribute::IS_REPEATABLE)]
 readonly class Param
 {
     public function __construct(
@@ -25,6 +25,16 @@ readonly class Param
 
     /**
      * Получить аргумент для фильтрования
+     *
+     * @return array{
+     *     type: int,
+     *     config?: string,
+     *     param: array<string, array{
+     *          filter: int,
+     *          flags?: int,
+     *          options?: array
+     *             }|int>
+     * }
      */
     public function getArgument(): array
     {

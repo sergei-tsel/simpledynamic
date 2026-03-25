@@ -19,6 +19,7 @@ readonly class DoctrineMongoDBTransactionManager implements TransactionManagerIn
      *
      * @throws \Throwable
      */
+    #[\Override]
     public function run(callable $todo): mixed
     {
         $session = $this->documentManager->getClient()->startSession();

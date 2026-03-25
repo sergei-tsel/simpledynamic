@@ -6,10 +6,10 @@ namespace App\Framework\Services\Routing;
 
 use Attribute;
 
-#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
 /**
  * Фильтруемый мидлвар
  */
+#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
 readonly class Middleware
 {
     public function __construct(

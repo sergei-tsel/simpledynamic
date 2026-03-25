@@ -34,7 +34,6 @@ class Routes extends Config
     public static function getConfig(): array
     {
         if (self::$filename) {
-            /** @var array $config */
             $config = array_merge(
                 self::$local,
                 yaml_parse_file(self::$filename),

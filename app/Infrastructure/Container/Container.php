@@ -85,6 +85,7 @@ final class Container
     /**
      * Разрешить зависимости метода
      *
+     * @return array<object|null>
      * @throws \Exception
      */
     public function resolveMethodDependencies(string $className, string $methodName): array

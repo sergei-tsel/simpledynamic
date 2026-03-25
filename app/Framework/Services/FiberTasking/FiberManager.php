@@ -110,7 +110,7 @@ class FiberManager
     /**
      * Проверить, работает ли файбер, в котором вызов
      */
-    public function isRunning(): bool
+    public function isRunning(): ?bool
     {
         return Fiber::getCurrent()?->isRunning();
     }

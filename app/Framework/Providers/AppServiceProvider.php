@@ -17,6 +17,7 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Зарегистрировать биндинги
      */
+    #[\Override]
     public function register(): void
     {
         $this->app->singleton(DatabaseManager::class, function ($app) {
@@ -31,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Выполнить действия после регистрации биндингов
      */
+    #[\Override]
     public function boot(): void
     {
     }

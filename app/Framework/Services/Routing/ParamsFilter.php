@@ -43,6 +43,8 @@ class ParamsFilter
 
     /**
      * Получить отфильтрованные данные
+     *
+     * @return array<array|false|null>
      */
     public function getFilteredData(array $options = []): array
     {
@@ -77,13 +79,15 @@ class ParamsFilter
 
     /**
      * Получить отфильтрованные данные из конфигов
+     *
+     * @return (array|false|null)[]
      */
     private function filterConfigs(array $configs): array
     {
         $params = [];
 
         foreach ($configs as $config => $rules) {
-            /** @var Config::class $config */
+            /** @var string $config */
             if (class_exists($config)) {
                 $params[$config] = filter_var_array($config::getConfig(), $rules, false);
             }

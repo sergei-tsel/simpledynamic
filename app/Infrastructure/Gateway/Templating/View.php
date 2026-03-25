@@ -29,7 +29,7 @@ class View
     /**
      * Загрузить и интерполировать шаблон
      */
-    public function render(array $data = []): string
+    public function render(array $data = []): string|false
     {
         extract($data);
 

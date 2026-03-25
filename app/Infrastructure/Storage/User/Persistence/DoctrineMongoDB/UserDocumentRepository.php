@@ -19,6 +19,7 @@ readonly class UserDocumentRepository implements UserProviderInterface
     ) {
     }
 
+    #[\Override]
     public function getOneByLogin(string $login): User
     {
         /** @var UserDocument $document */

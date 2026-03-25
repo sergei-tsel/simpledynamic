@@ -19,6 +19,7 @@ readonly class EloquentTransactionManager implements TransactionManagerInterface
      *
      * @throws \Throwable
      */
+    #[\Override]
     public function run(callable $todo): mixed
     {
         $this->databaseManager->beginTransaction();

@@ -20,6 +20,9 @@ use config\Routes;
 ]
 class BrowserAuth
 {
+    /**
+     * @return array{login?: string}
+     */
     public function handle(array $params, UserProviderInterface $userRepository): array
     {
         $path = explode('/', Routes::getUri()->getPath());

@@ -13,7 +13,7 @@ class JsonParser implements ParserInterface
      * Сериализовать
      */
     #[\Override]
-    public function serialize(object|array|string $data): string
+    public function serialize(object|array|string $data): string|false
     {
         return json_encode($data);
     }
