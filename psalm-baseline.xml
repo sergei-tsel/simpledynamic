@@ -13,9 +13,6 @@
     </PossiblyUnusedMethod>
   </file>
   <file src="app/Framework/Providers/AppServiceProvider.php">
-    <UnusedClass>
-      <code><![CDATA[AppServiceProvider]]></code>
-    </UnusedClass>
     <UnusedClosureParam>
       <code><![CDATA[$app]]></code>
       <code><![CDATA[$app]]></code>
@@ -28,7 +25,7 @@
       <code><![CDATA[register]]></code>
     </PossiblyUnusedMethod>
   </file>
-  <file src="app/Framework/Services/Arrays/DotNotationManager.php">
+  <file src="app/Framework/Services/Arrays/NotationManager.php">
     <PossiblyUnusedMethod>
       <code><![CDATA[getValue]]></code>
       <code><![CDATA[toMdsArray]]></code>
@@ -110,12 +107,17 @@
     </PossiblyUnusedMethod>
   </file>
   <file src="app/Infrastructure/Console/FiberTaskingTest.php">
+    <InvalidAttribute>
+      <code><![CDATA[\Override]]></code>
+      <code><![CDATA[\Override]]></code>
+    </InvalidAttribute>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[handle]]></code>
+    </PossiblyUnusedMethod>
     <UndefinedVariable>
       <code><![CDATA[$param]]></code>
     </UndefinedVariable>
-    <UnusedClass>
-      <code><![CDATA[FiberTaskingTest]]></code>
-    </UnusedClass>
   </file>
   <file src="app/Infrastructure/Container/Container.php">
     <PossiblyUnusedMethod>
@@ -151,12 +153,6 @@
       <code><![CDATA[XmlParser]]></code>
     </UnusedClass>
   </file>
-  <file src="app/Infrastructure/Gateway/Templating/TwigView.php">
-    <PossiblyUnusedProperty>
-      <code><![CDATA[$options]]></code>
-      <code><![CDATA[$path]]></code>
-    </PossiblyUnusedProperty>
-  </file>
   <file src="app/Infrastructure/Gateway/Templating/View.php">
     <PossiblyUnusedMethod>
       <code><![CDATA[exists]]></code>
@@ -168,9 +164,9 @@
     </UnusedClass>
   </file>
   <file src="app/Infrastructure/Http/Site/Controllers/PageController.php">
-    <UnusedClass>
-      <code><![CDATA[PageController]]></code>
-    </UnusedClass>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[welcome]]></code>
+    </PossiblyUnusedMethod>
   </file>
   <file src="app/Infrastructure/Http/Site/Middlewares/BrowserAuth.php">
     <UnusedClass>
@@ -188,9 +184,9 @@
     </UnusedClass>
   </file>
   <file src="app/Infrastructure/Http/Site/Routers/Web.php">
-    <UnusedClass>
-      <code><![CDATA[Web]]></code>
-    </UnusedClass>
+    <PossiblyUnusedProperty>
+      <code><![CDATA[$routes]]></code>
+    </PossiblyUnusedProperty>
   </file>
   <file src="app/Infrastructure/Storage/User/Persistence/DoctrineMongoDB/UserDocument.php">
     <PossiblyUnusedMethod>
@@ -202,49 +198,71 @@
       <code><![CDATA[UserDocumentRepository]]></code>
     </UnusedClass>
   </file>
+  <file src="app/Infrastructure/Storage/User/Persistence/Eloquent/UserModel.php">
+    <InvalidAttribute>
+      <code><![CDATA[\Override]]></code>
+    </InvalidAttribute>
+  </file>
   <file src="app/Infrastructure/Storage/User/Persistence/Eloquent/UserRepository.php">
     <UnusedClass>
       <code><![CDATA[UserRepository]]></code>
     </UnusedClass>
   </file>
+  <file src="config/App.php">
+    <InvalidAttribute>
+      <code><![CDATA[\Override]]></code>
+      <code><![CDATA[\Override]]></code>
+    </InvalidAttribute>
+  </file>
   <file src="config/Auth.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[hashPassword]]></code>
-    </PossiblyUnusedMethod>
+    <InvalidAttribute>
+      <code><![CDATA[\Override]]></code>
+      <code><![CDATA[\Override]]></code>
+    </InvalidAttribute>
+  </file>
+  <file src="config/Cookies.php">
+    <InvalidAttribute>
+      <code><![CDATA[\Override]]></code>
+      <code><![CDATA[\Override]]></code>
+    </InvalidAttribute>
   </file>
   <file src="config/Env.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[setEnv]]></code>
-    </PossiblyUnusedMethod>
+    <InvalidAttribute>
+      <code><![CDATA[\Override]]></code>
+      <code><![CDATA[\Override]]></code>
+    </InvalidAttribute>
   </file>
   <file src="config/Headers.php">
-    <UnusedClass>
-      <code><![CDATA[Headers]]></code>
-    </UnusedClass>
+    <InvalidAttribute>
+      <code><![CDATA[\Override]]></code>
+      <code><![CDATA[\Override]]></code>
+    </InvalidAttribute>
+  </file>
+  <file src="config/ODM.php">
+    <InvalidAttribute>
+      <code><![CDATA[\Override]]></code>
+      <code><![CDATA[\Override]]></code>
+    </InvalidAttribute>
+  </file>
+  <file src="config/ORM.php">
+    <InvalidAttribute>
+      <code><![CDATA[\Override]]></code>
+      <code><![CDATA[\Override]]></code>
+    </InvalidAttribute>
   </file>
   <file src="config/Routes.php">
-    <InvalidArgument>
-      <code><![CDATA[mb_ereg_match($routePath, $path) && $route->getMethod() === $_SERVER['REQUEST_METHOD']]]></code>
-    </InvalidArgument>
+    <InvalidAttribute>
+      <code><![CDATA[\Override]]></code>
+      <code><![CDATA[\Override]]></code>
+    </InvalidAttribute>
     <InvalidPropertyFetch>
       <code><![CDATA[$router::${'routes'}]]></code>
     </InvalidPropertyFetch>
-    <PossiblyUnusedMethod>
-      <code><![CDATA[getByName]]></code>
-    </PossiblyUnusedMethod>
   </file>
   <file src="config/Session.php">
-    <PossiblyUnusedProperty>
-      <code><![CDATA[$options]]></code>
-    </PossiblyUnusedProperty>
-    <UnusedClosureParam>
-      <code><![CDATA[$key]]></code>
-      <code><![CDATA[$value]]></code>
-    </UnusedClosureParam>
-  </file>
-  <file src="config/SessionCookies.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[setSessionCookies]]></code>
-    </PossiblyUnusedMethod>
+    <InvalidAttribute>
+      <code><![CDATA[\Override]]></code>
+      <code><![CDATA[\Override]]></code>
+    </InvalidAttribute>
   </file>
 </files>

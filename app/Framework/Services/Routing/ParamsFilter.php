@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Framework\Services\Routing;
 
 use App\Framework\Services\Reflection\ReflectionAttributeManager;
-use config\Config;
 use config\Routes;
 
 /**

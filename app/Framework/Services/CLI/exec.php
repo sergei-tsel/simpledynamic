@@ -3,13 +3,18 @@
 require __DIR__ . '/../../../../vendor/autoload.php';
 
 use App\Framework\Services\CLI\Command;
-use config\Commands;
+use config\App;
 
 if (PHP_SAPI !== 'cli') {
     exit(1);
 }
 
-$commands = Commands::getConfig();
+$commands = App::getConfigPart('commands') ?? [];
+
+if ($commands === [] || !array_key_exists((string) $_SERVER['argv'][1], $commands)) {
+    exit(1);
+}
+
 $commandName = $commands[$_SERVER['argv'][1]];
 
 if (is_array($commandName)) {

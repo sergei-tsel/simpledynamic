@@ -14,7 +14,6 @@ use Twig\Loader\FilesystemLoader;
 class TwigView extends View
 {
     protected Environment $twig;
-    protected array $appConfig;
 
     public function __construct(
         protected string $template,
@@ -23,10 +22,10 @@ class TwigView extends View
     ) {
         $this->twig = new Environment(new FilesystemLoader($path), $options);
 
-        $this->appConfig = App::getConfig();
+        $extensions = App::getConfigPart('twig_extensions') ?? [];
 
-        if ($this->appConfig['twig_extensions'] !== []) {
-            foreach ($this->appConfig['twig_extensions'] as $extension) {
+        if ($extensions !== []) {
+            foreach ($extensions as $extension) {
                 $this->twig->addExtension(new $extension());
             }
         }
@@ -49,7 +48,7 @@ class TwigView extends View
     #[\Override]
     public function render(array $data = [], ?string $blockName = null): string
     {
-        $data['locale'] = $this->appConfig['locale'];
+        $data['locale'] = App::getConfigPart('locale') ?? 'ru';
 
         $template = $this->twig->load($this->template);
 

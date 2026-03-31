@@ -40,6 +40,7 @@ class Auth extends Config
         ],
         '',
     ];
+
     #[\Override]
     protected static string $filename = '';
 

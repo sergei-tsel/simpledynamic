@@ -13,46 +13,30 @@ class Session extends Config
     protected static array  $local    = [
         'options' => [],
     ];
+
     #[\Override]
     protected static string $filename = '';
-    protected static string $options  = '';
-
-    /**
-     * Получить переменные сессии
-     *
-     * @return array<string, array>
-     */
-    #[\Override]
-    public static function getConfig(): array
-    {
-        if (self::$filename) {
-            $session = array_merge(
-                self::$local,
-                yaml_parse_file(self::$filename),
-            );
-        } else {
-            $session = self::$local;
-        }
-
-        $session['cookies'] = SessionCookies::getConfig();
-
-        return $session;
-    }
 
     /**
      * Установить переменные сессии
      */
     public static function setSession(?string $login = null): void
     {
-        self::setConfig(function (string $key, string $value): void {}, [
-            'cookies' => SessionCookies::getSetMethod(),
+        self::setConfigParts([
+            'cookies' => function (array $cookies): void {
+                foreach ($cookies as $key => $value) {
+                    $key === 'options' ? session_set_cookie_params($value) : session_set_cookie_params(...$value);
+                }
+            },
             'options' => function (array $options): void {
                 session_start($options);
             },
-            'params' => function (string $key, string $value): void {
-                $_SESSION[$key] = $value;
+            'params'  => function (array $params): void {
+                foreach ($params as $key => $value) {
+                    $_SESSION[$key] = $value;
+                }
             },
-        ], ['options']);
+        ]);
 
         if ($login) {
             $_SESSION['login'] = $login;

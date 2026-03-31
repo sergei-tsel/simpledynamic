@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Container;
 
-use config\Providers;
+use config\App;
 
 /**
  * Компонент для управления процессом регистрации и инициализации сервис-провайдеров
@@ -19,8 +19,13 @@ class ProviderManager
     public function buildContainer(): Container
     {
         $container = new Container();
+        $providers = App::getConfigPart('providers') ?? [];
 
-        foreach (Providers::getConfig() as $providerClass) {
+        if ($providers === []) {
+            return $container;
+        }
+
+        foreach ($providers as $providerClass) {
             $providerInstance = new $providerClass($container);
             $this->providers[] = $providerInstance;
             $providerInstance->register();

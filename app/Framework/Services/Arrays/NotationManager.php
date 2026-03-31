@@ -5,16 +5,29 @@ declare(strict_types=1);
 namespace App\Framework\Services\Arrays;
 
 /**
- * Сервис для управления точечной нотацией
+ * Сервис для управления нотацией
  */
-class DotNotationManager
+readonly class NotationManager
 {
+    public function __construct(
+        private string $separator,
+    ) {
+    }
+
     /**
-     * Получить элемент вложенного массива по точечной нотации
+     * Создать сервис для управления нотацией с переданным сепаратором
+     */
+    public static function instanceOne(string $separator): NotationManager
+    {
+        return new self($separator);
+    }
+
+    /**
+     * Получить элемент вложенного массива по нотации
      */
     public function getValue(array $data, string $path): mixed
     {
-        $keys = explode('.', $path);
+        $keys = explode($this->separator, $path);
         $value = $data;
 
         foreach ($keys as $key) {
@@ -29,7 +42,7 @@ class DotNotationManager
     }
 
     /**
-     * Положить элемент во вложенный массив по точечной нотации
+     * Положить элемент во вложенный массив по нотации
      */
     public function setValue(array &$data, string $path, mixed $value): void
     {
@@ -37,7 +50,7 @@ class DotNotationManager
             return;
         }
 
-        $keys = explode('.', $path);
+        $keys = explode($this->separator, $path);
         $level = &$data;
 
         foreach ($keys as $index => $key) {
@@ -54,7 +67,7 @@ class DotNotationManager
     }
 
     /**
-     * Перевести уровни вложенности в точечную нотацию
+     * Перевести многомерный массив в нотацию
      */
     public function fromMdsArray(array $data): array
     {
@@ -76,7 +89,7 @@ class DotNotationManager
                 }
 
                 foreach ($value as $key => $item) {
-                    $groups[++$i][$path . '.' . $key] = $item;
+                    $groups[++$i][$path . $this->separator . $key] = $item;
                 }
             }
         }
@@ -85,7 +98,7 @@ class DotNotationManager
     }
 
     /**
-     * Перевести точечную нотацию в уровни вложенности
+     * Перевести нотацию в многомерный массив
      */
     public function toMdsArray(array $data): array
     {

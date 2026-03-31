@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Получаем список изменённых файлов в текущем коммите
-FILES=$(git diff --cached --name-only --diff-filter=AM --relative)
+FILES=$(git diff --cached --name-only --diff-filter=ACM --relative)
 
 # Проверяем, есть ли изменённые файлы
 if [ -z "$FILES" ]; then
@@ -21,6 +21,7 @@ fi
 
 # Проверка с помощью Psalm
 echo "🔸 Psalm Check:"
+git add .psalm/baseline.xml
 /usr/bin/php8.5 vendor/bin/psalm --config=psalm.xml --output-format=github $FILES
 if [ $? -ne 0 ]; then
   echo "🔴 Ошибка при проверке Psalm!"

@@ -10,21 +10,36 @@ namespace config;
 class Config
 {
     protected static array $local     = [];
+
+    protected static array $cache     = [];
+
     protected static string $filename = '';
+
 
     /**
      * Получить конфигурацию
      */
     public static function getConfig(): array
     {
-        if (static::$filename) {
-            return array_merge(
-                static::$local,
-                yaml_parse_file(static::$filename),
-            );
+        static::$cache = static::$filename !== ''
+            ? array_merge(static::$local, yaml_parse_file(static::$filename))
+            : static::$local;
+
+        return static::$cache;
+    }
+
+    /**
+     * Получить часть конфигурации
+     */
+    public static function getConfigPart(string $name): mixed
+    {
+        $config = self::$cache !== [] ? self::$cache : static::getConfig();
+
+        if ($config === [] || !array_key_exists($name, $config)) {
+            return null;
         }
 
-        return static::$local;
+        return $config[$name];
     }
 
     /**
@@ -32,32 +47,30 @@ class Config
      */
     protected static function setConfig(
         callable $setter,
-        array $parts = [],
-        array $groups = [],
     ): void {
         $local = static::getConfig();
 
-        foreach ($local as $key => $value) {
-            if (!array_key_exists($key, $parts)) {
-                $setter($key, $value);
-            }
-        }
-
-        if ($parts === []) {
+        if ($local === []) {
             return;
         }
 
-        foreach ($parts as $partName => $partSetter) {
-            if (!array_key_exists($partName, $local)) {
-                continue;
-            }
+        $setter($local);
+    }
 
-            if (in_array($partName, $groups)) {
-                $partSetter($local[$partName]);
-            } elseif (is_array($local[$partName])) {
-                foreach ($local[$partName] as $key => $value) {
-                    $partSetter($key, $value);
-                }
+    /**
+     * Установить часть конфигурации
+     */
+    protected static function setConfigParts(array $parts): void
+    {
+        $local = static::getConfig();
+
+        if ($local === []) {
+            return;
+        }
+
+        foreach ($parts as $name => $setter) {
+            if (array_key_exists($name, $local)) {
+                $setter($local[$name]);
             }
         }
     }

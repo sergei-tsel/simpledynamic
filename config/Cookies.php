@@ -11,6 +11,7 @@ class Cookies extends Config
 {
     #[\Override]
     protected static array  $local    = [];
+
     #[\Override]
     protected static string $filename = '';
 
@@ -23,11 +24,13 @@ class Cookies extends Config
             setcookie('session', Auth::hash('base', $session));
         }
 
-        self::setConfig(function (string|int $key, string|array $value): void {
-            if (is_string($value)) {
-                setcookie($key, $value);
-            } elseif (is_array($value)) {
-                setcookie(...$value);
+        self::setConfig(function (array $config): void {
+            foreach ($config as $key => $value) {
+                if (is_string($value)) {
+                    setcookie($key, $value);
+                } elseif (is_array($value)) {
+                    setcookie(...$value);
+                }
             }
         });
     }

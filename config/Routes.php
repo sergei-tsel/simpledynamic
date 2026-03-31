@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace config;
 
-use App\Framework\Services\Arrays\DotNotationManager;
+use App\Framework\Services\Arrays\NotationManager;
 use App\Framework\Services\Routing\Route;
 use Uri\Rfc3986\Uri;
 
@@ -58,7 +58,7 @@ class Routes extends Config
         }
 
         return $config
-            |> new DotNotationManager()->fromMdsArray(...)
+            |> NotationManager::instanceOne('.')->fromMdsArray(...)
             |> Route::instanceMany(...);
     }
 
@@ -105,7 +105,7 @@ class Routes extends Config
 
             $path = self::getUri()->getPath();
 
-            return mb_ereg_match($routePath, $path) && $route->getMethod() === $_SERVER['REQUEST_METHOD'] ?? 'GET';
+            return mb_ereg_match($routePath, $path) && $route->getMethod() === ($_SERVER['REQUEST_METHOD'] ?? 'GET');
         });
 
         return array_first($routes);
