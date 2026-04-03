@@ -46,10 +46,11 @@ final class Container
 
     /**
      * Построить объект
+     * @throws \Exception
      */
     public function build(string $className): object
     {
-        $params = new MethodReflectionManager()->getParamsTypes($className);
+        $params = new MethodReflectionManager()->getParamsTypes(methodName: '__construct', class: $className);
 
         if ($params === []) {
             return new $className();
@@ -91,7 +92,7 @@ final class Container
     public function resolveMethodDependencies(string $className, string $methodName): array
     {
         $methodManager = new MethodReflectionManager();
-        $params = $methodManager->getParamsTypes($className, $methodName);
+        $params = $methodManager->getParamsTypes(methodName: $methodName, class: $className);
 
         if ($params === []) {
             return [];
@@ -110,6 +111,7 @@ final class Container
 
     /**
      * Разрешить зависимость
+     * @throws \Exception
      */
     protected function resolveDependency(string $name): ?object
     {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Framework\Services\Reflection;
 
 use ReflectionClass;
+use ReflectionException;
 use ReflectionMethod;
 
 /**
@@ -12,51 +13,61 @@ use ReflectionMethod;
  */
 class MethodReflectionManager
 {
+    use InstanceableReflectionAttributes;
+
     /**
-     * Вызвать метод и передать ему массив аргументов
-     *
-     * @throws \ReflectionException
+     * Вызвать метод с аргументами
      */
     public function invoke(string $methodName, object|string|null $class = null, array $args = []): mixed
     {
-        if ($class === null) {
-            $reflectionMethod = ReflectionMethod::createFromMethodName($methodName);
-        } else {
-            $reflectionMethod = new ReflectionMethod($class, $methodName);
-        }
+        $reflectionMethod = $this->create($methodName, $class);
 
-        return $reflectionMethod->invokeArgs(new $class(), $args);
+        try {
+            return $reflectionMethod?->invokeArgs(new $class(), $args);
+        } catch (ReflectionException) {
+            return null;
+        }
     }
 
     /**
-     * Разрешить зависимости метода
-     *
-     * @throws \ReflectionException
+     * Получить типы данных параметров метода
      */
-    public function getParamsTypes(string $class, ?string $methodName = null): array
+    public function getParamsTypes(string $methodName, object|string|null $class = null): array
     {
-        $reflectionClass = new ReflectionClass($class);
+        $reflectionMethod = $this->create($methodName, $class);
 
-        if ($methodName === null) {
-            $method = $reflectionClass->getConstructor();
-        } elseif ($reflectionClass->hasMethod($methodName)) {
-            $method = $reflectionClass->getMethod($methodName);
-        } else {
+        if ($reflectionMethod === null) {
             return [];
         }
 
-        if ($method === null) {
-            return [];
-        }
-
-        $params = $method->getParameters();
+        $reflectionParams = $reflectionMethod->getParameters();
 
         $paramsTypes = [];
 
-        foreach ($params as $param) {
-            $paramsTypes[] = $param->getType()?->getName();
+        foreach ($reflectionParams as $reflectionParam) {
+            $paramsTypes[$reflectionParam->getName()] = $reflectionParam->getType()?->getName();
         }
 
         return $paramsTypes;
+    }
+
+    /**
+     * Создать объект рефлексии метода для анализа класса
+     */
+    private function create(string $methodName, object|string|null $class = null): ?ReflectionMethod
+    {
+        try {
+            if ($class === null) {
+                return ReflectionMethod::createFromMethodName($methodName);
+            }
+
+            if (!new ReflectionClass($class)->hasMethod($methodName)) {
+                return null;
+            }
+
+            return new ReflectionMethod($class, $methodName);
+        } catch (ReflectionException) {
+            return null;
+        }
     }
 }

@@ -9,7 +9,7 @@ test:
 ecs:
 	vendor/bin/ecs check --fix
 psalm-alter:
-	vendor/bin/psalm --alter --issues=InvalidReturnType,UnnecessaryVarAnnotation
+	vendor/bin/psalm --alter --issues=InvalidReturnType,InvalidNullableReturnType,InvalidFalsableReturnType,UnnecessaryVarAnnotation
 psalm-baseline:
 	vendor/bin/psalm --set-baseline=psalm-baseline.xml --update-baseline
 rector:

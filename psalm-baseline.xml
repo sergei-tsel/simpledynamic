@@ -75,18 +75,21 @@
       <code><![CDATA[mixed]]></code>
     </PossiblyUnusedReturnValue>
   </file>
-  <file src="app/Framework/Services/Reflection/MethodReflectionManager.php">
-    <PossiblyUnusedReturnValue>
-      <code><![CDATA[mixed]]></code>
-    </PossiblyUnusedReturnValue>
-    <UndefinedClass>
-      <code><![CDATA[new $class()]]></code>
-    </UndefinedClass>
-    <UndefinedMethod>
-      <code><![CDATA[getName]]></code>
-    </UndefinedMethod>
+  <file src="app/Framework/Services/ParamsFiltration/Filter.php">
+    <NoValue>
+      <code><![CDATA[return filter_input(type: $arg->getInputType()->value, var_name: $arg->getVarName(), filter: $arg->getFilterId(), options: $arg->getFlagOptions());]]></code>
+    </NoValue>
   </file>
-  <file src="app/Framework/Services/Reflection/ReflectionAttributeManager.php">
+  <file src="app/Framework/Services/ParamsFiltration/FilterParam.php">
+    <UnusedProperty>
+      <code><![CDATA[$filterId]]></code>
+      <code><![CDATA[$flags]]></code>
+      <code><![CDATA[$inputType]]></code>
+      <code><![CDATA[$options]]></code>
+      <code><![CDATA[$varName]]></code>
+    </UnusedProperty>
+  </file>
+  <file src="app/Framework/Services/Reflection/ClassAttributeManager.php">
     <InvalidArgument>
       <code><![CDATA[$attributeName]]></code>
       <code><![CDATA[$attributeName]]></code>
@@ -95,6 +98,14 @@
       <code><![CDATA[$attributeName]]></code>
       <code><![CDATA[$attributeName]]></code>
     </InvalidArgument>
+  </file>
+  <file src="app/Framework/Services/Reflection/MethodReflectionManager.php">
+    <UndefinedClass>
+      <code><![CDATA[new $class()]]></code>
+    </UndefinedClass>
+    <UndefinedMethod>
+      <code><![CDATA[getName]]></code>
+    </UndefinedMethod>
   </file>
   <file src="app/Framework/Services/Routing/Middleware.php">
     <PossiblyUnusedMethod>
@@ -118,11 +129,6 @@
     <UndefinedVariable>
       <code><![CDATA[$param]]></code>
     </UndefinedVariable>
-  </file>
-  <file src="app/Infrastructure/Container/Container.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[bound]]></code>
-    </PossiblyUnusedMethod>
   </file>
   <file src="app/Infrastructure/Gateway/Clients/Guzzle.php">
     <InvalidArgument>
@@ -153,6 +159,12 @@
       <code><![CDATA[XmlParser]]></code>
     </UnusedClass>
   </file>
+  <file src="app/Infrastructure/Gateway/Templating/TwigView.php">
+    <PossiblyUnusedProperty>
+      <code><![CDATA[$options]]></code>
+      <code><![CDATA[$path]]></code>
+    </PossiblyUnusedProperty>
+  </file>
   <file src="app/Infrastructure/Gateway/Templating/View.php">
     <PossiblyUnusedMethod>
       <code><![CDATA[exists]]></code>
@@ -167,21 +179,6 @@
     <PossiblyUnusedMethod>
       <code><![CDATA[welcome]]></code>
     </PossiblyUnusedMethod>
-  </file>
-  <file src="app/Infrastructure/Http/Site/Middlewares/BrowserAuth.php">
-    <UnusedClass>
-      <code><![CDATA[BrowserAuth]]></code>
-    </UnusedClass>
-  </file>
-  <file src="app/Infrastructure/Http/Site/Middlewares/DigestAuth.php">
-    <UnusedClass>
-      <code><![CDATA[DigestAuth]]></code>
-    </UnusedClass>
-  </file>
-  <file src="app/Infrastructure/Http/Site/Middlewares/FormAuth.php">
-    <UnusedClass>
-      <code><![CDATA[FormAuth]]></code>
-    </UnusedClass>
   </file>
   <file src="app/Infrastructure/Http/Site/Routers/Web.php">
     <PossiblyUnusedProperty>
@@ -219,6 +216,9 @@
       <code><![CDATA[\Override]]></code>
       <code><![CDATA[\Override]]></code>
     </InvalidAttribute>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[hashPassword]]></code>
+    </PossiblyUnusedMethod>
   </file>
   <file src="config/Cookies.php">
     <InvalidAttribute>
@@ -231,12 +231,18 @@
       <code><![CDATA[\Override]]></code>
       <code><![CDATA[\Override]]></code>
     </InvalidAttribute>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[setEnv]]></code>
+    </PossiblyUnusedMethod>
   </file>
   <file src="config/Headers.php">
     <InvalidAttribute>
       <code><![CDATA[\Override]]></code>
       <code><![CDATA[\Override]]></code>
     </InvalidAttribute>
+    <UnusedClass>
+      <code><![CDATA[Headers]]></code>
+    </UnusedClass>
   </file>
   <file src="config/ODM.php">
     <InvalidAttribute>
@@ -258,6 +264,9 @@
     <InvalidPropertyFetch>
       <code><![CDATA[$router::${'routes'}]]></code>
     </InvalidPropertyFetch>
+    <PossiblyUnusedMethod>
+      <code><![CDATA[getByName]]></code>
+    </PossiblyUnusedMethod>
   </file>
   <file src="config/Session.php">
     <InvalidAttribute>

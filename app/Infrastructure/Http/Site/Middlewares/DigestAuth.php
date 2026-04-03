@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http\Site\Middlewares;
 
+use App\Framework\Services\ParamsFiltration\FilterParam;
+use App\Framework\Services\Routing\InputTypes;
 use config\Auth;
 
 /**
@@ -13,16 +15,23 @@ class DigestAuth
 {
     /**
      * @return array{digest: mixed}
+     * @throws \Exception
      */
+    #[
+        FilterParam(InputTypes::POST, 'secret'),
+        FilterParam(InputTypes::POST, 'key'),
+    ]
     public function handle(array $params): array
     {
-        $config = Auth::getConfig();
-        $digest = $params['handle']['digest'];
+        $secrets = Auth::getConfigPart('secrets');
 
-        if (hash_equals($config['secrets'][$digest['secret']], $digest['key'])) {
-
+        if (hash_equals($secrets[$params['POST']['secret']], $params['POST']['key'])) {
             return [
-                'digest' => $digest,
+                'digest' => [
+                    'secret' => $params['POST']['secret'],
+                    'key'    => $params['POST']['key'],
+                ],
+
             ];
         }
 

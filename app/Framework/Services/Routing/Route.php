@@ -4,21 +4,17 @@ declare(strict_types=1);
 
 namespace App\Framework\Services\Routing;
 
-use App\Framework\Services\Reflection\MethodReflectionManager;
-use App\Infrastructure\Container\ProviderManager;
-
 /**
  * Роут
  */
 readonly class Route
 {
     public function __construct(
-        private string       $method,
-        private string       $path,
-        private string       $controller,
-        private string       $action,
-        private string       $name,
-        private string|array $middlewares = [],
+        private string $method,
+        private string $path,
+        private string $controllerName,
+        private string $actionName,
+        private string $name,
     ) {
     }
 
@@ -45,8 +41,7 @@ readonly class Route
                 $value['path'],
                 $value['action'][0],
                 $value['action'][1],
-                $value['name'],
-                $value['middlewares'] ?? [],
+                $key,
             );
         }
 
@@ -70,70 +65,26 @@ readonly class Route
     }
 
     /**
+     * Получить имя контроллера
+     */
+    public function getControllerName(): string
+    {
+        return $this->controllerName;
+    }
+
+    /**
+     * Получить имя экшена
+     */
+    public function getActionName(): string
+    {
+        return $this->actionName;
+    }
+
+    /**
      * Получить имя
      */
     public function getName(): string
     {
         return $this->name;
-    }
-
-    /**
-     * Вызвать экшен
-     */
-    public function callAction(): void
-    {
-        $params = new ParamsFilter()
-            ->readAttributes($this->controller, $this->action)
-            ->getFilteredData();
-
-        if ($this->middlewares) {
-            $handledParams     = $this->callMiddlewares();
-            $params['handled'] = $handledParams;
-        }
-
-        $params = array_key_exists('path', $params)
-            ? [$params, ...$params['path']]
-            : $params;
-
-        $container = new ProviderManager()->buildContainer();
-
-        new MethodReflectionManager()
-            ->invoke($this->action, $container->resolve($this->controller), $params);
-    }
-
-    /**
-     * Вызвать мидлвары
-     */
-    private function callMiddlewares(): array
-    {
-        $middlewares = new MiddlewaresFilter()
-            ->readAttributes($this->controller, $this->action)
-            ->getFilteredData($this->middlewares);
-
-        $handledParams = [];
-
-        foreach ($middlewares as $name) {
-            $handledParams = array_merge($handledParams, $this->callMiddleware($name, $handledParams));
-        }
-
-        return $handledParams;
-    }
-
-    /**
-     * Вызвать мидлвар
-     */
-    private function callMiddleware(string $name, array $handledParams = []): array
-    {
-        $params = new ParamsFilter()
-            ->readAttributes($name)
-            ->getFilteredData();
-        $params['handled'] = $handledParams;
-
-        $container = new ProviderManager()->buildContainer();
-        $dependencies = $container->resolveMethodDependencies($name, 'handle');
-
-        $middleware = new $name();
-
-        return $middleware->handle($params, ...$dependencies);
     }
 }

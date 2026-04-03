@@ -82,7 +82,7 @@ readonly class NotationManager
 
         for ($i = 0; count($groups[$i] ?? []) > 0; $i++) {
             foreach ($groups[$i] as $path => $value) {
-                if (!is_array($value) || $value === [] || array_key_exists('name', $value)) {
+                if (!is_array($value) || $value === [] || array_any($value, fn ($item): bool => !is_array($item))) {
                     $result[$path] = $value;
 
                     continue;
