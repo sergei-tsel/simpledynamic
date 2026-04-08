@@ -10,8 +10,8 @@ use Symplify\EasyCodingStandard\Config\ECSConfig;
 
 return ECSConfig::configure()
     ->withPaths([
-        __DIR__ . '/app',
         __DIR__ . '/config',
+        __DIR__ . '/framework',
         __DIR__ . '/public',
     ])->withPhpCsFixerSets(
         doctrineAnnotation: true,
@@ -32,10 +32,10 @@ return ECSConfig::configure()
         ListSyntaxFixer::class,
         MethodArgumentSpaceFixer::class,
     ])->withPreparedSets( // add sets - group of rules
-         psr12: true,
-         //arrays: true,
-         //namespaces: true,
-         //spaces: true,
-         //docblocks: true,
-         ///comments: true,
+        psr12: true,
+        //arrays: true,
+        //namespaces: true,
+        //spaces: true,
+        //docblocks: true,
+        ///comments: true,
     );

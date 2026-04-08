@@ -9,9 +9,9 @@
     findUnusedCode="true"
     errorBaseline="psalm-baseline.xml"
 >
-    <projectFiles>
-        <directory name="app" />
+<projectFiles>
         <directory name="config" />
+        <directory name="framework" />
         <directory name="public" />
         <ignoreFiles>
             <directory name="hooks" />

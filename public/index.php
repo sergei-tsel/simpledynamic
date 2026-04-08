@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 require __DIR__ . '/../vendor/autoload.php';
 
-use App\Framework\Services\Routing\Router;
+use config\Env;
+use config\Headers;
 use config\Routes;
+use Framework\Services\Routing\Router;
 
 $filePath = __DIR__ . '/' . Routes::getUri()->getPath();
 
@@ -23,4 +27,11 @@ if (is_file($filePath)) {
     exit;
 }
 
-Router::handle();
+Env::set();
+
+try {
+    Router::handle();
+} catch (\Throwable) {
+}
+
+Headers::set();

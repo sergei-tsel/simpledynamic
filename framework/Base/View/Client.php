@@ -1,0 +1,12 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Framework\Base\View;
+
+/**
+ * Клиент
+ */
+class Client
+{
+}

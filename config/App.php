@@ -13,12 +13,10 @@ class App extends Config
     protected static array $local     = [
         'locale'          => 'en',
         'commands'        => [
-            'test' => [
-                \App\Infrastructure\Console\FiberTaskingTest::class,
-            ],
+            'test' => [],
         ],
         'providers'       => [
-            \App\Framework\Providers\AppServiceProvider::class,
+            \Framework\Providers\AppServiceProvider::class,
         ],
         'twig_extensions' => [],
     ];

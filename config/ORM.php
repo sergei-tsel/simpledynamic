@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace config;
 
 use Illuminate\Database\Capsule\Manager;
-use Illuminate\Database\DatabaseManager;
 
 /**
  * Конфигурация подключения к базе данных для ORM
@@ -38,7 +37,7 @@ class ORM extends Config
     /**
      * Создать конфигурацию подключения к базе данных для Eloquent
      */
-    public static function createEloquent(): DatabaseManager
+    public static function createEloquent(): Manager
     {
         $eloquent = self::getConfig();
 
@@ -48,6 +47,6 @@ class ORM extends Config
 
         $manager->bootEloquent();
 
-        return $manager->getDatabaseManager();
+        return $manager;
     }
 }

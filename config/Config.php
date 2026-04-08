@@ -21,9 +21,11 @@ class Config
      */
     public static function getConfig(): array
     {
-        static::$cache = static::$filename !== ''
-            ? array_merge(static::$local, yaml_parse_file(static::$filename))
-            : static::$local;
+        if (static::$filename !== '') {
+            static::$cache = array_merge(static::$local, yaml_parse_file(static::$filename));
+        }
+
+        static::$cache = static::$local;
 
         return static::$cache;
     }
@@ -33,7 +35,7 @@ class Config
      */
     public static function getConfigPart(string $name): mixed
     {
-        $config = self::$cache !== [] ? self::$cache : static::getConfig();
+        $config = static::getConfig();
 
         if ($config === [] || !array_key_exists($name, $config)) {
             return null;

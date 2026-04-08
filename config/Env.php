@@ -18,7 +18,7 @@ class Env extends Config
     /**
      * Установить переменные среды
      */
-    public static function setEnv(): void
+    public static function set(): void
     {
         self::setConfig(function (array $config): void {
             foreach ($config as $key => $value) {

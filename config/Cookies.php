@@ -18,7 +18,7 @@ class Cookies extends Config
     /**
      * Установить куки
      */
-    public static function setCookies(?string $session = null): void
+    public static function set(?string $session = null): void
     {
         if ($session) {
             setcookie('session', Auth::hash('base', $session));

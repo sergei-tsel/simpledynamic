@@ -18,7 +18,7 @@ class Headers extends Config
     /**
      * Установить заголовки
      */
-    public static function setHeaders(): void
+    public static function set(): void
     {
         self::setConfig(function (array $config): void {
             foreach ($config as $key => $value) {

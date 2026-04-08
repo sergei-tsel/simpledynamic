@@ -1,210 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="6.16.1@f1f5de594dc76faf8784e02d3dc4716c91c6f6ac">
-  <file src="app/Application/Actions/TransactionManagerInterface.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[run]]></code>
-    </PossiblyUnusedMethod>
-  </file>
-  <file src="app/Domain/User/DTO/User.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[getId]]></code>
-      <code><![CDATA[getLogin]]></code>
-      <code><![CDATA[getName]]></code>
-    </PossiblyUnusedMethod>
-  </file>
-  <file src="app/Framework/Providers/AppServiceProvider.php">
-    <UnusedClosureParam>
-      <code><![CDATA[$app]]></code>
-      <code><![CDATA[$app]]></code>
-    </UnusedClosureParam>
-  </file>
-  <file src="app/Framework/Providers/ServiceProvider.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[__construct]]></code>
-      <code><![CDATA[boot]]></code>
-      <code><![CDATA[register]]></code>
-    </PossiblyUnusedMethod>
-  </file>
-  <file src="app/Framework/Services/Arrays/NotationManager.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[getValue]]></code>
-      <code><![CDATA[toMdsArray]]></code>
-    </PossiblyUnusedMethod>
-  </file>
-  <file src="app/Framework/Services/CLI/Command.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[getArgument]]></code>
-    </PossiblyUnusedMethod>
-    <PossiblyUnusedProperty>
-      <code><![CDATA[$description]]></code>
-    </PossiblyUnusedProperty>
-    <UndefinedMethod>
-      <code><![CDATA[handle]]></code>
-    </UndefinedMethod>
-    <UnusedForeachValue>
-      <code><![CDATA[$v]]></code>
-    </UnusedForeachValue>
-  </file>
-  <file src="app/Framework/Services/DB/DoctrineMongoDB/DoctrineMongoDBTransactionManager.php">
-    <InvalidArgument>
-      <code><![CDATA[[
-                'session' => $session,
-            ]]]></code>
-    </InvalidArgument>
-    <UnusedClass>
-      <code><![CDATA[DoctrineMongoDBTransactionManager]]></code>
-    </UnusedClass>
-  </file>
-  <file src="app/Framework/Services/DB/Eloquent/EloquentTransactionManager.php">
-    <UnusedClass>
-      <code><![CDATA[EloquentTransactionManager]]></code>
-    </UnusedClass>
-  </file>
-  <file src="app/Framework/Services/DB/Eloquent/Migrations/MigrationRunner.php">
-    <InvalidArgument>
-      <code><![CDATA[$capsule]]></code>
-    </InvalidArgument>
-    <PossiblyUnusedMethod>
-      <code><![CDATA[load]]></code>
-    </PossiblyUnusedMethod>
-  </file>
-  <file src="app/Framework/Services/FiberTasking/FiberManager.php">
-    <PossiblyUnusedReturnValue>
-      <code><![CDATA[mixed]]></code>
-      <code><![CDATA[mixed]]></code>
-      <code><![CDATA[mixed]]></code>
-    </PossiblyUnusedReturnValue>
-  </file>
-  <file src="app/Framework/Services/ParamsFiltration/Filter.php">
-    <NoValue>
-      <code><![CDATA[return filter_input(type: $arg->getInputType()->value, var_name: $arg->getVarName(), filter: $arg->getFilterId(), options: $arg->getFlagOptions());]]></code>
-    </NoValue>
-  </file>
-  <file src="app/Framework/Services/ParamsFiltration/FilterParam.php">
-    <UnusedProperty>
-      <code><![CDATA[$filterId]]></code>
-      <code><![CDATA[$flags]]></code>
-      <code><![CDATA[$inputType]]></code>
-      <code><![CDATA[$options]]></code>
-      <code><![CDATA[$varName]]></code>
-    </UnusedProperty>
-  </file>
-  <file src="app/Framework/Services/Reflection/ClassAttributeManager.php">
-    <InvalidArgument>
-      <code><![CDATA[$attributeName]]></code>
-      <code><![CDATA[$attributeName]]></code>
-      <code><![CDATA[$attributeName]]></code>
-      <code><![CDATA[$attributeName]]></code>
-      <code><![CDATA[$attributeName]]></code>
-      <code><![CDATA[$attributeName]]></code>
-    </InvalidArgument>
-  </file>
-  <file src="app/Framework/Services/Reflection/MethodReflectionManager.php">
-    <UndefinedClass>
-      <code><![CDATA[new $class()]]></code>
-    </UndefinedClass>
-    <UndefinedMethod>
-      <code><![CDATA[getName]]></code>
-    </UndefinedMethod>
-  </file>
-  <file src="app/Framework/Services/Routing/Middleware.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[__construct]]></code>
-    </PossiblyUnusedMethod>
-  </file>
-  <file src="app/Framework/Services/Routing/Route.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[getName]]></code>
-    </PossiblyUnusedMethod>
-  </file>
-  <file src="app/Infrastructure/Console/FiberTaskingTest.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
-    <PossiblyUnusedMethod>
-      <code><![CDATA[__construct]]></code>
-      <code><![CDATA[handle]]></code>
-    </PossiblyUnusedMethod>
-    <UndefinedVariable>
-      <code><![CDATA[$param]]></code>
-    </UndefinedVariable>
-  </file>
-  <file src="app/Infrastructure/Gateway/Clients/Guzzle.php">
-    <InvalidArgument>
-      <code><![CDATA[$data]]></code>
-    </InvalidArgument>
-    <UnusedClass>
-      <code><![CDATA[Guzzle]]></code>
-    </UnusedClass>
-  </file>
-  <file src="app/Infrastructure/Gateway/Clients/StreamContext.php">
-    <UnusedClass>
-      <code><![CDATA[StreamContext]]></code>
-    </UnusedClass>
-  </file>
-  <file src="app/Infrastructure/Gateway/Parsers/JsonParser.php">
-    <UnusedClass>
-      <code><![CDATA[JsonParser]]></code>
-    </UnusedClass>
-  </file>
-  <file src="app/Infrastructure/Gateway/Parsers/ParserInterface.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[embed]]></code>
-      <code><![CDATA[serialize]]></code>
-    </PossiblyUnusedMethod>
-  </file>
-  <file src="app/Infrastructure/Gateway/Parsers/XmlParser.php">
-    <UnusedClass>
-      <code><![CDATA[XmlParser]]></code>
-    </UnusedClass>
-  </file>
-  <file src="app/Infrastructure/Gateway/Templating/TwigView.php">
-    <PossiblyUnusedProperty>
-      <code><![CDATA[$options]]></code>
-      <code><![CDATA[$path]]></code>
-    </PossiblyUnusedProperty>
-  </file>
-  <file src="app/Infrastructure/Gateway/Templating/View.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[exists]]></code>
-    </PossiblyUnusedMethod>
-  </file>
-  <file src="app/Infrastructure/Http/Common/Validators/AbstractValidator.php">
-    <UnusedClass>
-      <code><![CDATA[AbstractValidator]]></code>
-    </UnusedClass>
-  </file>
-  <file src="app/Infrastructure/Http/Site/Controllers/PageController.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[welcome]]></code>
-    </PossiblyUnusedMethod>
-  </file>
-  <file src="app/Infrastructure/Http/Site/Routers/Web.php">
-    <PossiblyUnusedProperty>
-      <code><![CDATA[$routes]]></code>
-    </PossiblyUnusedProperty>
-  </file>
-  <file src="app/Infrastructure/Storage/User/Persistence/DoctrineMongoDB/UserDocument.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[__construct]]></code>
-    </PossiblyUnusedMethod>
-  </file>
-  <file src="app/Infrastructure/Storage/User/Persistence/DoctrineMongoDB/UserDocumentRepository.php">
-    <UnusedClass>
-      <code><![CDATA[UserDocumentRepository]]></code>
-    </UnusedClass>
-  </file>
-  <file src="app/Infrastructure/Storage/User/Persistence/Eloquent/UserModel.php">
-    <InvalidAttribute>
-      <code><![CDATA[\Override]]></code>
-    </InvalidAttribute>
-  </file>
-  <file src="app/Infrastructure/Storage/User/Persistence/Eloquent/UserRepository.php">
-    <UnusedClass>
-      <code><![CDATA[UserRepository]]></code>
-    </UnusedClass>
-  </file>
   <file src="config/App.php">
     <InvalidAttribute>
       <code><![CDATA[\Override]]></code>
@@ -231,18 +26,12 @@
       <code><![CDATA[\Override]]></code>
       <code><![CDATA[\Override]]></code>
     </InvalidAttribute>
-    <PossiblyUnusedMethod>
-      <code><![CDATA[setEnv]]></code>
-    </PossiblyUnusedMethod>
   </file>
   <file src="config/Headers.php">
     <InvalidAttribute>
       <code><![CDATA[\Override]]></code>
       <code><![CDATA[\Override]]></code>
     </InvalidAttribute>
-    <UnusedClass>
-      <code><![CDATA[Headers]]></code>
-    </UnusedClass>
   </file>
   <file src="config/ODM.php">
     <InvalidAttribute>
@@ -261,17 +50,137 @@
       <code><![CDATA[\Override]]></code>
       <code><![CDATA[\Override]]></code>
     </InvalidAttribute>
-    <InvalidPropertyFetch>
-      <code><![CDATA[$router::${'routes'}]]></code>
-    </InvalidPropertyFetch>
-    <PossiblyUnusedMethod>
-      <code><![CDATA[getByName]]></code>
-    </PossiblyUnusedMethod>
   </file>
   <file src="config/Session.php">
     <InvalidAttribute>
       <code><![CDATA[\Override]]></code>
       <code><![CDATA[\Override]]></code>
     </InvalidAttribute>
+  </file>
+  <file src="framework/Base/View/View.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[exists]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="framework/Container/ServiceContainer.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[bound]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="framework/DB/DoctrineMongoDB/DoctrineMongoDBTransactionManager.php">
+    <InvalidArgument>
+      <code><![CDATA[[
+                'session' => $session,
+            ]]]></code>
+    </InvalidArgument>
+    <UnusedClass>
+      <code><![CDATA[DoctrineMongoDBTransactionManager]]></code>
+    </UnusedClass>
+  </file>
+  <file src="framework/DB/Eloquent/EloquentTransactionManager.php">
+    <UnusedClass>
+      <code><![CDATA[EloquentTransactionManager]]></code>
+    </UnusedClass>
+  </file>
+  <file src="framework/DB/Eloquent/Migrations/MigrationRunner.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[load]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="framework/DB/TransactionManagerInterface.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[run]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="framework/Gateway/Clients/Guzzle.php">
+    <InvalidArgument>
+      <code><![CDATA[$data]]></code>
+    </InvalidArgument>
+    <UnusedClass>
+      <code><![CDATA[Guzzle]]></code>
+    </UnusedClass>
+  </file>
+  <file src="framework/Gateway/Clients/StreamContext.php">
+    <UnusedClass>
+      <code><![CDATA[StreamContext]]></code>
+    </UnusedClass>
+  </file>
+  <file src="framework/Gateway/Parsers/JsonParser.php">
+    <UnusedClass>
+      <code><![CDATA[JsonParser]]></code>
+    </UnusedClass>
+  </file>
+  <file src="framework/Gateway/Templating/TwigView.php">
+    <PossiblyUnusedProperty>
+      <code><![CDATA[$options]]></code>
+      <code><![CDATA[$path]]></code>
+    </PossiblyUnusedProperty>
+  </file>
+  <file src="framework/Providers/ServiceProvider.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+      <code><![CDATA[boot]]></code>
+      <code><![CDATA[register]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="framework/Services/Arrays/NotationManager.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[getValue]]></code>
+      <code><![CDATA[toMdsArray]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="framework/Services/CLI/Command.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[getArgument]]></code>
+    </PossiblyUnusedMethod>
+    <PossiblyUnusedProperty>
+      <code><![CDATA[$description]]></code>
+    </PossiblyUnusedProperty>
+    <UndefinedMethod>
+      <code><![CDATA[handle]]></code>
+    </UndefinedMethod>
+    <UnusedForeachValue>
+      <code><![CDATA[$v]]></code>
+    </UnusedForeachValue>
+  </file>
+  <file src="framework/Services/FiberTasking/FiberManager.php">
+    <UnusedClass>
+      <code><![CDATA[FiberManager]]></code>
+    </UnusedClass>
+  </file>
+  <file src="framework/Services/ParamsFiltration/Filter.php">
+    <NoValue>
+      <code><![CDATA[return filter_input(type: $arg->getInputType()->value, var_name: $arg->getVarName(), filter: $arg->getFilterId(), options: $arg->getFlagOptions());]]></code>
+    </NoValue>
+  </file>
+  <file src="framework/Services/ParamsFiltration/FilterParam.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+    <UnusedProperty>
+      <code><![CDATA[$filterId]]></code>
+      <code><![CDATA[$flags]]></code>
+      <code><![CDATA[$inputType]]></code>
+      <code><![CDATA[$options]]></code>
+      <code><![CDATA[$varName]]></code>
+    </UnusedProperty>
+  </file>
+  <file src="framework/Services/Reflection/MethodReflectionManager.php">
+    <UndefinedClass>
+      <code><![CDATA[new $class()]]></code>
+    </UndefinedClass>
+    <UndefinedMethod>
+      <code><![CDATA[getName]]></code>
+    </UndefinedMethod>
+  </file>
+  <file src="framework/Services/Routing/Middleware.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[__construct]]></code>
+    </PossiblyUnusedMethod>
+  </file>
+  <file src="framework/Services/Routing/Route.php">
+    <PossiblyUnusedMethod>
+      <code><![CDATA[getName]]></code>
+    </PossiblyUnusedMethod>
   </file>
 </files>

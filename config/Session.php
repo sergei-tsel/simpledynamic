@@ -20,7 +20,7 @@ class Session extends Config
     /**
      * Установить переменные сессии
      */
-    public static function setSession(?string $login = null): void
+    public static function set(?string $login = null): void
     {
         self::setConfigParts([
             'cookies' => function (array $cookies): void {

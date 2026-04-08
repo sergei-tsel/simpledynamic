@@ -1,7 +1,7 @@
 {
     "name": "sergei-tsel/simpledynamic",
     "type": "project",
-    "description": "The skeleton application for the Simpledynamic framework.",
+    "description": "The Simpledynamic framework",
     "keywords": ["simple", "dynamic", "framework"],
     "license": "MIT",
     "require-dev": {
@@ -23,8 +23,8 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "app/",
             "config\\": "config/",
+            "Framework\\": "framework/",
             "public\\": "public/"
         }
     }

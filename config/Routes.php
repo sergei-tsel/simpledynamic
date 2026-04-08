@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace config;
 
-use App\Framework\Services\Arrays\NotationManager;
-use App\Framework\Services\Routing\Route;
+use Framework\Base\Controller\Route;
+use Framework\Gateway\Templating\TwigView;
+use Framework\Services\Arrays\NotationManager;
 use Uri\Rfc3986\Uri;
 
 /**
@@ -21,28 +22,24 @@ class Routes extends Config
     #[\Override]
     protected static string $filename = '';
 
-    protected static array $routers   = [
-        \App\Infrastructure\Http\Site\Routers\Web::class,
-    ];
+    protected static array $routers   = [];
 
     protected static ?Uri $uri = null;
 
     /**
      * Получить роуты
-     *
-     * @return Route[]
      */
-    #[\Override]
-    public static function getConfig(): array
+    public static function get(): array
     {
-        if (self::$filename) {
-            $config = array_merge(
-                self::$local,
-                yaml_parse_file(self::$filename),
-            );
-        } else {
-            $config = self::$local;
-        }
+        $routes = [
+            'welcome' => [
+                'method' => 'GET',
+                'path'   => '/',
+                'action' => function (): void {
+                    echo new TwigView('welcome.php.twig')->render();
+                },
+            ],
+        ];
 
         if (self::$routers !== []) {
             foreach (self::$routers as $router) {
@@ -50,14 +47,14 @@ class Routes extends Config
                     continue;
                 }
 
-                $config = array_merge(
-                    $config,
-                    $router::${'routes'},
+                $routes = array_merge(
+                    $routes,
+                    $router::getRoutes(),
                 );
             }
         }
 
-        return $config
+        return $routes
             |> NotationManager::instanceOne('.')->fromMdsArray(...)
             |> Route::instanceMany(...);
     }
@@ -97,9 +94,9 @@ class Routes extends Config
      */
     public static function getByPath(): Route|null
     {
-        $config = self::getConfig();
+        $routes = self::get();
 
-        $routes = array_filter($config, function (Route $route): bool {
+        $filteredRoutes = array_filter($routes, function (Route $route): bool {
             $routePath = preg_replace('#\{/d+}#u', '\d+', $route->getPath());
             $routePath = '^' . $routePath . '$';
 
@@ -108,7 +105,7 @@ class Routes extends Config
             return mb_ereg_match($routePath, $path) && $route->getMethod() === ($_SERVER['REQUEST_METHOD'] ?? 'GET');
         });
 
-        return array_first($routes);
+        return array_first($filteredRoutes);
     }
 
     /**
@@ -116,7 +113,7 @@ class Routes extends Config
      */
     public static function getByName(string $name): Route|null
     {
-        $routes = self::getConfig();
+        $routes = self::get();
 
         return $routes[$name] ?? null;
     }
