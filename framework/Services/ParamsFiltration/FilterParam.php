@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Framework\Services\ParamsFiltration;
 
 use Attribute;
-use Framework\Services\Routing\InputTypes;
+use Framework\Services\Routing\InputType;
 
 /**
  * Фильтруемый параметр
@@ -14,11 +14,11 @@ use Framework\Services\Routing\InputTypes;
 readonly class FilterParam extends FilterArgument
 {
     public function __construct(
-        private InputTypes $inputType,
-        private string     $varName,
-        private int        $filterId    = FILTER_UNSAFE_RAW,
-        private array      $flags       = [],
-        private array      $options     = [],
+        private InputType $inputType,
+        private string    $varName,
+        private int       $filterId    = FILTER_UNSAFE_RAW,
+        private array     $flags       = [],
+        private array     $options     = [],
     ) {
         parent::__construct(
             filterId: $this->filterId,

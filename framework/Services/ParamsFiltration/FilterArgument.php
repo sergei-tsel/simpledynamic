@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Services\ParamsFiltration;
 
-use Framework\Services\Routing\InputTypes;
+use Framework\Services\Routing\InputType;
 
 /**
  * Аргумент фильтра
@@ -12,11 +12,11 @@ use Framework\Services\Routing\InputTypes;
 readonly class FilterArgument
 {
     public function __construct(
-        private int         $filterId,
-        private ?array      $flags     = [],
-        private ?array      $options   = [],
-        private ?InputTypes $inputType = null,
-        private ?string     $varName   = null,
+        private int        $filterId,
+        private ?array     $flags     = [],
+        private ?array     $options   = [],
+        private ?InputType $inputType = null,
+        private ?string    $varName   = null,
     ) {
     }
 
@@ -25,7 +25,7 @@ readonly class FilterArgument
         return $this->filterId;
     }
 
-    public function getInputType(): ?InputTypes
+    public function getInputType(): ?InputType
     {
         return $this->inputType;
     }

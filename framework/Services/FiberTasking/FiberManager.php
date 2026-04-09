@@ -37,8 +37,6 @@ class FiberManager
 
     /**
      * Начать выполнение файбера
-     *
-     * @throws \Throwable
      */
     public function start(string $name): mixed
     {
@@ -51,7 +49,6 @@ class FiberManager
 
     /**
      * Возобновить выполнение файбера с передачей значения
-     * @throws \Throwable
      */
     public function resume(string $name, mixed $value = null): mixed
     {
@@ -63,7 +60,6 @@ class FiberManager
 
     /**
      * Возобновить выполнение файбера с передачей исключения
-     * @throws \Throwable
      */
     public function throw(string $name, \Throwable $exception): mixed
     {
@@ -75,7 +71,6 @@ class FiberManager
 
     /**
      * Получить значение, возвращённое файбером
-     * @throws \Throwable
      */
     public function getReturn(string $name): mixed
     {
@@ -128,18 +123,21 @@ class FiberManager
 
     /**
      * Приостановить выполнение файбера, в котором вызов
-     * @throws \Throwable
      */
     public function suspend(mixed $value = null): mixed
     {
-        return Fiber::getCurrent()?->suspend($value);
+        try {
+            return Fiber::getCurrent()?->suspend($value);
+        } catch (\Throwable) {
+        }
+
+        return null;
     }
 
     /**
      * Выполнить задачу в файбере
-     * @param array{int: array{'args': array, 'func': callable}} $steps
      *
-     * @throws \Throwable
+     * @param array{int: array{'args': array, 'func': callable}} $steps
      */
     public function performTask(array $steps): ?array
     {
@@ -151,7 +149,7 @@ class FiberManager
 
         for ($i = 0; $i < count($steps); $i++) {
             $stepResult = $steps[$i]['func'](...$steps[$i]['args']);
-            $suspendParams = Fiber::getCurrent()->suspend($stepResult);
+            $suspendParams = $this->suspend($stepResult);
 
             if (isset($steps[$i + 1])) {
                 if (is_array($stepResult) && $stepResult !== []) {
@@ -171,8 +169,6 @@ class FiberManager
 
     /**
      * Выполнить добавленные файберы
-     *
-     * @throws \Throwable
      */
     public function execute(): void
     {
@@ -180,11 +176,14 @@ class FiberManager
             /** @var Fiber $fiber */
             $fiber = $task['fiber'];
 
-            $task['returns'][] = match (true) {
-                !$fiber->isStarted()   => $fiber->start(...$task['params']),
-                $fiber->isSuspended()  => $fiber->resume(empty($task['resumes']) ? null : array_shift($task['resumes'])),
-                $fiber->isTerminated() => $fiber->getReturn(),
-            };
+            try {
+                $task['returns'][] = match (true) {
+                    !$fiber->isStarted()   => $fiber->start(...$task['params']),
+                    $fiber->isSuspended()  => $fiber->resume(empty($task['resumes']) ? null : array_shift($task['resumes'])),
+                    $fiber->isTerminated() => $fiber->getReturn(),
+                };
+            } catch (\Throwable) {
+            }
         }
     }
 
@@ -193,6 +192,6 @@ class FiberManager
      */
     public function removeCompleted(): void
     {
-        $this->tasks = array_filter($this->tasks, fn(array $task): bool => !$task['fiber']->isTerminated());
+        $this->tasks = array_filter($this->tasks, fn (array $task): bool => !$task['fiber']->isTerminated());
     }
 }

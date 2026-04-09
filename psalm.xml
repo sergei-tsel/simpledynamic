@@ -15,6 +15,7 @@
         <directory name="public" />
         <ignoreFiles>
             <directory name="hooks" />
+            <directory name="logs" />
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>

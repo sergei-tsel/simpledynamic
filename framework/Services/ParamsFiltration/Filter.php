@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Services\ParamsFiltration;
 
-use Framework\Services\Routing\InputTypes;
+use Framework\Services\Routing\InputType;
 
 class Filter
 {
@@ -29,7 +29,7 @@ class Filter
      *
      * @param FilterArgument[] $args
      */
-    public function inputVars(InputTypes $type, array $args, bool $addEmpty = true): array|false|null
+    public function inputVars(InputType $type, array $args, bool $addEmpty = true): array|false|null
     {
         if ($args === []) {
             return [];

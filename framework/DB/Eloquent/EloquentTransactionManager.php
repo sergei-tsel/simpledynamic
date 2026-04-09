@@ -19,8 +19,6 @@ readonly class EloquentTransactionManager implements TransactionManagerInterface
 
     /**
      * Выполнить действия с базой данных в транзакции
-     *
-     * @throws \Throwable
      */
     #[\Override]
     public function run(callable $todo): mixed
@@ -33,10 +31,10 @@ readonly class EloquentTransactionManager implements TransactionManagerInterface
             $this->databaseManager->commit();
 
             return $result;
-        } catch (\Throwable $exception) {
+        } catch (\Throwable) {
             $this->databaseManager->rollBack();
-
-            throw $exception;
         }
+
+        return null;
     }
 }

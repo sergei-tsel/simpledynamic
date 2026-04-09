@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Framework\Services\Routing;
 
 /**
- * Типы входных данных
+ * Тип входных данных
  */
-enum InputTypes: int
+enum InputType: int
 {
     private const int INPUT_POST = INPUT_POST;
     private const int INPUT_GET = INPUT_GET;

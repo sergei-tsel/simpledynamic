@@ -62,25 +62,12 @@
       <code><![CDATA[exists]]></code>
     </PossiblyUnusedMethod>
   </file>
-  <file src="framework/Container/ServiceContainer.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[bound]]></code>
-    </PossiblyUnusedMethod>
-  </file>
   <file src="framework/DB/DoctrineMongoDB/DoctrineMongoDBTransactionManager.php">
     <InvalidArgument>
       <code><![CDATA[[
                 'session' => $session,
             ]]]></code>
     </InvalidArgument>
-    <UnusedClass>
-      <code><![CDATA[DoctrineMongoDBTransactionManager]]></code>
-    </UnusedClass>
-  </file>
-  <file src="framework/DB/Eloquent/EloquentTransactionManager.php">
-    <UnusedClass>
-      <code><![CDATA[EloquentTransactionManager]]></code>
-    </UnusedClass>
   </file>
   <file src="framework/DB/Eloquent/Migrations/MigrationRunner.php">
     <PossiblyUnusedMethod>
@@ -143,27 +130,10 @@
       <code><![CDATA[$v]]></code>
     </UnusedForeachValue>
   </file>
-  <file src="framework/Services/FiberTasking/FiberManager.php">
-    <UnusedClass>
-      <code><![CDATA[FiberManager]]></code>
-    </UnusedClass>
-  </file>
   <file src="framework/Services/ParamsFiltration/Filter.php">
     <NoValue>
       <code><![CDATA[return filter_input(type: $arg->getInputType()->value, var_name: $arg->getVarName(), filter: $arg->getFilterId(), options: $arg->getFlagOptions());]]></code>
     </NoValue>
-  </file>
-  <file src="framework/Services/ParamsFiltration/FilterParam.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[__construct]]></code>
-    </PossiblyUnusedMethod>
-    <UnusedProperty>
-      <code><![CDATA[$filterId]]></code>
-      <code><![CDATA[$flags]]></code>
-      <code><![CDATA[$inputType]]></code>
-      <code><![CDATA[$options]]></code>
-      <code><![CDATA[$varName]]></code>
-    </UnusedProperty>
   </file>
   <file src="framework/Services/Reflection/MethodReflectionManager.php">
     <UndefinedClass>

@@ -22,8 +22,6 @@ class Router
 
     /**
      * Обработать запрос
-     *
-     * @throws \Exception
      */
     public static function handle(): mixed
     {
@@ -66,8 +64,6 @@ class Router
 
     /**
      * Вызвать мидлвар
-     *
-     * @throws \Exception
      */
     private static function callMiddleware(string $name, array $handledParams = []): array
     {
@@ -94,8 +90,6 @@ class Router
 
     /**
      * Вызвать экшен
-     *
-     * @throws \Exception
      */
     private static function callAction(Route $route, array $handledParams = []): mixed
     {
@@ -133,16 +127,16 @@ class Router
         $params = [];
 
         foreach ($filterParams as $attributeValue => $argument) {
-            $inputType = InputTypes::tryFrom($attributeValue);
+            $inputType = InputType::tryFrom($attributeValue);
 
             $params[$inputType->name][] = match ($inputType) {
-                InputTypes::POST,
-                InputTypes::GET,
-                InputTypes::COOKIE,
-                InputTypes::ENV,
-                InputTypes::SERVER  => $filter->inputVars(type: $inputType, args: $argument, addEmpty: false),
-                InputTypes::FILES   => $filter->vars(vars: $_FILES, args: $argument, addEmpty: false),
-                InputTypes::SESSION => $filter->vars(vars: $_SESSION, args: $argument, addEmpty: false),
+                InputType::POST,
+                InputType::GET,
+                InputType::COOKIE,
+                InputType::ENV,
+                InputType::SERVER  => $filter->inputVars(type: $inputType, args: $argument, addEmpty: false),
+                InputType::FILES   => $filter->vars(vars: $_FILES, args: $argument, addEmpty: false),
+                InputType::SESSION => $filter->vars(vars: $_SESSION, args: $argument, addEmpty: false),
             };
         };
 

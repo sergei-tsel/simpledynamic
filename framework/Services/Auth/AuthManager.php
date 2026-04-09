@@ -13,8 +13,6 @@ final class AuthManager
 {
     /**
      * Авторизоваться через браузер
-     *
-     * @throws \Exception
      */
     public function browse(array $params, string $hashedPassword): array
     {
@@ -28,6 +26,7 @@ final class AuthManager
         if (!isset($params['SERVER']['PHP_AUTH_USER'])) {
             try {
                 throw new \Exception("401" . PHP_EOL . "Логин не передан");
+            } catch (\Throwable) {
             } finally {
                 header("HTTP/1.1 401 Unauthorized");
                 header("WWW-Authenticate: Basic realm=\"$realm\"");
@@ -39,6 +38,7 @@ final class AuthManager
         if (!password_verify((string) $params['SERVER']['PHP_AUTH_PW'], $hashedPassword)) {
             try {
                 throw new \Exception("403" . PHP_EOL . "Логин или пароль неправильный");
+            } catch (\Throwable) {
             } finally {
                 header("HTTP/1.1 403 Forbidden");
 
@@ -53,7 +53,6 @@ final class AuthManager
 
     /**
      * Авторизоваться через форму
-     * @throws \Exception
      */
     public function form(array $params, string $hashedPassword): array
     {
@@ -67,7 +66,10 @@ final class AuthManager
         }
 
         if (!password_verify((string) $params['POST']['password'], $hashedPassword)) {
-            throw new \Exception("403" . PHP_EOL . "Логин или пароль неправильный");
+            try {
+                throw new \Exception("403" . PHP_EOL . "Логин или пароль неправильный");
+            } catch (\Throwable) {
+            }
         }
 
         Session::set();
@@ -80,15 +82,16 @@ final class AuthManager
 
     /**
      * Авторизоваться через дайджест
-     *
-     * @throws \Exception
      */
     public function digest(array $params): array
     {
         $secrets = Auth::getConfigPart('secrets');
 
         if (!hash_equals($secrets[$params['POST']['secret']], $params['POST']['key'])) {
-            throw new \Exception("403" . PHP_EOL . "Секретный ключ неправильный");
+            try {
+                throw new \Exception("403" . PHP_EOL . "Секретный ключ неправильный");
+            } catch (\Throwable) {
+            }
         }
 
         return [

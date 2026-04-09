@@ -46,7 +46,6 @@ final class ServiceContainer
 
     /**
      * Построить объект
-     * @throws \Exception
      */
     public function build(string $className): object
     {
@@ -69,13 +68,14 @@ final class ServiceContainer
 
     /**
      * Разрешить объект
-     *
-     * @throws \Exception
      */
     public function resolve(string $className): object
     {
         if (in_array($className, $this->stack)) {
-            throw new \Exception('Кольцевая зависимость');
+            try {
+                throw new \Exception('Кольцевая зависимость от ' . $className);
+            } catch (\Throwable) {
+            }
         }
 
         $this->stack[] = $className;
@@ -87,7 +87,6 @@ final class ServiceContainer
      * Разрешить зависимости метода
      *
      * @return array<object|null>
-     * @throws \Exception
      */
     public function resolveMethodDependencies(string $className, string $methodName): array
     {
@@ -111,7 +110,6 @@ final class ServiceContainer
 
     /**
      * Разрешить зависимость
-     * @throws \Exception
      */
     protected function resolveDependency(string $name): ?object
     {

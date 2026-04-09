@@ -19,8 +19,6 @@ readonly class DoctrineMongoDBTransactionManager implements TransactionManagerIn
 
     /**
      * Выполнить действия с базой данных в транзакции
-     *
-     * @throws \Throwable
      */
     #[\Override]
     public function run(callable $todo): mixed
@@ -37,12 +35,12 @@ readonly class DoctrineMongoDBTransactionManager implements TransactionManagerIn
             $session->commitTransaction();
 
             return $result;
-        } catch (\Throwable $exception) {
+        } catch (\Throwable) {
             $session->abortTransaction();
-
-            throw $exception;
         } finally {
             $session->endSession();
         }
+
+        return null;
     }
 }
