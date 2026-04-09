@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Framework\Gateway\Templating;
+namespace Sympledynamic\Gateway\Templating;
 
 use config\App;
-use Framework\Base\View\View;
+use Sympledynamic\Base\View\View;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\Base\Controller;
+namespace Sympledynamic\Base\Controller;
 
 use Attribute;
 

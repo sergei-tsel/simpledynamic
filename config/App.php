@@ -16,7 +16,7 @@ class App extends Config
             'test' => [],
         ],
         'providers'       => [
-            \Framework\Providers\AppServiceProvider::class,
+            \Sympledynamic\Providers\AppServiceProvider::class,
         ],
         'twig_extensions' => [],
     ];

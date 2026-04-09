@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\Gateway\Clients;
+namespace Sympledynamic\Gateway\Clients;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
@@ -28,8 +28,7 @@ class Guzzle
         array  $data,
         array  $headers = [],
         bool   $isAsync = false
-    ): ResponseInterface|PromiseInterface
-    {
+    ): ResponseInterface|PromiseInterface {
         $request = new Request($method, $url, $headers, $data);
 
         if ($isAsync) {

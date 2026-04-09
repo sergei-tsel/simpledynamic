@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Framework\DB\Eloquent;
+namespace Sympledynamic\DB\Eloquent;
 
-use Framework\DB\TransactionManagerInterface;
+use Sympledynamic\DB\TransactionManagerInterface;
 use Illuminate\Database\DatabaseManager;
 
 /**

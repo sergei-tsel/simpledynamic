@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\DB\Eloquent\Migrations;
+namespace Sympledynamic\DB\Eloquent\Migrations;
 
 use config\ORM;
 use Illuminate\Database\Capsule\Manager;

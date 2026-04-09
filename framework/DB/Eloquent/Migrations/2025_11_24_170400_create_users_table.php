@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\Services\DB\Eloquent\Migrations;
+namespace Sympledynamic\Services\DB\Eloquent\Migrations;
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

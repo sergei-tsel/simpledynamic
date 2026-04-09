@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../../../../../vendor/autoload.php';
+require_once __DIR__ . '/../../../../vendor/autoload.php';
 
-use Framework\DB\Eloquent\Migrations\MigrationRunner;
+use Sympledynamic\DB\Eloquent\Migrations\MigrationRunner;
 
 $migrationRunner = new MigrationRunner();
 

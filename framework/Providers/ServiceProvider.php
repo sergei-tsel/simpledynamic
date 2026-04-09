@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Framework\Providers;
+namespace Sympledynamic\Providers;
 
-use Framework\Container\ServiceContainer;
+use Sympledynamic\Container\ServiceContainer;
 
 /**
  * Базовый сервис-провайдер

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Framework\Services\ParamsFiltration;
+namespace Sympledynamic\Services\ParamsFiltration;
 
-use Framework\Services\Routing\InputType;
+use Sympledynamic\Services\Routing\InputType;
 
 class Filter
 {

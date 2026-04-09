@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\Services\Logging;
+namespace Sympledynamic\Services\Logging;
 
 /**
  * Логгер

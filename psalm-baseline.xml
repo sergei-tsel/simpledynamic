@@ -57,11 +57,6 @@
       <code><![CDATA[\Override]]></code>
     </InvalidAttribute>
   </file>
-  <file src="framework/Base/View/View.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[exists]]></code>
-    </PossiblyUnusedMethod>
-  </file>
   <file src="framework/DB/DoctrineMongoDB/DoctrineMongoDBTransactionManager.php">
     <InvalidArgument>
       <code><![CDATA[[
@@ -69,60 +64,12 @@
             ]]]></code>
     </InvalidArgument>
   </file>
-  <file src="framework/DB/Eloquent/Migrations/MigrationRunner.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[load]]></code>
-    </PossiblyUnusedMethod>
-  </file>
-  <file src="framework/DB/TransactionManagerInterface.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[run]]></code>
-    </PossiblyUnusedMethod>
-  </file>
   <file src="framework/Gateway/Clients/Guzzle.php">
     <InvalidArgument>
       <code><![CDATA[$data]]></code>
     </InvalidArgument>
-    <UnusedClass>
-      <code><![CDATA[Guzzle]]></code>
-    </UnusedClass>
-  </file>
-  <file src="framework/Gateway/Clients/StreamContext.php">
-    <UnusedClass>
-      <code><![CDATA[StreamContext]]></code>
-    </UnusedClass>
-  </file>
-  <file src="framework/Gateway/Parsers/JsonParser.php">
-    <UnusedClass>
-      <code><![CDATA[JsonParser]]></code>
-    </UnusedClass>
-  </file>
-  <file src="framework/Gateway/Templating/TwigView.php">
-    <PossiblyUnusedProperty>
-      <code><![CDATA[$options]]></code>
-      <code><![CDATA[$path]]></code>
-    </PossiblyUnusedProperty>
-  </file>
-  <file src="framework/Providers/ServiceProvider.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[__construct]]></code>
-      <code><![CDATA[boot]]></code>
-      <code><![CDATA[register]]></code>
-    </PossiblyUnusedMethod>
-  </file>
-  <file src="framework/Services/Arrays/NotationManager.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[getValue]]></code>
-      <code><![CDATA[toMdsArray]]></code>
-    </PossiblyUnusedMethod>
   </file>
   <file src="framework/Services/CLI/Command.php">
-    <PossiblyUnusedMethod>
-      <code><![CDATA[getArgument]]></code>
-    </PossiblyUnusedMethod>
-    <PossiblyUnusedProperty>
-      <code><![CDATA[$description]]></code>
-    </PossiblyUnusedProperty>
     <UndefinedMethod>
       <code><![CDATA[handle]]></code>
     </UndefinedMethod>

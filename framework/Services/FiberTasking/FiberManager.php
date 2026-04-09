@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\Services\FiberTasking;
+namespace Sympledynamic\Services\FiberTasking;
 
 use Fiber;
 

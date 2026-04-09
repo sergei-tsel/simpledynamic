@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Framework\Gateway\Parsers;
+namespace Sympledynamic\Gateway\Parsers;
 
-use Framework\Base\View\ParserInterface;
+use Sympledynamic\Base\View\ParserInterface;
 use SimpleXMLElement;
 
 /**

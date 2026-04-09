@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace config;
 
-use Framework\Base\Controller\Route;
-use Framework\Gateway\Templating\TwigView;
-use Framework\Services\Arrays\NotationManager;
+use Sympledynamic\Base\Controller\Route;
+use Sympledynamic\Gateway\Templating\TwigView;
+use Sympledynamic\Services\Arrays\NotationManager;
 use Uri\Rfc3986\Uri;
 
 /**

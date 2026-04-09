@@ -24,7 +24,7 @@
     "autoload": {
         "psr-4": {
             "config\\": "config/",
-            "Framework\\": "framework/",
+            "Sympledynamic\\": "framework/",
             "public\\": "public/"
         }
     }

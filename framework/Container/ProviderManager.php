@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\Container;
+namespace Sympledynamic\Container;
 
 use config\App;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\Gateway\Clients;
+namespace Sympledynamic\Gateway\Clients;
 
 /**
  * Клиент для отправки представления с помощью потока
@@ -17,8 +17,7 @@ class StreamContext
         string $url,
         array  $data,
         array  $headers = [],
-    ): void
-    {
+    ): void {
         $options = [
             'http' => [
                 'method' => $method,

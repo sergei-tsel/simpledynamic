@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\Providers;
+namespace Sympledynamic\Providers;
 
 use config\ODM;
 use config\ORM;
@@ -20,9 +20,9 @@ class AppServiceProvider extends ServiceProvider
     #[\Override]
     public function register(): void
     {
-        $this->app->singleton(DatabaseManager::class, fn(): \Illuminate\Database\DatabaseManager => ORM::createEloquent()->getDatabaseManager());
+        $this->app->singleton(DatabaseManager::class, fn (): \Illuminate\Database\DatabaseManager => ORM::createEloquent()->getDatabaseManager());
 
-        $this->app->singleton(DocumentManager::class, fn(): \Doctrine\ODM\MongoDB\DocumentManager => ODM::createDoctrineMongoDB());
+        $this->app->singleton(DocumentManager::class, fn (): \Doctrine\ODM\MongoDB\DocumentManager => ODM::createDoctrineMongoDB());
     }
 
     /**

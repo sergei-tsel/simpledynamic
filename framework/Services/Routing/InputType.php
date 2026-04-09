@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\Services\Routing;
+namespace Sympledynamic\Services\Routing;
 
 /**
  * Тип входных данных

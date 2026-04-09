@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Framework\Services\Routing;
+namespace Sympledynamic\Services\Routing;
 
 use config\Routes;
-use Framework\Base\Controller\Middleware;
-use Framework\Base\Controller\Route;
-use Framework\Container\ProviderManager;
-use Framework\Services\ParamsFiltration\Filter;
-use Framework\Services\ParamsFiltration\FilterParam;
-use Framework\Services\Reflection\ClassReflectionManager;
-use Framework\Services\Reflection\MethodReflectionManager;
+use Sympledynamic\Base\Controller\Middleware;
+use Sympledynamic\Base\Controller\Route;
+use Sympledynamic\Container\ProviderManager;
+use Sympledynamic\Services\ParamsFiltration\Filter;
+use Sympledynamic\Services\ParamsFiltration\FilterParam;
+use Sympledynamic\Services\Reflection\ClassReflectionManager;
+use Sympledynamic\Services\Reflection\MethodReflectionManager;
 
 /**
  * Роутер

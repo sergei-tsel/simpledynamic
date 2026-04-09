@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\Services\Arrays;
+namespace Sympledynamic\Services\Arrays;
 
 /**
  * Сервис для управления нотацией
