@@ -9,9 +9,15 @@ namespace config;
  */
 class Env extends Config
 {
+    /**
+     * @psalm-suppress InvalidAttribute
+     */
     #[\Override]
     protected static array  $local    = [];
 
+    /**
+     * @psalm-suppress InvalidAttribute
+     */
     #[\Override]
     protected static string $filename = '';
 

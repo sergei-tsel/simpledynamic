@@ -6,6 +6,8 @@ namespace Sympledynamic\Gateway\Clients;
 
 /**
  * Клиент для отправки представления с помощью потока
+ *
+ * @psalm-suppress UnusedClass
  */
 class StreamContext
 {

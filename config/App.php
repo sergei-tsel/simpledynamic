@@ -7,8 +7,16 @@ namespace config;
 /**
  * Конфигурация приложения
  */
+/**
+ * Конфигурация приложения
+ *
+ * @psalm-suppress PossiblyUnusedProperty
+ */
 class App extends Config
 {
+    /**
+     * @psalm-suppress InvalidAttribute
+     */
     #[\Override]
     protected static array $local     = [
         'locale'          => 'en',
@@ -21,6 +29,9 @@ class App extends Config
         'twig_extensions' => [],
     ];
 
+    /**
+     * @psalm-suppress InvalidAttribute
+     */
     #[\Override]
     protected static string $filename = '';
 }

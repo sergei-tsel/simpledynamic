@@ -9,11 +9,17 @@ namespace config;
  */
 class Session extends Config
 {
+    /**
+     * @psalm-suppress InvalidAttribute
+     */
     #[\Override]
     protected static array  $local    = [
         'options' => [],
     ];
 
+    /**
+     * @psalm-suppress InvalidAttribute
+     */
     #[\Override]
     protected static string $filename = '';
 

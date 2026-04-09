@@ -9,6 +9,8 @@ use SimpleXMLElement;
 
 /**
  * Парсер XML
+ *
+ * @psalm-suppress UnusedClass
  */
 class XmlParser implements ParserInterface
 {

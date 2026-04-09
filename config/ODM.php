@@ -13,6 +13,9 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
  */
 class ODM extends Config
 {
+    /**
+     * @psalm-suppress InvalidAttribute
+     */
     #[\Override]
     protected static array  $local    = [
         'hydrator'    => [
@@ -22,6 +25,9 @@ class ODM extends Config
         'default_db'  => 'simpledynamic_doctrine_odm',
         'driver_path' => '.\app\Model\ODM\Documents',
     ];
+    /**
+     * @psalm-suppress InvalidAttribute
+     */
     #[\Override]
     protected static string $filename = '';
 

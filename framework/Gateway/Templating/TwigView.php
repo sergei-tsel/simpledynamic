@@ -11,6 +11,8 @@ use Twig\Loader\FilesystemLoader;
 
 /**
  * Представление с шаблоном Twig
+ *
+ * @psalm-suppress UnusedProperty
  */
 class TwigView extends View
 {

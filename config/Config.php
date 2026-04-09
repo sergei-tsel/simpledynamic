@@ -15,7 +15,6 @@ class Config
 
     protected static string $filename = '';
 
-
     /**
      * Получить конфигурацию
      */

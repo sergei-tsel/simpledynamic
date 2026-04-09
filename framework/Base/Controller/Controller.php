@@ -6,6 +6,8 @@ namespace Sympledynamic\Base\Controller;
 
 /**
  * Контроллер
+ *
+ * @psalm-suppress UnusedClass
  */
 abstract class Controller
 {

@@ -9,10 +9,15 @@ use Sympledynamic\Services\Routing\InputType;
 
 /**
  * Фильтруемый параметр
+ *
+ * @psalm-suppress UnusedProperty
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
 readonly class FilterParam extends FilterArgument
 {
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     public function __construct(
         private InputType $inputType,
         private string    $varName,

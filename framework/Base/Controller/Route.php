@@ -78,6 +78,8 @@ readonly class Route
 
     /**
      * Получить имя
+     *
+     * @psalm-suppress PossiblyUnusedMethod
      */
     public function getName(): string
     {

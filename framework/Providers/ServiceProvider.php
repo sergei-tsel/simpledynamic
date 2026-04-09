@@ -11,6 +11,9 @@ use Sympledynamic\Container\ServiceContainer;
  */
 abstract class ServiceProvider
 {
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     public function __construct(
         /**
          * @var ServiceContainer
@@ -21,6 +24,8 @@ abstract class ServiceProvider
 
     /**
      * Зарегистрировать биндинги
+     *
+     * @psalm-suppress PossiblyUnusedMethod
      */
     public function register(): void
     {
@@ -28,6 +33,8 @@ abstract class ServiceProvider
 
     /**
      * Выполнить действия после регистрации биндингов
+     *
+     * @psalm-suppress PossiblyUnusedMethod
      */
     public function boot(): void
     {

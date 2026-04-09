@@ -9,6 +9,8 @@ use Illuminate\Database\DatabaseManager;
 
 /**
  * Сервис для управления транзакцией Eloquent
+ *
+ * @psalm-suppress UnusedClass
  */
 readonly class EloquentTransactionManager implements TransactionManagerInterface
 {

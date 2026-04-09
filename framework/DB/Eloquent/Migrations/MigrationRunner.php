@@ -16,6 +16,8 @@ class MigrationRunner
 
     /**
      * Загрузить миграции
+     *
+     * @psalm-suppress PossiblyUnusedMethod
      */
     public function load(Manager $capsule): void
     {

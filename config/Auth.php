@@ -11,6 +11,9 @@ use Random\Engine\Secure;
  */
 class Auth extends Config
 {
+    /**
+     * @psalm-suppress InvalidAttribute
+     */
     #[\Override]
     protected static array $local = [
         'realms'   => [
@@ -41,6 +44,9 @@ class Auth extends Config
         '',
     ];
 
+    /**
+     * @psalm-suppress InvalidAttribute
+     */
     #[\Override]
     protected static string $filename = '';
 
@@ -72,6 +78,8 @@ class Auth extends Config
 
     /**
      * Хешировать пароль, применяя конфигурацию
+     *
+     * @psalm-suppress PossiblyUnusedMethod
      */
     public static function hashPassword(#[\SensitiveParameter] string $password): string
     {

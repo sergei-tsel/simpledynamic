@@ -14,11 +14,17 @@ use Uri\Rfc3986\Uri;
  */
 class Routes extends Config
 {
+    /**
+     * @psalm-suppress InvalidAttribute
+     */
     #[\Override]
     protected static array  $local    = [
         'base' => 'http://localhost:8000/',
     ];
 
+    /**
+     * @psalm-suppress InvalidAttribute
+     */
     #[\Override]
     protected static string $filename = '';
 
@@ -110,6 +116,8 @@ class Routes extends Config
 
     /**
      * Получить роут по имени
+     *
+     * @psalm-suppress PossiblyUnusedMethod
      */
     public static function getByName(string $name): Route|null
     {

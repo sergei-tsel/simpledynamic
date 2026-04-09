@@ -16,6 +16,8 @@ class View
 
     /**
      * Проверить существование шаблона
+     *
+     * @psalm-suppress PossiblyUnusedMethod
      */
     public function exists(): ?View
     {

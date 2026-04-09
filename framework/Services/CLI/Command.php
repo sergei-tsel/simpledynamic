@@ -12,7 +12,12 @@ use Sympledynamic\Container\ProviderManager;
 class Command
 {
     protected string $signature = '';
+
+    /**
+     * @psalm-suppress PossiblyUnusedProperty
+     */
     protected string $description = '';
+
     protected array $arguments = [];
 
     /**
@@ -28,7 +33,8 @@ class Command
 
         $dependencies = $container->resolveMethodDependencies(static::class, 'handle');
 
-        $command->handle(...$dependencies);
+        /** @psalm-suppress UndefinedMethod */
+        $command->handle(...array_values($dependencies));
     }
 
     /**
@@ -66,9 +72,7 @@ class Command
             $hasNoValue = in_array($key, $optsWithoutValues);
 
             if ($hasNoValue && is_array($value)) {
-                foreach ($value as $v) {
-                    $this->arguments[$key][] = true;
-                }
+                $this->arguments[$key] = array_fill(0, count($value), true);
             } elseif ($hasNoValue) {
                 $this->arguments[$key] = isset($this->arguments[$key]);
             } else {
@@ -79,6 +83,8 @@ class Command
 
     /**
      * Получить аргумент
+     *
+     * @psalm-suppress PossiblyUnusedMethod
      */
     protected function getArgument(string $name): string|bool|null
     {

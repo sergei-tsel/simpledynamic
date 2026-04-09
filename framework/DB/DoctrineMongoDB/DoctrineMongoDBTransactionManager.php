@@ -9,6 +9,8 @@ use Sympledynamic\DB\TransactionManagerInterface;
 
 /**
  * Сервис для управления транзакцией DoctrineMongoDB
+ *
+ * @psalm-suppress UnusedClass
  */
 readonly class DoctrineMongoDBTransactionManager implements TransactionManagerInterface
 {
@@ -23,12 +25,15 @@ readonly class DoctrineMongoDBTransactionManager implements TransactionManagerIn
     #[\Override]
     public function run(callable $todo): mixed
     {
-        $session = $this->documentManager->getClient()->startSession();
+        $session = $this->documentManager
+            ->getClient()
+            ->startSession();
         $session->startTransaction();
 
         try {
             $result = $todo();
 
+            /** @psalm-suppress InvalidArgument */
             $this->documentManager->flush([
                 'session' => $session,
             ]);

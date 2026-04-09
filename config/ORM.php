@@ -11,6 +11,9 @@ use Illuminate\Database\Capsule\Manager;
  */
 class ORM extends Config
 {
+    /**
+     * @psalm-suppress InvalidAttribute
+     */
     #[\Override]
     protected static array  $local               = [
         'driver'    => 'mysql',
@@ -22,6 +25,9 @@ class ORM extends Config
         'collation' => 'utf8_unicode_ci',
         'prefix'    => '',
     ];
+    /**
+     * @psalm-suppress InvalidAttribute
+     */
     #[\Override]
     protected static string $filename            = '';
 

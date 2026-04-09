@@ -11,6 +11,8 @@ use Psr\Http\Message\ResponseInterface;
 
 /**
  * Клиент для отправки представления с помощью Guzzle
+ *
+ * @psalm-suppress UnusedClass
  */
 class Guzzle
 {
@@ -29,7 +31,7 @@ class Guzzle
         array  $headers = [],
         bool   $isAsync = false
     ): ResponseInterface|PromiseInterface {
-        $request = new Request($method, $url, $headers, $data);
+        $request = new Request(method: $method, uri: $url, headers: $headers, body: json_encode($data));
 
         if ($isAsync) {
             return $this->client->sendAsync($request)->wait();

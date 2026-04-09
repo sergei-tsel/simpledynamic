@@ -12,6 +12,9 @@ use Attribute;
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
 readonly class Middleware
 {
+    /**
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     public function __construct(
         private string $name,
     ) {
@@ -19,6 +22,8 @@ readonly class Middleware
 
     /**
      * Получить имя
+     *
+     * @psalm-suppress PossiblyUnusedMethod
      */
     public function getName(): string
     {

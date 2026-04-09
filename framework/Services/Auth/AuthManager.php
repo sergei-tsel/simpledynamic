@@ -9,6 +9,9 @@ use config\Cookies;
 use config\Routes;
 use config\Session;
 
+/**
+ * @psalm-suppress UnusedClass
+ */
 final class AuthManager
 {
     /**

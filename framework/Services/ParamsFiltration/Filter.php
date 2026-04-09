@@ -13,7 +13,7 @@ class Filter
      */
     public function inputVarValue(FilterArgument $arg): mixed
     {
-        return filter_input(type: $arg->getInputType()->value, var_name: $arg->getVarName(), filter: $arg->getFilterId(), options: $arg->getFlagOptions());
+        return filter_input(type: $arg->getInputType()->value, var_name: $arg->getVarName(), filter: $arg->getFilterId(), options: $arg->getFlagOptions()) ?: null;
     }
 
     /**

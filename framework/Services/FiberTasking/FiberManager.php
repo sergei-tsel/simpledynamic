@@ -8,6 +8,8 @@ use Fiber;
 
 /**
  * Сервис для управления файберами
+ *
+ * @psalm-suppress UnusedClass
  */
 class FiberManager
 {

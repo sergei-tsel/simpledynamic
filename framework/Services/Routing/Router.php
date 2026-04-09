@@ -22,6 +22,8 @@ class Router
 
     /**
      * Обработать запрос
+     *
+     * @psalm-suppress PossiblyUnusedReturnValue
      */
     public static function handle(): mixed
     {

@@ -20,13 +20,7 @@ psalm-alter:
 	vendor/bin/psalm --alter --issues=all
 
 psalm-alter-dry-run:
-	vendor/bin/psalm --alter --issues=InvalidNullableReturnType --dry-run
-
-psalm-baseline-set:
-	vendor/bin/psalm --set-baseline=psalm-baseline.xml
-
-psalm-baseline-update:
-	vendor/bin/psalm --update-baseline
+	vendor/bin/psalm --alter --issues=all --dry-run
 
 rector:
 	vendor/bin/rector process --config=rector.php

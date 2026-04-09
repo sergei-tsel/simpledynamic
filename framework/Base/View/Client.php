@@ -6,6 +6,8 @@ namespace Sympledynamic\Base\View;
 
 /**
  * Клиент
+ *
+ * @psalm-suppress UnusedClass
  */
 class Client
 {

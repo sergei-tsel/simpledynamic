@@ -6,6 +6,8 @@ namespace Sympledynamic\Base\Model;
 
 /**
  * Репозиторий
+ *
+ * @psalm-suppress UnusedClass
  */
 interface RepositoryInterface
 {

@@ -24,6 +24,8 @@ readonly class NotationManager
 
     /**
      * Получить элемент вложенного массива по нотации
+     *
+     * @psalm-suppress PossiblyUnusedMethod
      */
     public function getValue(array $data, string $path): mixed
     {
@@ -99,6 +101,8 @@ readonly class NotationManager
 
     /**
      * Перевести нотацию в многомерный массив
+     *
+     * @psalm-suppress PossiblyUnusedMethod
      */
     public function toMdsArray(array $data): array
     {

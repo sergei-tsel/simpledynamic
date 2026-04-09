@@ -8,6 +8,8 @@ use Sympledynamic\Base\View\ParserInterface;
 
 /**
  * Парсер JSON
+ *
+ * @psalm-suppress UnusedClass
  */
 class JsonParser implements ParserInterface
 {

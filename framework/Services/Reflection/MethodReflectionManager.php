@@ -23,7 +23,7 @@ class MethodReflectionManager
         $reflectionMethod = $this->create($methodName, $class);
 
         try {
-            return $reflectionMethod?->invokeArgs(new $class(), $args);
+            return $reflectionMethod?->invokeArgs($class, $args);
         } catch (ReflectionException) {
             return null;
         }
@@ -45,7 +45,15 @@ class MethodReflectionManager
         $paramsTypes = [];
 
         foreach ($reflectionParams as $reflectionParam) {
-            $paramsTypes[$reflectionParam->getName()] = $reflectionParam->getType()?->getName();
+            $paramType = $reflectionParam->getType();
+
+            if ($paramType !== null) {
+                $paramsTypes[$reflectionParam->getName()] = match (true) {
+                    $paramType instanceof \ReflectionNamedType        => $paramType->getName(),
+                    $paramType instanceof \ReflectionUnionType,
+                    $paramType instanceof \ReflectionIntersectionType => (string) $paramType,
+                };
+            }
         }
 
         return $paramsTypes;
@@ -58,14 +66,20 @@ class MethodReflectionManager
     {
         try {
             if ($class === null) {
-                return ReflectionMethod::createFromMethodName($methodName);
+                if (!str_contains($methodName, '::')) {
+                    return null;
+                }
+
+                return new ReflectionMethod($methodName);
             }
 
-            if (!new ReflectionClass($class)->hasMethod($methodName)) {
+            $reflectionClass = new ReflectionClass($class);
+
+            if (!$reflectionClass->hasMethod($methodName)) {
                 return null;
             }
 
-            return new ReflectionMethod($class, $methodName);
+            return $reflectionClass->getMethod($methodName);
         } catch (ReflectionException) {
             return null;
         }

@@ -38,6 +38,8 @@ final class ServiceContainer
 
     /**
      * Проверить наличие зарегистрированного биндинга
+     *
+     * @psalm-suppress PossiblyUnusedMethod
      */
     public function bound(string $abstract): bool
     {
