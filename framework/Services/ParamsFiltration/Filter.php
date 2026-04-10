@@ -6,7 +6,7 @@ namespace Sympledynamic\Services\ParamsFiltration;
 
 use Sympledynamic\Services\Routing\InputType;
 
-class Filter
+final class Filter
 {
     /**
      * Получить переменную из суперглобального массива и отфильтровать её при необходимости

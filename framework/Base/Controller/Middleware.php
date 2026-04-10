@@ -8,6 +8,8 @@ use Attribute;
 
 /**
  * Фильтруемый мидлвар
+ *
+ * @psalm-suppress ClassCanBeFinal
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
 readonly class Middleware

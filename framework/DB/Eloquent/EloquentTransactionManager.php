@@ -12,7 +12,7 @@ use Illuminate\Database\DatabaseManager;
  *
  * @psalm-suppress UnusedClass
  */
-readonly class EloquentTransactionManager implements TransactionManagerInterface
+final readonly class EloquentTransactionManager implements TransactionManagerInterface
 {
     public function __construct(
         private DatabaseManager $databaseManager,

@@ -8,6 +8,8 @@ use config\App;
 
 /**
  * Компонент для управления процессом регистрации и инициализации сервис-провайдеров
+ *
+ * @psalm-suppress ClassCanBeFinal
  */
 class ProviderManager
 {

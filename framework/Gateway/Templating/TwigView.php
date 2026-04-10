@@ -14,7 +14,7 @@ use Twig\Loader\FilesystemLoader;
  *
  * @psalm-suppress UnusedProperty
  */
-class TwigView extends View
+final class TwigView extends View
 {
     protected Environment $twig;
 

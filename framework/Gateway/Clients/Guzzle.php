@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
  *
  * @psalm-suppress UnusedClass
  */
-class Guzzle
+final class Guzzle
 {
     public function __construct(
         public Client $client = new Client(),

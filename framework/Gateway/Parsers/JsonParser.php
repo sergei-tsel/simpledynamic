@@ -11,7 +11,7 @@ use Sympledynamic\Base\View\ParserInterface;
  *
  * @psalm-suppress UnusedClass
  */
-class JsonParser implements ParserInterface
+final class JsonParser implements ParserInterface
 {
     /**
      * Сериализовать данные

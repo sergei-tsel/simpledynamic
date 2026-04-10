@@ -13,7 +13,7 @@ use Sympledynamic\Services\Routing\InputType;
  * @psalm-suppress UnusedProperty
  */
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
-readonly class FilterParam extends FilterArgument
+final readonly class FilterParam extends FilterArgument
 {
     /**
      * @psalm-suppress PossiblyUnusedMethod

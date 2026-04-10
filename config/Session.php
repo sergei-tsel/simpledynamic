@@ -6,6 +6,8 @@ namespace config;
 
 /**
  * Конфигурация переменных сессии
+ *
+ * @psalm-suppress ClassCanBeFinal
  */
 class Session extends Config
 {

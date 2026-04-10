@@ -6,10 +6,8 @@ namespace config;
 
 /**
  * Конфигурация приложения
- */
-/**
- * Конфигурация приложения
  *
+ * @psalm-suppress ClassCanBeFinal
  * @psalm-suppress PossiblyUnusedProperty
  */
 class App extends Config

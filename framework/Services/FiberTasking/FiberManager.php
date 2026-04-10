@@ -11,7 +11,7 @@ use Fiber;
  *
  * @psalm-suppress UnusedClass
  */
-class FiberManager
+final class FiberManager
 {
     private array $tasks = [];
 

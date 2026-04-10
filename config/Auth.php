@@ -8,6 +8,8 @@ use Random\Engine\Secure;
 
 /**
  * Конфигурация авторизации
+ *
+ * @psalm-suppress ClassCanBeFinal
  */
 class Auth extends Config
 {

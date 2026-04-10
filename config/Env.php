@@ -6,6 +6,8 @@ namespace config;
 
 /**
  * Конфигурация переменных среды
+ *
+ * @psalm-suppress ClassCanBeFinal
  */
 class Env extends Config
 {

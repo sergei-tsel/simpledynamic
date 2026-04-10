@@ -16,7 +16,7 @@ use Sympledynamic\Services\Reflection\MethodReflectionManager;
 /**
  * Роутер
  */
-class Router
+final class Router
 {
     private static ?ClassReflectionManager $reflectionManager = null;
 

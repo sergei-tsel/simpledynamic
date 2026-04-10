@@ -8,6 +8,8 @@ use Closure;
 
 /**
  * Роут
+ *
+ * @psalm-suppress ClassCanBeFinal
  */
 readonly class Route
 {

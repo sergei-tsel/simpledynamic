@@ -11,7 +11,7 @@ use ReflectionMethod;
 /**
  * Сервис для управления методами с помощью рефлексии
  */
-class MethodReflectionManager
+final class MethodReflectionManager
 {
     use InstanceableReflectionAttributes;
 

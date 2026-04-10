@@ -8,6 +8,8 @@ use Sympledynamic\Container\ProviderManager;
 
 /**
  * Базовая консольная команда
+ *
+ * @psalm-suppress ClassCanBeFinal
  */
 class Command
 {

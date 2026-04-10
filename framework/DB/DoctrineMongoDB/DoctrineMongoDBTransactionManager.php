@@ -12,7 +12,7 @@ use Sympledynamic\DB\TransactionManagerInterface;
  *
  * @psalm-suppress UnusedClass
  */
-readonly class DoctrineMongoDBTransactionManager implements TransactionManagerInterface
+final readonly class DoctrineMongoDBTransactionManager implements TransactionManagerInterface
 {
     public function __construct(
         private DocumentManager $documentManager,

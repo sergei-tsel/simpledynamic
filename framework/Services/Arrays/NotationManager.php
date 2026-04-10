@@ -7,7 +7,7 @@ namespace Sympledynamic\Services\Arrays;
 /**
  * Сервис для управления нотацией
  */
-readonly class NotationManager
+final readonly class NotationManager
 {
     public function __construct(
         private string $separator,

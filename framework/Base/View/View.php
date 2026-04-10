@@ -6,6 +6,8 @@ namespace Sympledynamic\Base\View;
 
 /**
  * Представление
+ *
+ * @psalm-suppress ClassCanBeFinal
  */
 class View
 {

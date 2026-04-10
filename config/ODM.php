@@ -10,6 +10,8 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 
 /**
  * Конфигурация подключения к базе данных для ODM
+ *
+ * @psalm-suppress ClassCanBeFinal
  */
 class ODM extends Config
 {

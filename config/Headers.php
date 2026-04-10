@@ -6,6 +6,8 @@ namespace config;
 
 /**
  * Конфигурация заголовков
+ *
+ * @psalm-suppress ClassCanBeFinal
  */
 class Headers extends Config
 {

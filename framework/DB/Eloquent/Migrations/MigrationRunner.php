@@ -10,7 +10,7 @@ use Illuminate\Database\Capsule\Manager;
 /**
  * Сервис для запуска миграций
  */
-class MigrationRunner
+final class MigrationRunner
 {
     private array $newMigrations = [];
 

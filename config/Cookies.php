@@ -6,6 +6,8 @@ namespace config;
 
 /**
  * Конфигурация куки
+ *
+ * @psalm-suppress ClassCanBeFinal
  */
 class Cookies extends Config
 {

@@ -8,6 +8,8 @@ use Illuminate\Database\Capsule\Manager;
 
 /**
  * Конфигурация подключения к базе данных для ORM
+ *
+ * @psalm-suppress ClassCanBeFinal
  */
 class ORM extends Config
 {

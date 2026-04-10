@@ -7,7 +7,7 @@ namespace Sympledynamic\Services\Logging;
 /**
  * Логгер
  */
-readonly class Logger
+final readonly class Logger
 {
     public function __construct(
         private string $logDir,

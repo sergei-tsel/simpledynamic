@@ -9,7 +9,7 @@ namespace Sympledynamic\Gateway\Clients;
  *
  * @psalm-suppress UnusedClass
  */
-class StreamContext
+final class StreamContext
 {
     /**
      * Отправить представление

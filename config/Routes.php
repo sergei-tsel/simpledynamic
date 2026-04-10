@@ -11,6 +11,8 @@ use Uri\Rfc3986\Uri;
 
 /**
  * Конфигурация роутов
+ *
+ * @psalm-suppress ClassCanBeFinal
  */
 class Routes extends Config
 {
@@ -68,7 +70,7 @@ class Routes extends Config
     /**
      * Получить Uri
      */
-    public static function getUri(): Uri
+    public static function getUri(): ?Uri
     {
         if (self::$uri === null) {
             self::$uri = new Uri(uri: $_SERVER['REQUEST_URI'], baseUrl: new Uri(self::$local['base']));

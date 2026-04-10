@@ -12,7 +12,7 @@ use SimpleXMLElement;
  *
  * @psalm-suppress UnusedClass
  */
-class XmlParser implements ParserInterface
+final class XmlParser implements ParserInterface
 {
     /**
      * Сериализовать данные

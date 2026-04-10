@@ -13,7 +13,7 @@ use ReflectionProperty;
 /**
  * Сервис для управления классом с помощью рефлексии
  */
-class ClassReflectionManager
+final class ClassReflectionManager
 {
     use InstanceableReflectionAttributes;
 
