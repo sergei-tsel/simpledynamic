@@ -13,7 +13,7 @@ if (PHP_SAPI !== 'cli') {
 
 $commands = App::getConfigPart('commands') ?? [];
 
-if ($commands === [] || !array_key_exists((string) $_SERVER['argv'][1], $commands)) {
+if (!isset($commands[$_SERVER['argv'][1]])) {
     exit(1);
 }
 

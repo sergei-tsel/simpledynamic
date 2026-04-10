@@ -16,12 +16,6 @@ ecs:
 psalm:
 	vendor/bin/psalm
 
-psalm-alter:
-	vendor/bin/psalm --alter --issues=all
-
-psalm-alter-dry-run:
-	vendor/bin/psalm --alter --issues=all --dry-run
-
 rector:
 	vendor/bin/rector process --config=rector.php
 

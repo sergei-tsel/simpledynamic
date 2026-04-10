@@ -140,6 +140,7 @@ final class FiberManager
      * Выполнить задачу в файбере
      *
      * @param array{int: array{'args': array, 'func': callable}} $steps
+     * @psalm-suppress TypeDoesNotContainType
      */
     public function performTask(array $steps): ?array
     {

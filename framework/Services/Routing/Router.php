@@ -138,7 +138,7 @@ final class Router
                 InputType::ENV,
                 InputType::SERVER  => $filter->inputVars(type: $inputType, args: $argument, addEmpty: false),
                 InputType::FILES   => $filter->vars(vars: $_FILES, args: $argument, addEmpty: false),
-                InputType::SESSION => $filter->vars(vars: $_SESSION, args: $argument, addEmpty: false),
+                InputType::SESSION => $filter->vars(vars: $_SESSION ?? [], args: $argument, addEmpty: false),
             };
         };
 

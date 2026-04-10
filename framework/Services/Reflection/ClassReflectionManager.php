@@ -20,7 +20,7 @@ final class ClassReflectionManager
     /**
      * Прочитать атрибуты
      *
-     * @return array<string, object[][]|array<string, object[][]>
+     * @return array<string, object[][]|array<string, object[][]>>
      */
     public function readAttributes(object|string $class, ?string $memberName = null, array $attributesNames = [], array $areInstanceOf = []): array
     {
@@ -64,7 +64,7 @@ final class ClassReflectionManager
     /**
      * Прочитать атрибуты члена класса
      *
-     * @return array<string, object[][]|array<string, object[][]>
+     * @return array<string, object[][]|array<string, object[][]>>
      */
     public function readMemberAttributes(object|string $class, ?string $memberName = null, array $attributesNames = [], array $areInstanceOf = []): array
     {
