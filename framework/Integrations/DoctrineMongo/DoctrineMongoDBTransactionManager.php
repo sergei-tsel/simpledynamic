@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\DB\DoctrineMongoDB;
+namespace Simpledynamic\Integrations\DoctrineMongo;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Sympledynamic\DB\TransactionManagerInterface;
+use Simpledynamic\Integrations\TransactionManagerInterface;
 
 /**
  * Сервис для управления транзакцией DoctrineMongoDB

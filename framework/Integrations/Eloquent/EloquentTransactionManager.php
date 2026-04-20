@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\DB\Eloquent;
+namespace Simpledynamic\Integrations\Eloquent;
 
-use Sympledynamic\DB\TransactionManagerInterface;
 use Illuminate\Database\DatabaseManager;
+use Simpledynamic\Integrations\TransactionManagerInterface;
 
 /**
  * Сервис для управления транзакцией Eloquent

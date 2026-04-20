@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\DB;
+namespace Simpledynamic\Integrations;
 
 /**
  * Сервис для управления транзакцией

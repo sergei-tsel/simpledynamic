@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Gateway\Templating;
+namespace Simpledynamic\Integrations\Twig;
 
 use config\App;
 use Sympledynamic\Base\View\View;
@@ -32,14 +32,11 @@ final class TwigView extends View
                 $this->twig->addExtension(new $extension());
             }
         }
-
-        parent::__construct($template);
     }
 
     /**
      * Проверить существование шаблона Twig
      */
-    #[\Override]
     public function exists(): ?View
     {
         return $this->twig->getLoader()->exists($this->template) ? $this : null;
@@ -48,7 +45,6 @@ final class TwigView extends View
     /**
      * Загрузить и интерполировать шаблон Twig
      */
-    #[\Override]
     public function render(array $data = [], ?string $blockName = null): string
     {
         $data['locale'] = App::getConfigPart('locale') ?? 'ru';

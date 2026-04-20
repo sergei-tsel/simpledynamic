@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace config;
 
+use Simpledynamic\Integrations\Twig\TwigView;
 use Sympledynamic\Base\Controller\Route;
-use Sympledynamic\Gateway\Templating\TwigView;
 use Sympledynamic\Services\Arrays\NotationManager;
 use Uri\Rfc3986\Uri;
 

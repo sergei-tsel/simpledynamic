@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Gateway\Parsers;
+namespace Simpledynamic\Services\Parsers;
 
-use Sympledynamic\Base\View\ParserInterface;
 use SimpleXMLElement;
+use Sympledynamic\Base\View\ParserInterface;
 
 /**
  * Парсер XML

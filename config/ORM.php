@@ -34,7 +34,7 @@ class ORM extends Config
     protected static string $filename            = '';
 
     protected static array $migrationDirectories = [
-        __DIR__ . '/../app/Framework/Services/DB/Eloquent/Migrations',
+        __DIR__ . '/../framework/Integrations/Eloquent/Migrations',
     ];
 
     public static function getMigrationDirectories(): array

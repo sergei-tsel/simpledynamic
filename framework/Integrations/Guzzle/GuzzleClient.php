@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Gateway\Clients;
+namespace Sympledynamic\Integrations\Guzzle;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
  *
  * @psalm-suppress UnusedClass
  */
-final class Guzzle
+final class GuzzleClient
 {
     public function __construct(
         public Client $client = new Client(),
