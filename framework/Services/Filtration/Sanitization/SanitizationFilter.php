@@ -1,0 +1,31 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Simpledynamic\Services\Filtration\Sanitization;
+
+/**
+ * Фильтр для санитизации данных
+ */
+enum SanitizationFilter: int
+{
+    private const int FILTER_UNSAFE_RAW = FILTER_UNSAFE_RAW;
+    private const int FILTER_SANITIZE_ENCODED = FILTER_SANITIZE_ENCODED;
+    private const int FILTER_SANITIZE_SPECIAL_CHARS = FILTER_SANITIZE_SPECIAL_CHARS;
+    private const int FILTER_SANITIZE_FULL_SPECIAL_CHARS = FILTER_SANITIZE_FULL_SPECIAL_CHARS;
+    private const int FILTER_SANITIZE_EMAIL = FILTER_SANITIZE_EMAIL;
+    private const int FILTER_SANITIZE_URL = FILTER_SANITIZE_URL;
+    private const int FILTER_SANITIZE_NUMBER_INT = FILTER_SANITIZE_NUMBER_INT;
+    private const int FILTER_SANITIZE_NUMBER_FLOAT = FILTER_SANITIZE_NUMBER_FLOAT;
+    private const int FILTER_SANITIZE_ADD_SLASHES = FILTER_SANITIZE_ADD_SLASHES;
+
+    case UNSAFE_RAW = self::FILTER_UNSAFE_RAW;
+    case ENCODED = self::FILTER_SANITIZE_ENCODED;
+    case SPECIAL_CHARS = self::FILTER_SANITIZE_SPECIAL_CHARS;
+    case FULL_SPECIAL_CHARS = self::FILTER_SANITIZE_FULL_SPECIAL_CHARS;
+    case EMAIL = self::FILTER_SANITIZE_EMAIL;
+    case URL = self::FILTER_SANITIZE_URL;
+    case NUMBER_INT = self::FILTER_SANITIZE_NUMBER_INT;
+    case NUMBER_FLOAT = self::FILTER_SANITIZE_NUMBER_FLOAT;
+    case ADD_SLASHES = self::FILTER_SANITIZE_ADD_SLASHES;
+}

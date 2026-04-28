@@ -8,8 +8,8 @@ use config\Routes;
 use Sympledynamic\Base\Controller\Middleware;
 use Sympledynamic\Base\Controller\Route;
 use Sympledynamic\Container\ProviderManager;
-use Sympledynamic\Services\ParamsFiltration\Filter;
-use Sympledynamic\Services\ParamsFiltration\FilterParam;
+use Sympledynamic\Services\Filtration\Filter;
+use Sympledynamic\Services\Filtration\FilterParam;
 use Sympledynamic\Services\Reflection\ClassReflectionManager;
 use Sympledynamic\Services\Reflection\MethodReflectionManager;
 
@@ -131,16 +131,21 @@ final class Router
         foreach ($filterParams as $attributeValue => $argument) {
             $inputType = InputType::tryFrom($attributeValue);
 
-            $params[$inputType->name][] = match ($inputType) {
-                InputType::POST,
-                InputType::GET,
-                InputType::COOKIE,
-                InputType::ENV,
-                InputType::SERVER  => $filter->inputVars(type: $inputType, args: $argument, addEmpty: false),
-                InputType::FILES   => $filter->vars(vars: $_FILES, args: $argument, addEmpty: false),
-                InputType::SESSION => $filter->vars(vars: $_SESSION ?? [], args: $argument, addEmpty: false),
-            };
-        };
+            if ($inputType === null) {
+                $globalArray = GlobalArray::tryFrom($attributeValue);
+
+                if ($globalArray === null) {
+                    continue;
+                }
+
+                $params[$globalArray->name][] = match ($globalArray) {
+                    GlobalArray::FILES   => $filter->vars(vars: $_FILES, args: $argument, addEmpty: false),
+                    GlobalArray::SESSION => $filter->vars(vars: $_SESSION ?? [], args: $argument, addEmpty: false),
+                };
+            } else {
+                $params[$inputType->name][] = $filter->inputVars(type: $inputType, args: $argument, addEmpty: false);
+            }
+        }
 
         return $params;
     }

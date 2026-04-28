@@ -2,18 +2,36 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Services\ParamsFiltration;
+namespace Sympledynamic\Services\Filtration;
 
 use Sympledynamic\Services\Routing\InputType;
 
 final class Filter
 {
     /**
-     * Получить переменную из суперглобального массива и отфильтровать её при необходимости
+     * Проверить, что внешняя переменная существует
+     *
+     * @psalm-suppress PossiblyUnusedMethod
+     */
+    public function inputVarExists(InputType $type, string $name): bool
+    {
+        return filter_has_var($type->value, $name);
+    }
+
+    /**
+     * Получить внешнюю переменную и отфильтровать её при необходимости
      */
     public function inputVarValue(FilterArgument $arg): mixed
     {
-        return filter_input(type: $arg->getInputType()->value, var_name: $arg->getVarName(), filter: $arg->getFilterId(), options: $arg->getFlagOptions()) ?: null;
+        if ($arg->getOptions() === null) {
+            return null;
+        }
+
+        /**
+         * @psalm-suppress NoValue
+         * @psalm-suppress InvalidArgument
+         */
+        return filter_input(type: $arg->getInputType()->value, var_name: $arg->getVarName(), filter: $arg->getFilter()->value, options: $arg->getOptions());
     }
 
     /**
@@ -21,11 +39,19 @@ final class Filter
      */
     public function varValue(string $value, FilterArgument $arg): mixed
     {
-        return filter_var(value: $value, filter: $arg->getFilterId(), options: $arg->getFlagOptions());
+        if ($arg->getOptions() === null) {
+            return $value;
+        }
+
+        /**
+         * @psalm-suppress NoValue
+         * @psalm-suppress InvalidArgument
+         */
+        return filter_var(value: $value, filter: $arg->getFilter()->value, options: $arg->getOptions());
     }
 
     /**
-     * Получить массив переменных из суперглобального массива и отфильтровать их при необходимости
+     * Получить массив внешних переменных и отфильтровать их при необходимости
      *
      * @param FilterArgument[] $args
      */
@@ -41,7 +67,7 @@ final class Filter
             ];
         }
 
-        $options = array_map(fn (FilterArgument $arg): array => $arg->getFilterFlagOptions(), $args);
+        $options = array_map(fn (FilterArgument $arg): array => $arg->getFlagOptions(), $args);
 
         return filter_input_array(type: $type->value, options: $options, add_empty: $addEmpty);
     }
@@ -67,7 +93,7 @@ final class Filter
             ];
         }
 
-        $options = array_map(fn (FilterArgument $arg): array => $arg->getFilterFlagOptions(), $args);
+        $options = array_map(fn (FilterArgument $arg): array => $arg->getFlagOptions(), $args);
 
         return filter_var_array(array: $vars, options: $options, add_empty: $addEmpty);
     }

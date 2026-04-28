@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Sympledynamic\Services\Routing;
 
 /**
- * Тип входных данных
+ * Тип внешних переменных
  */
 enum InputType: int
 {
@@ -18,8 +18,6 @@ enum InputType: int
     case POST = self::INPUT_POST;
     case GET = self::INPUT_GET;
     case COOKIE = self::INPUT_COOKIE;
-    case FILES = 3;
     case ENV = self::INPUT_ENV;
     case SERVER = self::INPUT_SERVER;
-    case SESSION = 6;
 }
