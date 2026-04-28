@@ -9,11 +9,13 @@ use Illuminate\Database\Capsule\Manager;
 /**
  * Конфигурация подключения к базе данных для ORM
  *
+ * @api
  * @psalm-suppress ClassCanBeFinal
  */
 class ORM extends Config
 {
     /**
+     * @var array<string, array<array-key, mixed>|scalar|null>
      * @psalm-suppress InvalidAttribute
      */
     #[\Override]
@@ -33,6 +35,9 @@ class ORM extends Config
     #[\Override]
     protected static string $filename            = '';
 
+    /**
+     * @var string[]
+     */
     protected static array $migrationDirectories = [
         __DIR__ . '/../framework/Integrations/Eloquent/Migrations',
     ];

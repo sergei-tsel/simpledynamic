@@ -9,11 +9,13 @@ use Random\Engine\Secure;
 /**
  * Конфигурация авторизации
  *
+ * @api
  * @psalm-suppress ClassCanBeFinal
  */
 class Auth extends Config
 {
     /**
+     * @var array<string, array<array-key, mixed>|scalar|null>
      * @psalm-suppress InvalidAttribute
      */
     #[\Override]
@@ -43,7 +45,6 @@ class Auth extends Config
         ],
         'secrets'  => [
         ],
-        '',
     ];
 
     /**
@@ -62,20 +63,25 @@ class Auth extends Config
         string $secret = '',
         string $info   = '',
     ): string {
-        $auth = self::getConfig();
-        /** @var string $algo */
-        $algo = $auth['hash']['algo'];
-        /** @var string $key */
-        $key = $secret ? $auth['secrets'][$secret] : '';
+        /** @var array{type: string[], algo: string, iterations: int, length: int} $auth */
+        $auth = self::getConfigPart('auth');
 
-        return match ($type) {
-            'base'     => hash($algo, $data),
-            'file'     => hash_file($algo, $data),
-            'nkdf'     => hash_hkdf($algo, $key, $auth['hash']['length'], $info, new Secure()->generate()),
-            'hmac'     => hash_hmac($algo, $data, $key),
-            'hmacFile' => hash_hmac_file($algo, $data, $key),
-            'pbkdf2'   => hash_pbkdf2($algo, $data, new Secure()->generate(), $auth['hash']['iterations'], $auth['hash']['length']),
-        } ?: '';
+        if (!in_array($type, $auth)) {
+            return '';
+        }
+
+        /** @var string[] $secrets */
+        $secrets = self::getConfigPart('secrets');
+
+        return (string) match ($type) {
+            'base'     => hash(algo: $auth['algo'], data: $data),
+            'file'     => hash_file(algo: $secrets['algo'], filename: $data),
+            'nkdf'     => hash_hkdf(algo: $auth['algo'], key: $secrets[$secret], length: $auth['length'], info: $info, salt: new Secure()->generate()),
+            'hmac'     => hash_hmac(algo: $auth['algo'], data: $data, key: $secrets[$secret]),
+            'hmacFile' => hash_hmac_file(algo: $auth['algo'], filename: $data, key: $secrets[$secret]),
+            'pbkdf2'   => hash_pbkdf2(algo: $auth['algo'], password: $data, salt: new Secure()->generate(), iterations: $auth['iterations'], length: $auth['length']),
+            default    => '',
+        };
     }
 
     /**
@@ -85,8 +91,9 @@ class Auth extends Config
      */
     public static function hashPassword(#[\SensitiveParameter] string $password): string
     {
-        $auth = self::getConfig();
+        /** @var array{algo: string, options: array{string, scalar}} $auth */
+        $auth = self::getConfigPart('password');
 
-        return password_hash($password, $auth['password']['algo'], $auth['password']['options']);
+        return password_hash($password, $auth['algo'], $auth['options']);
     }
 }

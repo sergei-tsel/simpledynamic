@@ -7,21 +7,51 @@ namespace config;
 /**
  * Базовая конфигурация
  */
-class Config
+abstract class Config
 {
-    protected static array $local     = [];
+    /**
+     * @var array<string, array<array-key, mixed>|scalar|null>
+     */
+    protected static array $local = [];
 
+    /**
+     * @var array<string, array<array-key, mixed>|scalar|null>
+     */
     protected static array $cache     = [];
 
     protected static string $filename = '';
 
     /**
      * Получить конфигурацию
+     *
+     * @return array<string, array<array-key, mixed>|scalar|null>
      */
     public static function getConfig(): array
     {
+        if (static::$cache !== []) {
+            return static::$cache;
+        }
+
         if (static::$filename !== '') {
-            static::$cache = array_merge(static::$local, yaml_parse_file(static::$filename));
+            $parsedYaml = yaml_parse_file(static::$filename);
+
+            if (!is_array($parsedYaml)) {
+                static::$cache = static::$local;
+                return static::$cache;
+            }
+
+            $filteredYaml = array_filter(
+                $parsedYaml,
+                fn ($value): bool => is_array($value) || is_scalar($value) || $value === null
+            );
+
+            $stringKeysYaml = [];
+            foreach ($filteredYaml as $key => $value) {
+                $stringKeysYaml[(string)$key] = $value;
+            }
+
+            static::$cache = array_merge(static::$local, $stringKeysYaml);
+            return static::$cache;
         }
 
         static::$cache = static::$local;
@@ -31,8 +61,10 @@ class Config
 
     /**
      * Получить часть конфигурации
+     *
+     * @return array|scalar|null
      */
-    public static function getConfigPart(string $name): mixed
+    public static function getConfigPart(string $name): array|string|int|float|bool|null
     {
         $config = static::getConfig();
 
@@ -60,6 +92,8 @@ class Config
 
     /**
      * Установить часть конфигурации
+     *
+     * @param array<string, callable> $parts
      */
     protected static function setConfigParts(array $parts): void
     {

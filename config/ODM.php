@@ -11,22 +11,25 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
 /**
  * Конфигурация подключения к базе данных для ODM
  *
+ * @api
  * @psalm-suppress ClassCanBeFinal
  */
 class ODM extends Config
 {
     /**
+     * @var array<string, array<array-key, mixed>|scalar|null>
      * @psalm-suppress InvalidAttribute
      */
     #[\Override]
     protected static array  $local    = [
         'hydrator'    => [
-            'directory' => './app/Model/ODM/Hydrators',
+            'directory' => './app/Models/ODM/Hydrators',
             'namespace' => 'Hydrators',
         ],
         'default_db'  => 'simpledynamic_doctrine_odm',
-        'driver_path' => '.\app\Model\ODM\Documents',
+        'driver_path' => './app/Models/ODM/Documents',
     ];
+
     /**
      * @psalm-suppress InvalidAttribute
      */
@@ -39,14 +42,17 @@ class ODM extends Config
     public static function createDoctrineMongoDB(): DocumentManager
     {
         $mongoDB = self::getConfig();
+        $hydrator = $mongoDB['hydrator'] ?? [];
+        $driverPath = is_string($mongoDB['driver_path']) ? $mongoDB['driver_path'] : './app/Models/ODM/Documents';
+        $defaultDb = is_string($mongoDB['default_db']) ? $mongoDB['default_db'] : 'simpledynamic_doctrine_odm';
 
         $config = new Configuration();
         $config->setUseNativeLazyObject(true);
-        $config->setHydratorDir($mongoDB['hydrator']['directory']);
-        $config->setHydratorNamespace($mongoDB['hydrator']['namespace']);
-        $config->setDefaultDB($mongoDB['default_db']);
+        $config->setHydratorDir((string) ($hydrator['directory'] ?? './app/Models/ODM/Hydrators'));
+        $config->setHydratorNamespace((string) ($hydrator['namespace'] ?? 'Hydrators'));
+        $config->setDefaultDB($defaultDb);
 
-        $config->setMetadataDriverImpl(AttributeDriver::create($mongoDB['driver_path']));
+        $config->setMetadataDriverImpl(AttributeDriver::create([$driverPath]));
 
         return DocumentManager::create(config: $config);
     }

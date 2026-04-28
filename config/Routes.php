@@ -7,21 +7,24 @@ namespace config;
 use Simpledynamic\Integrations\Twig\TwigView;
 use Sympledynamic\Base\Controller\Route;
 use Sympledynamic\Services\Arrays\NotationManager;
+use Sympledynamic\Services\Routing\RouterInterface;
 use Uri\Rfc3986\Uri;
 
 /**
  * Конфигурация роутов
  *
+ * @api
  * @psalm-suppress ClassCanBeFinal
  */
 class Routes extends Config
 {
     /**
+     * @var array<string, array<array-key, mixed>|scalar|null>
      * @psalm-suppress InvalidAttribute
      */
     #[\Override]
     protected static array  $local    = [
-        'base' => 'http://localhost:8000/',
+        'base' => 'http://localhost:8000',
     ];
 
     /**
@@ -30,12 +33,17 @@ class Routes extends Config
     #[\Override]
     protected static string $filename = '';
 
+    /**
+     * @var string[]
+     */
     protected static array $routers   = [];
 
     protected static ?Uri $uri = null;
 
     /**
      * Получить роуты
+     *
+     * @return Route[]
      */
     public static function get(): array
     {
@@ -51,20 +59,20 @@ class Routes extends Config
 
         if (self::$routers !== []) {
             foreach (self::$routers as $router) {
-                if (!class_exists($router)) {
-                    continue;
-                }
+                if (is_subclass_of($router, RouterInterface::class)) {
+                    $group = $router::getRoutes();
 
-                $routes = array_merge(
-                    $routes,
-                    $router::getRoutes(),
-                );
+                    $routes = array_merge(
+                        $routes,
+                        $group,
+                    );
+                }
             }
         }
 
-        return $routes
-            |> NotationManager::instanceOne('.')->fromMdsArray(...)
-            |> Route::instanceMany(...);
+        return Route::instanceMany(
+            NotationManager::instanceOne('.')->fromMdsArray($routes)
+        );
     }
 
     /**
@@ -72,11 +80,10 @@ class Routes extends Config
      */
     public static function getUri(): Uri
     {
-        if (self::$uri === null) {
-            self::$uri = new Uri(uri: $_SERVER['REQUEST_URI'], baseUrl: new Uri(self::$local['base']));
-        }
+        /** @var string $base */
+        $base = self::getConfigPart('base');
 
-        return self::$uri;
+        return self::$uri ??= new Uri(uri: $_SERVER['REQUEST_URI'] ?? '/', baseUrl: new Uri($base));
     }
 
     /**
@@ -86,7 +93,16 @@ class Routes extends Config
     {
         $route = self::getByPath();
 
+        if ($route === null) {
+            return null;
+        }
+
         $routePath = preg_filter(['#\{/u', '/}#u'], ['(?P<', '>\d+)'], $route->getPath());
+
+        if (!is_string($routePath)) {
+            return null;
+        }
+
         $routePath = '^' . $routePath . '$';
 
         $params = [];
@@ -104,8 +120,17 @@ class Routes extends Config
     {
         $routes = self::get();
 
+        if ($routes === []) {
+            return null;
+        }
+
         $filteredRoutes = array_filter($routes, function (Route $route): bool {
             $routePath = preg_replace('#\{/d+}#u', '\d+', $route->getPath());
+
+            if (!is_string($routePath)) {
+                return false;
+            }
+
             $routePath = '^' . $routePath . '$';
 
             $path = self::getUri()->getPath();
@@ -113,7 +138,13 @@ class Routes extends Config
             return mb_ereg_match($routePath, $path) && $route->getMethod() === ($_SERVER['REQUEST_METHOD'] ?? 'GET');
         });
 
-        return array_first($filteredRoutes);
+        $route = array_first($filteredRoutes);
+
+        if (!$route instanceof Route) {
+            return null;
+        }
+
+        return $route;
     }
 
     /**
