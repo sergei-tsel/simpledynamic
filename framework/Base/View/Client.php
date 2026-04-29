@@ -7,6 +7,7 @@ namespace Sympledynamic\Base\View;
 /**
  * Клиент
  *
+ * @api
  * @psalm-suppress UnusedClass
  * @psalm-suppress ClassCanBeFinal
  */

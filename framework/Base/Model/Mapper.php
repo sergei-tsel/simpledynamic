@@ -7,6 +7,7 @@ namespace Sympledynamic\Base\Model;
 /**
  * Маппер
  *
+ * @api
  * @psalm-suppress ClassCanBeFinal
  */
 class Mapper

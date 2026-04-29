@@ -9,6 +9,7 @@ use Closure;
 /**
  * Роут
  *
+ * @api
  * @psalm-suppress ClassCanBeFinal
  */
 readonly class Route
@@ -42,19 +43,22 @@ readonly class Route
             }
 
             if (is_callable($value['action'])) {
+                /** @var Closure $callableAction */
+                $callableAction = is_a($value['action'], Closure::class) ? $value['action'] : ($value['action'])(...);
+
                 $routes[$key] = new self(
-                    method: $value['method'],
-                    path: $value['path'],
-                    name: $key,
-                    action: $value['action'],
+                    method: (string) $value['method'],
+                    path: (string) $value['path'],
+                    name: (string) $key,
+                    action: $callableAction,
                 );
-            } else {
+            } elseif (is_array($value['action'])) {
                 $routes[$key] = new self(
-                    method: $value['method'],
-                    path: $value['path'],
-                    name: $key,
-                    controllerName: $value['action'][0],
-                    actionName: $value['action'][1],
+                    method: (string) $value['method'],
+                    path: (string) $value['path'],
+                    name: (string) $key,
+                    controllerName: (string) $value['action'][0],
+                    actionName: (string) $value['action'][1],
                 );
             }
         }

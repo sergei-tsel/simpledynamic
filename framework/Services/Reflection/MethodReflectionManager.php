@@ -17,13 +17,19 @@ final class MethodReflectionManager
 
     /**
      * Вызвать метод с аргументами
+     *
+     * @param object|class-string|null $class
      */
     public function invoke(string $methodName, object|string|null $class = null, array $args = []): mixed
     {
         $reflectionMethod = $this->create($methodName, $class);
 
         try {
-            return $reflectionMethod?->invokeArgs($class, $args);
+            if ($class === null || is_object($class)) {
+                return $reflectionMethod?->invokeArgs($class, $args);
+            }
+
+            return null;
         } catch (ReflectionException) {
             return null;
         }
@@ -31,6 +37,9 @@ final class MethodReflectionManager
 
     /**
      * Получить типы данных параметров метода
+     *
+     * @param object|class-string|null $class
+     * @return array<string, string>
      */
     public function getParamsTypes(string $methodName, object|string|null $class = null): array
     {
@@ -61,6 +70,8 @@ final class MethodReflectionManager
 
     /**
      * Создать объект рефлексии метода для анализа класса
+     *
+     * @param object|class-string|null $class
      */
     private function create(string $methodName, object|string|null $class = null): ?ReflectionMethod
     {

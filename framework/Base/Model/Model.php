@@ -7,6 +7,7 @@ namespace Sympledynamic\Base\Model;
 /**
  * Модель
  *
+ * @api
  * @psalm-suppress ClassCanBeFinal
  */
 class Model

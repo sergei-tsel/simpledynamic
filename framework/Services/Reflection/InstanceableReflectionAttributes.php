@@ -18,8 +18,8 @@ trait InstanceableReflectionAttributes
 {
     /**
      * Получить экземпляры множества атрибутов
-     *
-     * @return array<string, object[]>
+     * @param array<int, class-string> $attributesNames
+     * @return array<class-string, list<object|class-string>>
      */
     protected function instanceManyAttributes(
         ReflectionClass|ReflectionClassConstant|ReflectionMethod|ReflectionParameter|ReflectionProperty $reflectionEntity,
@@ -40,8 +40,10 @@ trait InstanceableReflectionAttributes
             ];
         }
 
+        /** @var array<int, object> $attributes */
         $attributes = $this->instanceAttributes(reflectionEntity: $reflectionEntity, isInstanceOf: $isInstanceOf);
 
+        /** @var array<class-string, list<object>> $filteredAttributes */
         $filteredAttributes = [];
 
         foreach ($attributes as $attribute) {
@@ -59,7 +61,7 @@ trait InstanceableReflectionAttributes
      * Получить экземпляры атрибутов
      *
      * @param class-string<T>|null $attributeName
-     * @return object[]
+     * @return list<object>
      */
     protected function instanceAttributes(
         ReflectionClass|ReflectionClassConstant|ReflectionMethod|ReflectionParameter|ReflectionProperty $reflectionEntity,
@@ -67,7 +69,7 @@ trait InstanceableReflectionAttributes
         bool                                                                                            $isInstanceOf      = false
     ): array {
         $reflectionAttributes = $reflectionEntity->getAttributes(
-            name: $attributeName ?: null,
+            name: $attributeName ?? null,
             flags: $isInstanceOf ? ReflectionAttribute::IS_INSTANCEOF : 0,
         );
 

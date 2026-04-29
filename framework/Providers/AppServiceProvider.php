@@ -12,6 +12,7 @@ use Illuminate\Database\DatabaseManager;
 /**
  * Сервис-провайдер приложения
  *
+ * @api
  * @psalm-suppress ClassCanBeFinal
  */
 class AppServiceProvider extends ServiceProvider

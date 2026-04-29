@@ -8,17 +8,27 @@ use Sympledynamic\Services\Reflection\MethodReflectionManager;
 
 /**
  * Сервис-контейнер
+ *
+ * @api
  */
 final class ServiceContainer
 {
+    /** @var array<class-string, array{concrete: callable|class-string, shared: bool}>|null[]*/
     protected array $bindings = [];
 
+    /** @var array<class-string, object>|null[] */
     protected array $instances = [];
 
+    /** @var array<int, class-string>|null[] */
     protected array $stack = [];
 
     /**
      * Зарегистрировать новый биндинг
+     *
+     * @param class-string $abstract
+     * @param callable|class-string|null $concrete
+     * @param bool $shared
+     * @return void
      */
     public function bind(string $abstract, callable|string|null $concrete = null, bool $shared = false): void
     {
@@ -30,6 +40,10 @@ final class ServiceContainer
 
     /**
      * Зарегистрировать новый общий биндинг
+     *
+     * @param class-string $abstract
+     * @param callable|class-string $concrete
+     * @return void
      */
     public function singleton(string $abstract, callable|string $concrete = ''): void
     {
@@ -48,28 +62,37 @@ final class ServiceContainer
 
     /**
      * Построить объект
+     *
+     * @param class-string $className
+     * @return object
      */
     public function build(string $className): object
     {
+        /** @var array<string, class-string> $params */
         $params = new MethodReflectionManager()->getParamsTypes(methodName: '__construct', class: $className);
 
         if ($params === []) {
+            /** @psalm-suppress MixedMethodCall */
             return new $className();
         }
 
         $dependencies = [];
 
         foreach ($params as $param) {
-            if ($param !== null && class_exists($param)) {
+            if (class_exists($param)) {
                 $dependencies[] = $this->resolveDependency($param);
             }
         }
 
+        /** @psalm-suppress MixedMethodCall */
         return new $className(...$dependencies);
     }
 
     /**
      * Разрешить объект
+     *
+     * @param class-string $className
+     * @return object
      */
     public function resolve(string $className): object
     {
@@ -88,11 +111,14 @@ final class ServiceContainer
     /**
      * Разрешить зависимости метода
      *
+     * @param class-string $className
      * @return array<object|null>
      */
     public function resolveMethodDependencies(string $className, string $methodName): array
     {
         $methodManager = new MethodReflectionManager();
+
+        /** @var array<string, class-string> $params */
         $params = $methodManager->getParamsTypes(methodName: $methodName, class: $className);
 
         if ($params === []) {
@@ -102,7 +128,7 @@ final class ServiceContainer
         $dependencies = [];
 
         foreach ($params as $param) {
-            if ($param !== null && class_exists($param)) {
+            if (class_exists($param)) {
                 $dependencies[] = $this->resolveDependency($param);
             }
         }
@@ -112,6 +138,9 @@ final class ServiceContainer
 
     /**
      * Разрешить зависимость
+     *
+     * @param class-string $name
+     * @return object|null
      */
     protected function resolveDependency(string $name): ?object
     {
@@ -125,7 +154,8 @@ final class ServiceContainer
             return $this->instances[$name];
         }
 
-        $instance = $binding['concrete'] instanceof \Closure
+        /** @var object|null $instance */
+        $instance = is_callable($binding['concrete'])
             ? $binding['concrete']($this)
             : $this->resolve($binding['concrete']);
 
@@ -133,6 +163,7 @@ final class ServiceContainer
             $this->instances[$name] = $instance;
         }
 
+        /** @psalm-suppress MixedReturnStatement */
         return $instance;
     }
 }

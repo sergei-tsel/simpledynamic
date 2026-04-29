@@ -8,17 +8,16 @@ use Sympledynamic\Container\ServiceContainer;
 
 /**
  * Базовый сервис-провайдер
+ *
+ * @api
  */
 abstract class ServiceProvider
 {
     /**
-     * @psalm-suppress PossiblyUnusedMethod
+     * @param ServiceContainer $app
      */
     public function __construct(
-        /**
-         * @var ServiceContainer
-         */
-        protected $app,
+        protected ServiceContainer $app,
     ) {
     }
 
