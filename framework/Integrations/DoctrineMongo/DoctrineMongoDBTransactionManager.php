@@ -31,6 +31,10 @@ final readonly class DoctrineMongoDBTransactionManager implements TransactionMan
         $session->startTransaction();
 
         try {
+            /**
+             * @psalm-suppress MixedAssignment
+             * @var mixed $result
+             */
             $result = $todo();
 
             /** @psalm-suppress InvalidArgument */
@@ -42,10 +46,10 @@ final readonly class DoctrineMongoDBTransactionManager implements TransactionMan
             return $result;
         } catch (\Throwable) {
             $session->abortTransaction();
+
+            return null;
         } finally {
             $session->endSession();
         }
-
-        return null;
     }
 }

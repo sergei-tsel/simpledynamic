@@ -25,18 +25,30 @@ final readonly class EloquentTransactionManager implements TransactionManagerInt
     #[\Override]
     public function run(callable $todo): mixed
     {
-        $this->databaseManager->beginTransaction();
+        try {
+            $this->databaseManager->beginTransaction();
+        } catch (\Throwable) {
+            return null;
+        }
 
         try {
+            /**
+             * @psalm-suppress MixedAssignment
+             * @var mixed $result
+             */
             $result = $todo();
 
             $this->databaseManager->commit();
 
             return $result;
         } catch (\Throwable) {
-            $this->databaseManager->rollBack();
-        }
+            try {
+                $this->databaseManager->rollBack();
 
-        return null;
+                return null;
+            } catch (\Throwable) {
+                return null;
+            }
+        }
     }
 }

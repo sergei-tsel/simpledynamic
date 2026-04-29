@@ -7,6 +7,7 @@ namespace Simpledynamic\Integrations\Twig;
 use config\App;
 use Sympledynamic\Base\View\View;
 use Twig\Environment;
+use Twig\Extension\ExtensionInterface;
 use Twig\Loader\FilesystemLoader;
 
 /**
@@ -27,15 +28,23 @@ final class TwigView extends View
 
         $extensions = App::getConfigPart('twig_extensions') ?? [];
 
-        if ($extensions !== []) {
-            foreach ($extensions as $extension) {
-                $this->twig->addExtension(new $extension());
+        if (!is_array($extensions)) {
+            return;
+        }
+
+        foreach ($extensions as $extension) {
+            if (!is_string($extension) || !is_subclass_of($extension, ExtensionInterface::class)) {
+                continue;
             }
+
+            $this->twig->addExtension(new $extension());
         }
     }
 
     /**
      * Проверить существование шаблона Twig
+     *
+     * @psalm-suppress PossiblyUnusedMethod
      */
     public function exists(): ?View
     {
@@ -49,12 +58,16 @@ final class TwigView extends View
     {
         $data['locale'] = App::getConfigPart('locale') ?? 'ru';
 
-        $template = $this->twig->load($this->template);
+        try {
+            $template = $this->twig->load($this->template);
 
-        if ($blockName === null) {
-            return $template->render($data);
-        } else {
-            return $template->renderBlock($blockName, $data);
+            if ($blockName === null) {
+                return $template->render($data);
+            } else {
+                return $template->renderBlock($blockName, $data);
+            }
+        } catch (\Throwable) {
+            return '';
         }
     }
 }

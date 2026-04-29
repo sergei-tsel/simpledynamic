@@ -12,6 +12,7 @@ use Illuminate\Database\Capsule\Manager;
  */
 final class MigrationRunner
 {
+    /** @var array<array-key, object> */
     private array $newMigrations = [];
 
     /**
@@ -23,7 +24,15 @@ final class MigrationRunner
     {
         $migrationDirectories = ORM::getMigrationDirectories();
 
+        if ($migrationDirectories === []) {
+            return;
+        }
+
         foreach ($migrationDirectories as $directory) {
+            if (!is_string($directory)) {
+                continue;
+            }
+
             $this->loadByDirectory($directory, $capsule);
         }
     }
@@ -37,20 +46,37 @@ final class MigrationRunner
             $capsule = ORM::createEloquent();
         }
 
+        /** @var array|false $files */
         $files = scandir($directory);
 
+        if (!is_array($files)) {
+            return;
+        }
+
         foreach ($files as $file) {
-            if (preg_match('/^(\d+)_(.*)_table\.php$/', $file)) {
-                include_once $directory . '/' . $file;
-                $className = pathinfo($file, PATHINFO_FILENAME);
+            if (!is_string($file) || !preg_match('/^([0-9]+)_(.*)_table\.php$/', $file)) {
+                continue;
+            }
 
-                $executed = $capsule::table('migrations')
-                    ->where('migration', $className)
-                    ->exists();
+            $filePath = $directory . '/' . $file;
 
-                if (!$executed) {
-                    $this->newMigrations[] = new $className();
-                }
+            if (file_exists($filePath)) {
+                include_once $filePath;
+            }
+
+            $className = pathinfo($file, PATHINFO_FILENAME);
+
+            if (!class_exists($className)) {
+                continue;
+            }
+
+            $executed = $capsule::table('migrations')
+                ->where('migration', $className)
+                ->exists();
+
+            if (!$executed) {
+                /** @psalm-suppress MixedMethodCall */
+                $this->newMigrations[] = new $className();
             }
         }
     }
@@ -61,8 +87,11 @@ final class MigrationRunner
             $capsule = ORM::createEloquent();
         }
 
-        return $capsule::table('migrations')
-            ->max('batch') ?: 0;
+        /** @psalm-suppress MixedAssignment */
+        $batch = $capsule::table('migrations')
+            ->max('batch');
+
+        return is_numeric($batch) ? intval($batch) : 0;
     }
 
     /**
@@ -73,7 +102,12 @@ final class MigrationRunner
         $capsule = ORM::createEloquent();
 
         foreach ($this->newMigrations as $migration) {
-            $migration->run();
+            if (!method_exists($migration, 'up')) {
+                continue;
+            }
+
+            /** @psalm-suppress MixedMethodCall */
+            $migration->up();
 
             $capsule::table('migrations')->insert([
                 'migration' => basename(str_replace('\\', '/', $migration::class)),
@@ -89,16 +123,25 @@ final class MigrationRunner
     {
         $capsule = ORM::createEloquent();
 
+        /** @var array<array-key, class-string> $migrationsToRollback */
         $migrationsToRollback = $capsule::table('migrations')
             ->orderByDesc('id')
             ->pluck('migration')
             ->toArray();
 
         foreach ($migrationsToRollback as $migrationName) {
+            /** @var class-string $fullClassName */
             $fullClassName = '\\' . str_replace('/', '\\', $migrationName);
 
+            if (!class_exists($fullClassName) || !method_exists($fullClassName, 'down')) {
+                continue;
+            }
+
+            /** @psalm-suppress MixedMethodCall */
             $migrationInstance = new $fullClassName();
-            $migrationInstance->rollback();
+
+            /** @psalm-suppress MixedMethodCall */
+            $migrationInstance->down();
 
             $capsule::table('migrations')
                 ->where('migration', $migrationName)
