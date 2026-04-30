@@ -9,6 +9,7 @@ use Sympledynamic\Container\ProviderManager;
 /**
  * Базовая консольная команда
  *
+ * @api
  * @psalm-suppress ClassCanBeFinal
  */
 class Command
@@ -20,6 +21,7 @@ class Command
      */
     protected string $description = '';
 
+    /** @var array<array-key, array<int, bool>|string|bool> */
     protected array $arguments = [];
 
     /**
@@ -31,6 +33,11 @@ class Command
 
         /** @var Command $command */
         $command = $container->resolve(static::class);
+
+        if (!method_exists($command, 'handle')) {
+            return;
+        }
+
         $command->parseCliArguments();
 
         $dependencies = $container->resolveMethodDependencies(static::class, 'handle');
@@ -68,6 +75,7 @@ class Command
             }
         }
 
+        /** @var array<array-key, array<int, bool>|string|bool> $parsedOptions */
         $parsedOptions = getopt($shortOpts, $longOpts);
 
         foreach ($parsedOptions as $key => $value) {
@@ -88,7 +96,7 @@ class Command
      *
      * @psalm-suppress PossiblyUnusedMethod
      */
-    protected function getArgument(string $name): string|bool|null
+    protected function getArgument(string $name): array|string|bool|null
     {
         return $this->arguments[$name] ?? null;
     }

@@ -7,16 +7,20 @@ require __DIR__ . '/../../../vendor/autoload.php';
 use config\App;
 use Sympledynamic\Services\CLI\Command;
 
-if (PHP_SAPI !== 'cli') {
+if (PHP_SAPI !== 'cli' || !isset($_SERVER['argv'])) {
     exit(1);
 }
 
+/** @var array<array-key, array<array-key, scalar>|scalar>|scalar|null $commands */
 $commands = App::getConfigPart('commands') ?? [];
 
-if (!isset($commands[$_SERVER['argv'][1]])) {
+if (!is_array($commands) || !isset($commands[$_SERVER['argv'][1]])) {
     exit(1);
 }
 
+/**
+ * @var array<array-key, array<array-key, class-string<Command>>|class-string<Command>> $commands
+ */
 $commandName = $commands[$_SERVER['argv'][1]];
 
 if (is_array($commandName)) {
