@@ -10,43 +10,37 @@ use config\Routes;
 use config\Session;
 
 /**
+ * Сервис для управления авторизацией
+ *
  * @psalm-suppress UnusedClass
  */
 final class AuthManager
 {
     /**
      * Авторизоваться через браузер
+     *
+     * @param array{SERVER: array{PHP_AUTH_USER: string, PHP_AUTH_PW: string}} $params
      */
     public function browse(array $params, string $hashedPassword): array
     {
         $path = explode('/', Routes::getUri()->getPath());
 
         $clientRealm = mb_ucfirst($path[1]);
-        $realms      = Auth::getConfigPart('realms');
 
-        $realm = in_array($clientRealm, $realms) ? $clientRealm : $realms[0];
+        /** @var string[] $realms */
+        $realms = Auth::getConfigPart('realms');
 
-        if (!isset($params['SERVER']['PHP_AUTH_USER'])) {
-            try {
-                throw new \Exception("401" . PHP_EOL . "Логин не передан");
-            } catch (\Throwable) {
-            } finally {
-                header("HTTP/1.1 401 Unauthorized");
-                header("WWW-Authenticate: Basic realm=\"$realm\"");
-
-                return [];
-            }
+        if (!isset($params['SERVER']['PHP_AUTH_USER']) || !in_array($clientRealm, $realms)) {
+            $this->tryThrow(message: "401" . PHP_EOL . "Логин не передан", headers: [
+                "HTTP/1.1 401 Unauthorized",
+                "WWW-Authenticate: Basic realm=\"$clientRealm\"",
+            ]);
         }
 
-        if (!password_verify((string) $params['SERVER']['PHP_AUTH_PW'], $hashedPassword)) {
-            try {
-                throw new \Exception("403" . PHP_EOL . "Логин или пароль неправильный");
-            } catch (\Throwable) {
-            } finally {
-                header("HTTP/1.1 403 Forbidden");
-
-                return [];
-            }
+        if (!password_verify($params['SERVER']['PHP_AUTH_PW'], $hashedPassword)) {
+            $this->tryThrow(message: "403" . PHP_EOL . "Логин или пароль неправильный", headers: [
+                "HTTP/1.1 403 Forbidden",
+            ]);
         }
 
         return [
@@ -56,10 +50,14 @@ final class AuthManager
 
     /**
      * Авторизоваться через форму
+     *
+     * @param array{POST: array{password: string, login: string}} $params
      */
     public function form(array $params, string $hashedPassword): array
     {
-        $hash = Auth::hash('base', session_id());
+        $hash = Auth::hash('base', $this->getSessionId());
+
+        /** @var array{hash: string, login: string} $sessionCookies */
         $sessionCookies = Session::getConfigPart('cookies');
 
         if (hash_equals($hash, $sessionCookies['hash'])) {
@@ -68,15 +66,12 @@ final class AuthManager
             ];
         }
 
-        if (!password_verify((string) $params['POST']['password'], $hashedPassword)) {
-            try {
-                throw new \Exception("403" . PHP_EOL . "Логин или пароль неправильный");
-            } catch (\Throwable) {
-            }
+        if (!password_verify($params['POST']['password'], $hashedPassword)) {
+            $this->tryThrow("403" . PHP_EOL . "Логин или пароль неправильный");
         }
 
         Session::set();
-        Cookies::set(session_id());
+        Cookies::set($this->getSessionId());
 
         return [
             'login' => $params['POST']['login'],
@@ -85,16 +80,16 @@ final class AuthManager
 
     /**
      * Авторизоваться через дайджест
+     *
+     * @param array{POST: array{secret: string, key: string}} $params
      */
     public function digest(array $params): array
     {
+        /** @var string[] $secrets */
         $secrets = Auth::getConfigPart('secrets');
 
         if (!hash_equals($secrets[$params['POST']['secret']], $params['POST']['key'])) {
-            try {
-                throw new \Exception("403" . PHP_EOL . "Секретный ключ неправильный");
-            } catch (\Throwable) {
-            }
+            $this->tryThrow("403" . PHP_EOL . "Секретный ключ неправильный");
         }
 
         return [
@@ -103,5 +98,41 @@ final class AuthManager
                 'key'    => $params['POST']['key'],
             ],
         ];
+    }
+
+    /**
+     * Получить идентификатор доступа
+     */
+    protected function getSessionId(): string
+    {
+        $sessionId = session_id();
+
+        if ($sessionId === false) {
+            $this->tryThrow("403" . PHP_EOL . "Ошибка при получении идентификатора доступа");
+        }
+
+        /** @var string $sessionId */
+        return $sessionId;
+    }
+
+    /**
+     * Выбросить исключение в try-catch-finally
+     *
+     * @param array<array-key, non-empty-string> $headers
+     */
+    protected function tryThrow(string $message, array $headers = []): array
+    {
+        try {
+            throw new \Exception($message);
+        } catch (\Throwable) {
+        } finally {
+            if ($headers !== []) {
+                foreach ($headers as $header) {
+                    header($header);
+                }
+            }
+
+            return [];
+        }
     }
 }

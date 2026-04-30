@@ -10,14 +10,17 @@ namespace Sympledynamic\Services\Arrays;
 final readonly class NotationManager
 {
     public function __construct(
-        private string $separator,
+        /** @var non-empty-string */
+        private string $separator = '.',
     ) {
     }
 
     /**
      * Создать сервис для управления нотацией с переданным сепаратором
+     *
+     * @param non-empty-string $separator
      */
-    public static function instanceOne(string $separator): NotationManager
+    public static function instanceOne(string $separator = '.'): NotationManager
     {
         return new self($separator);
     }
@@ -37,6 +40,7 @@ final readonly class NotationManager
                 return null;
             }
 
+            /** @var array|scalar|null $value */
             $value = $value[$key];
         }
 
@@ -45,6 +49,8 @@ final readonly class NotationManager
 
     /**
      * Положить элемент во вложенный массив по нотации
+     *
+     * @param object|array|scalar|null $value
      */
     public function setValue(array &$data, string $path, mixed $value): void
     {
@@ -56,16 +62,17 @@ final readonly class NotationManager
         $level = &$data;
 
         foreach ($keys as $index => $key) {
-            if ($index !== count($keys) - 1) {
-                if (!isset($level[$key]) || !is_array($level[$key])) {
-                    $level[$key] = [];
-                }
-
-                $level = &$level[$key];
+            if ($index === count($keys) - 1) {
+                $level[$key] = $value;
+                return;
             }
-        }
 
-        $level[end($keys)] = $value;
+            if (!isset($level[$key]) || !is_array($level[$key])) {
+                $level[$key] = [];
+            }
+
+            $level = &$level[$key];
+        }
     }
 
     /**
@@ -83,6 +90,7 @@ final readonly class NotationManager
         ];
 
         for ($i = 0; count($groups[$i] ?? []) > 0; $i++) {
+            /** @var array|scalar|null $value */
             foreach ($groups[$i] as $path => $value) {
                 if (!is_array($value) || $value === [] || array_any($value, fn ($item): bool => !is_array($item))) {
                     $result[$path] = $value;
@@ -90,6 +98,7 @@ final readonly class NotationManager
                     continue;
                 }
 
+                /** @var array|scalar|null $item */
                 foreach ($value as $key => $item) {
                     $groups[++$i][$path . $this->separator . $key] = $item;
                 }
@@ -112,8 +121,12 @@ final readonly class NotationManager
 
         $result = [];
 
+        /**
+         * @var string $path
+         * @var string $value
+         */
         foreach ($data as $path => $value) {
-            $this->setValue($result, $path, $value);
+            $this->setValue(data: $result, path: $path, value: $value);
         }
 
         return $result;

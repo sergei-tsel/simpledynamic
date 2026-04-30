@@ -29,15 +29,12 @@ final class XmlParser implements ParserInterface
     #[\Override]
     public function embed(string $resourceData, array $data): array
     {
-        if (!simplexml_load_string($resourceData)->valid()) {
+        $xmlElement = simplexml_load_string($resourceData);
+
+        if ($xmlElement === false || !$xmlElement->valid()) {
             return $data;
         }
 
-        return array_merge(
-            $data,
-            get_object_vars(
-                simplexml_load_string($resourceData)
-            )
-        );
+        return array_merge($data, get_object_vars($xmlElement));
     }
 }

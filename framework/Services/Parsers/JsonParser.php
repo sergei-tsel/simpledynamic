@@ -32,6 +32,6 @@ final class JsonParser implements ParserInterface
             return $data;
         }
 
-        return array_merge($data, json_decode($resourceData, true));
+        return array_merge($data, (array) json_decode($resourceData, true));
     }
 }
