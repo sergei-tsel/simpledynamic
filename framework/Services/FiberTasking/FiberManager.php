@@ -13,6 +13,7 @@ use Fiber;
  */
 final class FiberManager
 {
+    /** @var array<string, array{fiber: Fiber, params: array, resumes: array, returns: array}> */
     private array $tasks = [];
 
     /**
@@ -43,7 +44,7 @@ final class FiberManager
     public function start(string $name): mixed
     {
         $task = $this->tasks[$name];
-        /** @var Fiber $fiber */
+
         $fiber = $task['fiber'];
 
         return $fiber->start(...$task['params']);
@@ -54,10 +55,13 @@ final class FiberManager
      */
     public function resume(string $name, mixed $value = null): mixed
     {
-        /** @var Fiber $fiber */
         $fiber = $this->tasks[$name]['fiber'];
 
-        return $fiber->resume($value);
+        try {
+            return $fiber->resume($value);
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     /**
@@ -65,10 +69,13 @@ final class FiberManager
      */
     public function throw(string $name, \Throwable $exception): mixed
     {
-        /** @var Fiber $fiber */
         $fiber = $this->tasks[$name]['fiber'];
 
-        return $fiber->throw($exception);
+        try {
+            return $fiber->throw($exception);
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     /**
@@ -76,7 +83,6 @@ final class FiberManager
      */
     public function getReturn(string $name): mixed
     {
-        /** @var Fiber $fiber */
         $fiber = $this->tasks[$name]['fiber'];
 
         return $fiber->getReturn();
@@ -87,7 +93,6 @@ final class FiberManager
      */
     public function isStarted(string $name): bool
     {
-        /** @var Fiber $fiber */
         $fiber = $this->tasks[$name]['fiber'];
 
         return $fiber->isStarted();
@@ -98,7 +103,6 @@ final class FiberManager
      */
     public function isSuspended(string $name): bool
     {
-        /** @var Fiber $fiber */
         $fiber = $this->tasks[$name]['fiber'];
 
         return $fiber->isSuspended();
@@ -117,7 +121,6 @@ final class FiberManager
      */
     public function isTerminated(string $name): bool
     {
-        /** @var Fiber $fiber */
         $fiber = $this->tasks[$name]['fiber'];
 
         return $fiber->isTerminated();
@@ -125,6 +128,8 @@ final class FiberManager
 
     /**
      * Приостановить выполнение файбера, в котором вызов
+     *
+     * @param array|null|object|scalar $value
      */
     public function suspend(mixed $value = null): mixed
     {
@@ -139,10 +144,9 @@ final class FiberManager
     /**
      * Выполнить задачу в файбере
      *
-     * @param array{int: array{'args': array, 'func': callable}} $steps
-     * @psalm-suppress TypeDoesNotContainType
+     * @param array{int: array{'args': array, 'func': callable}}|null[] $steps
      */
-    public function performTask(array $steps): ?array
+    public function performTask(array $steps): mixed
     {
         if ($steps === []) {
             return null;
@@ -150,22 +154,28 @@ final class FiberManager
 
         $taskResult = null;
 
-        for ($i = 0; $i < count($steps); $i++) {
+        /** @var array<int, array{'args': array, 'func': callable}> $steps */
+        $stepsCount = count($steps);
+        for ($i = 0; $i < $stepsCount; $i++) {
+            /** @var object|array|scalar|null $stepResult */
             $stepResult = $steps[$i]['func'](...$steps[$i]['args']);
-            $suspendParams = $this->suspend($stepResult);
 
-            if (isset($steps[$i + 1])) {
+            /** @var object|array|scalar|null $suspendParams */
+            $suspendParams = $this->suspend($stepResult) ?? null;
+
+            $nextIndex = $i + 1;
+            if (isset($steps[$nextIndex]) && $nextIndex > 0) {
                 if (is_array($stepResult) && $stepResult !== []) {
-                    $steps[$i + 1]['args'] = array_merge($steps[$i + 1]['args'], $stepResult);
+                    $steps[$nextIndex]['args'] = array_merge($steps[$nextIndex]['args'], $stepResult);
                 }
 
                 if (is_array($suspendParams) && $suspendParams !== []) {
-                    $steps[$i + 1]['args'] = array_merge($steps[$i + 1]['args'], $suspendParams);
+                    $steps[$nextIndex]['args'] = array_merge($steps[$nextIndex]['args'], $suspendParams);
                 }
             } else {
                 $taskResult = $stepResult;
             }
-        };
+        }
 
         return $taskResult;
     }
@@ -176,13 +186,13 @@ final class FiberManager
     public function execute(): void
     {
         foreach ($this->tasks as &$task) {
-            /** @var Fiber $fiber */
             $fiber = $task['fiber'];
 
             try {
+                /** @psalm-suppress MixedAssignment */
                 $task['returns'][] = match (true) {
                     !$fiber->isStarted()   => $fiber->start(...$task['params']),
-                    $fiber->isSuspended()  => $fiber->resume(empty($task['resumes']) ? null : array_shift($task['resumes'])),
+                    $fiber->isSuspended()  => $fiber->resume(array_shift($task['resumes'])),
                     $fiber->isTerminated() => $fiber->getReturn(),
                 };
             } catch (\Throwable) {
