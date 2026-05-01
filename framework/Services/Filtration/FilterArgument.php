@@ -29,6 +29,7 @@ readonly class FilterArgument
     public function __construct(
         private AlternativeFilter|SanitizationFilter|ValidationFilter $filter,
         private array                                                 $flags     = [],
+        /** @var array<string, mixed> */
         private array                                                 $options   = [],
         private ?InputType                                            $inputType = null,
         private ?string                                               $varName   = null,
@@ -66,24 +67,38 @@ readonly class FilterArgument
     /**
      * Получить ассоциативный массив с фильтром, флагами и опциями
      *
-     * @return array{filter: int, flags?: array<int, int>, options?: Closure|array<string, int|float|string>|null}
+     * @return array{filter: 514|515|516|517|518|519|520|522|523|1024, flags?: array<array-key, int>, options?: Closure|array<array-key, mixed>|null}
      */
     public function getFlagOptions(): array
     {
-        return $this->filter === AlternativeFilter::CALLBACK
-            ? [
+        if ($this->filter === AlternativeFilter::CALLBACK) {
+            return [
                 'filter'  => $this->filter->value,
                 'options' => $this->callback,
-              ]
-            : array_merge([
-                'filter'  => $this->filter->value,
-              ], $this->validateFlagOptions());
+            ];
+        }
+
+        $validated = $this->validateFlagOptions();
+
+        $flagOptions = [
+            'filter'  => $this->filter->value,
+        ];
+
+        if (isset($validated['flags'])) {
+            $flagOptions['flags'] = $validated['flags'];
+        }
+
+        if (isset($validated['options'])) {
+            $flagOptions['options'] = $validated['options'];
+        }
+
+        return $flagOptions;
     }
 
     /**
      * Получить ассоциативный массив с флагами и опциями
      *
-     * @return array{flags?: array, options?: array<string, int|float|string>}
+     * @return array{flags?: array<array-key, int>, options?: array<string, mixed>}
      */
     protected function validateFlagOptions(): array
     {
@@ -99,8 +114,8 @@ readonly class FilterArgument
             $flagOptions['flags'] = array_filter(array_map(fn (\BackedEnum $flag): int => (int) $flag->value, $this->flags), fn (int $flag): bool => in_array($flag, $map['flags']));
         }
 
-        if ($this->options !== []) {
-            $flagOptions['options'] = array_filter($this->options, fn (string $key): bool => in_array($key, $map['options']), ARRAY_FILTER_USE_KEY);
+        if ($this->options !== [] && isset($map['options'])) {
+            $flagOptions['options'] = array_filter($this->options, fn (string $key): bool => in_array($key, $map['options'], true), ARRAY_FILTER_USE_KEY, );
         }
 
         return $flagOptions;
@@ -109,7 +124,7 @@ readonly class FilterArgument
     /**
      * Получить карту поддерживаемых флагов и опций фильтра
      *
-     * @return array{flags: list<int>, options?: list<string>}
+     * @return array<'flags'|'options', list{0?: GenericFilterFlag::FLAG_NONE|int|string,...}>
      */
     protected function getFilterMap(): array
     {
@@ -185,7 +200,7 @@ readonly class FilterArgument
         }
 
         return [
-            'flags'   => array_map(fn (IntFilterFlag|FloatFilterFlag|UrlFilterFlag|DomainFilterFlag|EmailFilterFlag|IpFilterFlag $flag): int => $flag->value, $flagOptions['flags']),
+            'flags'   => array_map(fn (IntFilterFlag|FloatFilterFlag|UrlFilterFlag|DomainFilterFlag|EmailFilterFlag|IpFilterFlag $flag): int => $flag->value, $flagOptions['flags'] ?? []),
             'options' => array_map(fn (ValidationFilterOption|IntFilterOption|FloatFilterOption|RegexpFilterOption $option): string => $option->value, $options),
         ];
     }

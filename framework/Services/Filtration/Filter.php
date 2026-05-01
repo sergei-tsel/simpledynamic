@@ -21,13 +21,14 @@ final class Filter
     /**
      * Получить внешнюю переменную и отфильтровать её при необходимости
      */
-    public function inputVarValue(FilterArgument $arg): mixed
+    public function inputVarValue(FilterArgument $arg): array|string|float|int|bool|null
     {
-        if ($arg->getOptions() === null) {
+        if ($arg->getInputType() === null || $arg->getVarName() === null || $arg->getOptions() === null) {
             return null;
         }
 
         /**
+         * @psalm-suppress PossiblyNullPropertyFetch
          * @psalm-suppress NoValue
          * @psalm-suppress InvalidArgument
          */
@@ -37,7 +38,7 @@ final class Filter
     /**
      * Отфильтровать переменную при необходимости
      */
-    public function varValue(string $value, FilterArgument $arg): mixed
+    public function varValue(array|string|float|int|bool|null $value, FilterArgument $arg): array|string|float|int|bool|null
     {
         if ($arg->getOptions() === null) {
             return $value;
@@ -62,8 +63,11 @@ final class Filter
         }
 
         if (count($args) === 1) {
+            /** @var FilterArgument $arg */
+            $arg = array_first($args);
+
             return [
-                array_key_first($args) => $this->inputVarValue(arg: array_first($args)),
+                array_key_first($args) => $this->inputVarValue(arg: $arg),
             ];
         }
 
@@ -75,6 +79,7 @@ final class Filter
     /**
      * Отфильтровать массив переменных при необходимости
      *
+     * @param array<array-key, array|string|float|int|bool|null> $vars
      * @param FilterArgument[] $args
      */
     public function vars(array $vars, array $args, bool $addEmpty = true): array|false|null
@@ -88,8 +93,14 @@ final class Filter
         }
 
         if (count($vars) === 1) {
+            /** @var array|string|float|int|bool|null $var */
+            $var = array_first($vars);
+
+            /** @var FilterArgument $arg */
+            $arg = array_first($args);
+
             return [
-                array_key_first($args) => $this->varValue(value: array_first($vars), arg: array_first($args)),
+                array_key_first($args) => $this->varValue(value: $var, arg: $arg),
             ];
         }
 
