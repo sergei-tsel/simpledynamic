@@ -20,7 +20,13 @@ final class ClassReflectionManager
     /**
      * Прочитать атрибуты
      *
-     * @return array<string, object[][]|array<string, object[][]>>
+     * @param object|class-string $class
+     * @param array<string, array<int, class-string>|null> $attributesNames
+     * @return array{
+     *     class?: array<class-string, list<object>>,
+     *     member?: array<class-string, list<object>>,
+     *     params?: array<non-empty-string, array<class-string, list<object>>>
+     * }
      */
     public function readAttributes(object|string $class, ?string $memberName = null, array $attributesNames = [], array $areInstanceOf = []): array
     {
@@ -64,9 +70,11 @@ final class ClassReflectionManager
     /**
      * Прочитать атрибуты члена класса
      *
-     * @return array<string, object[][]|array<string, object[][]>>
+     * @param object|class-string $class
+     * @param array<string, array<int, class-string>|null> $attributesNames
+     * @return array{member?: array<class-string, list<object>>, params?: array<non-empty-string, array<class-string, list<object>>>}
      */
-    public function readMemberAttributes(object|string $class, ?string $memberName = null, array $attributesNames = [], array $areInstanceOf = []): array
+    public function readMemberAttributes(object|string $class, string $memberName, array $attributesNames = [], array $areInstanceOf = []): array
     {
         if (!$class instanceof ReflectionClass) {
             $class = $this->create($class);
@@ -76,17 +84,22 @@ final class ClassReflectionManager
             }
         }
 
+        /**
+         * @var ReflectionClass $class
+         */
         $classMember = $this->createMember(class: $class, memberName: $memberName);
 
         if ($classMember === null) {
             return [];
         }
 
-        $attributes['member'] = $this->instanceManyAttributes(
-            reflectionEntity: $classMember,
-            attributesNames: $attributesNames['member'] ?? [],
-            isInstanceOf: !empty($areInstanceOf['member']),
-        );
+        $attributes = [
+            'member' => $this->instanceManyAttributes(
+                reflectionEntity: $classMember,
+                attributesNames: $attributesNames['member'] ?? [],
+                isInstanceOf: !empty($areInstanceOf['member']),
+            ),
+        ];
 
         if ($classMember instanceof ReflectionMethod && array_key_exists('params', $attributesNames)) {
             foreach ($classMember->getParameters() as $reflectionParam) {
@@ -103,6 +116,9 @@ final class ClassReflectionManager
 
     /**
      * Создать объект рефлексии класса
+     *
+     * @param object|class-string $class
+     * @return ReflectionClass|null
      */
     private function create(object|string $class): ?ReflectionClass
     {
@@ -115,6 +131,8 @@ final class ClassReflectionManager
 
     /**
      * Создать объект рефлексии члена класса
+     *
+     * @param object|class-string $class
      */
     private function createMember(object|string $class, string $memberName): ReflectionClass|ReflectionClassConstant|ReflectionMethod|ReflectionProperty|null
     {
@@ -123,14 +141,15 @@ final class ClassReflectionManager
         }
 
         try {
+            /** @var ReflectionClass $class */
             return match (true) {
-                $memberName === '__construct'                  => $class->getConstructor(),
-                $class->hasMethod($memberName)                 => $class->getMethod($memberName),
-                $class->hasProperty($memberName)               => $class->getProperty($memberName),
-                $class->hasConstant($memberName)               => $class->getReflectionConstant($memberName) ?: null,
-                $class->isSubclassOf($memberName),
-                in_array($memberName, $class->getTraitNames()) => $this->create($class),
-                default                                        => null,
+                $memberName === '__construct'                                   => $class->getConstructor(),
+                $class->hasMethod($memberName)                                  => $class->getMethod($memberName),
+                $class->hasProperty($memberName)                                => $class->getProperty($memberName),
+                $class->hasConstant($memberName)                                => $class->getReflectionConstant($memberName) ?: null,
+                class_exists($memberName) && $class->isSubclassOf($memberName),
+                in_array($memberName, $class->getTraitNames())                  => $this->create($class),
+                default                                                         => null,
             };
         } catch (ReflectionException) {
             return null;
