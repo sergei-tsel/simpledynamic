@@ -36,6 +36,31 @@ final class MethodReflectionManager
     }
 
     /**
+     * Получить имена параметров метода
+     *
+     * @param object|class-string|null $class
+     * @return array<int, string>
+     */
+    public function getParamsNames(string $methodName, object|string|null $class = null): array
+    {
+        $reflectionMethod = $this->create($methodName, $class);
+
+        if ($reflectionMethod === null) {
+            return [];
+        }
+
+        $reflectionParams = $reflectionMethod->getParameters();
+
+        $paramsNames = [];
+
+        foreach ($reflectionParams as $reflectionParam) {
+            $paramsNames[] = $reflectionParam->getName();
+        }
+
+        return $paramsNames;
+    }
+
+    /**
      * Получить типы данных параметров метода
      *
      * @param object|class-string|null $class

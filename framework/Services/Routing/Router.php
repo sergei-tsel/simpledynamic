@@ -18,7 +18,7 @@ use Sympledynamic\Services\Reflection\MethodReflectionManager;
  */
 final class Router
 {
-    private static ClassReflectionManager $reflectionManager;
+    private static ClassReflectionManager $classReflectionManager;
 
     /**
      * Обработать запрос
@@ -57,12 +57,12 @@ final class Router
      *
      * @param class-string $controllerName
      */
-    public static function call(string $controllerName, string $methodName): mixed
+    private static function call(string $controllerName, string $methodName): mixed
     {
-        self::$reflectionManager = new ClassReflectionManager();
+        self::$classReflectionManager = new ClassReflectionManager();
 
         /** @var array<string, array<class-string<Middleware>, list<Middleware>>> $actionAttributes */
-        $actionAttributes = self::$reflectionManager->readAttributes(class: $controllerName, memberName: $methodName, attributesNames: [
+        $actionAttributes = self::$classReflectionManager->readAttributes(class: $controllerName, memberName: $methodName, attributesNames: [
             'class'  => [
                 Middleware::class,
             ],
@@ -93,7 +93,7 @@ final class Router
     private static function callMiddleware(string $name, array $handledParams = []): array
     {
         /** @var array<string, array<class-string<FilterParam>, list<FilterParam>>> $params */
-        $params = self::$reflectionManager->readAttributes(
+        $params = self::$classReflectionManager->readAttributes(
             class: $name,
             memberName: 'handle',
             attributesNames: [
@@ -129,24 +129,28 @@ final class Router
      */
     private static function callControllerMethod(string $controllerName, string $methodName, array $handledParams = []): mixed
     {
-        /** @var array<string, array<class-string<FilterParam>, list<FilterParam>>> $inputParams */
-        $inputParams = self::$reflectionManager->readAttributes(
-            class: $controllerName,
-            memberName: $methodName,
-            attributesNames: [
-                'member' => [
-                    FilterParam::class,
-                ],
-            ],
-        );
-
         $params = Routes::getPathParams() ?? [];
 
-        $params['request'] = array_merge($handledParams, self::filterInputParams(filterParams: $inputParams['member'][FilterParam::class]));
+        $methodReflectionManager = new MethodReflectionManager();
+
+        if (in_array('request', $methodReflectionManager->getParamsNames($methodName, $controllerName))) {
+            /** @var array<string, array<class-string<FilterParam>, list<FilterParam>>> $inputParams */
+            $inputParams = self::$classReflectionManager->readAttributes(
+                class: $controllerName,
+                memberName: $methodName,
+                attributesNames: [
+                    'member' => [
+                        FilterParam::class,
+                    ],
+                ],
+            );
+
+            $params['request'] = array_merge($handledParams, self::filterInputParams(filterParams: $inputParams['member'][FilterParam::class]));
+        }
 
         $container = new ProviderManager()->buildContainer();
 
-        return new MethodReflectionManager()->invoke(methodName: $methodName, class: $container->resolve($controllerName), args: $params);
+        return $methodReflectionManager->invoke(methodName: $methodName, class: $container->resolve($controllerName), args: $params);
     }
 
     /**
