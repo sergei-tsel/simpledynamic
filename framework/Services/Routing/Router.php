@@ -18,7 +18,7 @@ use Sympledynamic\Services\Reflection\MethodReflectionManager;
  */
 final class Router
 {
-    private static ?ClassReflectionManager $reflectionManager = null;
+    private static ClassReflectionManager $reflectionManager;
 
     /**
      * Обработать запрос
@@ -33,42 +33,66 @@ final class Router
             return null;
         }
 
-        if ($route->getAction() !== null) {
-            return $route->getAction()->call($route);
+        $action = $route->getAction();
+
+        if ($action instanceof \Closure) {
+            return $action->call($route);
         }
 
+        $controllerName = $route->getControllerName();
+
+        if ($controllerName === null || !class_exists($controllerName) || !method_exists($controllerName, $action)) {
+            return null;
+        }
+
+        /**
+         * @var class-string
+         * @var string $action
+         */
+        return self::call(controllerName: $controllerName, methodName: $action);
+    }
+
+    /**
+     * Вызвать экшен
+     *
+     * @param class-string $controllerName
+     */
+    public static function call(string $controllerName, string $methodName): mixed
+    {
         self::$reflectionManager = new ClassReflectionManager();
 
-        $actionAttributes = self::$reflectionManager->readAttributes(class: $route->getControllerName(), memberName: $route->getActionName(), attributesNames: [
+        /** @var array<string, array<class-string<Middleware>, list<Middleware>>> $actionAttributes */
+        $actionAttributes = self::$reflectionManager->readAttributes(class: $controllerName, memberName: $methodName, attributesNames: [
             'class'  => [
                 Middleware::class,
             ],
             'member' => [
                 Middleware::class,
-                FilterParam::class,
             ],
         ]);
 
         $handledParams = [];
 
-        /** @var Middleware $attribute */
         foreach ($actionAttributes['class'][Middleware::class] as $attribute) {
             $handledParams = self::callMiddleware(name: $attribute->getName(), handledParams: $handledParams);
         }
 
-        /** @var Middleware $attribute */
         foreach ($actionAttributes['member'][Middleware::class] as $attribute) {
             $handledParams = self::callMiddleware(name: $attribute->getName(), handledParams: $handledParams);
         }
 
-        return self::callAction(route: $route, handledParams: $handledParams);
+        return self::callControllerMethod(controllerName: $controllerName, methodName: $methodName, handledParams: $handledParams);
     }
+
 
     /**
      * Вызвать мидлвар
+     *
+     * @param class-string $name
      */
     private static function callMiddleware(string $name, array $handledParams = []): array
     {
+        /** @var array<string, array<class-string<FilterParam>, list<FilterParam>>> $params */
         $params = self::$reflectionManager->readAttributes(
             class: $name,
             memberName: 'handle',
@@ -85,19 +109,30 @@ final class Router
         $container = new ProviderManager()->buildContainer();
         $dependencies = $container->resolveMethodDependencies(className: $name, methodName: 'handle');
 
+        /** @psalm-suppress MixedMethodCall */
         $middleware = new $name();
 
-        return array_merge($handledParams, $middleware->handle($params, ...$dependencies));
+        /** @psalm-suppress MixedMethodCall */
+        $middlewareHandledParams = $middleware->handle($params, ...$dependencies);
+
+        if (!is_array($middlewareHandledParams)) {
+            return [];
+        }
+
+        return array_merge($handledParams, $middlewareHandledParams);
     }
 
     /**
-     * Вызвать экшен
+     * Вызвать метод контроллера
+     *
+     * @param class-string $controllerName
      */
-    private static function callAction(Route $route, array $handledParams = []): mixed
+    private static function callControllerMethod(string $controllerName, string $methodName, array $handledParams = []): mixed
     {
+        /** @var array<string, array<class-string<FilterParam>, list<FilterParam>>> $inputParams */
         $inputParams = self::$reflectionManager->readAttributes(
-            class: $route->getControllerName(),
-            memberName: $route->getActionName(),
+            class: $controllerName,
+            memberName: $methodName,
             attributesNames: [
                 'member' => [
                     FilterParam::class,
@@ -105,19 +140,19 @@ final class Router
             ],
         );
 
-        $params = Routes::getPathParams();
+        $params = Routes::getPathParams() ?? [];
 
-        if ($route->getMethod() === 'POST') {
-            $params['request'] = array_merge($handledParams, self::filterInputParams(filterParams: $inputParams['member'][FilterParam::class]));
-        }
+        $params['request'] = array_merge($handledParams, self::filterInputParams(filterParams: $inputParams['member'][FilterParam::class]));
 
         $container = new ProviderManager()->buildContainer();
 
-        return new MethodReflectionManager()->invoke(methodName: $route->getActionName(), class: $container->resolve($route->getControllerName()), args: $params);
+        return new MethodReflectionManager()->invoke(methodName: $methodName, class: $container->resolve($controllerName), args: $params);
     }
 
     /**
      * Отфильтровать внешние параметры
+     *
+     * @param array<int, FilterParam> $filterParams
      */
     private static function filterInputParams(array $filterParams): array
     {
@@ -128,22 +163,24 @@ final class Router
         $filter = new Filter();
         $params = [];
 
-        foreach ($filterParams as $attributeValue => $argument) {
-            $inputType = InputType::tryFrom($attributeValue);
+        foreach ($filterParams as $filterParam) {
+            $inputType = $filterParam->getInputType();
 
             if ($inputType === null) {
-                $globalArray = GlobalArray::tryFrom($attributeValue);
+                $varName = $filterParam->getVarName();
 
-                if ($globalArray === null) {
+                if ($varName === null) {
                     continue;
                 }
 
-                $params[$globalArray->name][] = match ($globalArray) {
-                    GlobalArray::FILES   => $filter->vars(vars: $_FILES, args: $argument, addEmpty: false),
-                    GlobalArray::SESSION => $filter->vars(vars: $_SESSION ?? [], args: $argument, addEmpty: false),
+                $params[$filterParam->getType()->name][] = match ($filterParam->getType()) {
+                    GlobalArray::FILES   => isset($_FILES[$varName]) ? $filter->varValue(value: $_FILES[$varName], arg: $filterParam) : null,
+                    GlobalArray::SESSION => isset($_SESSION[$varName]) && (is_array($_SESSION[$varName]) || is_scalar($_SESSION[$varName]))
+                        ? $filter->varValue(value: $_SESSION[$varName], arg: $filterParam)
+                        : null,
                 };
             } else {
-                $params[$inputType->name][] = $filter->inputVars(type: $inputType, args: $argument, addEmpty: false);
+                $params[$inputType->name][] = $filter->inputVarValue(arg: $filterParam);
             }
         }
 

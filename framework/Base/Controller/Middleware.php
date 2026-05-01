@@ -19,6 +19,7 @@ readonly class Middleware
      * @psalm-suppress PossiblyUnusedMethod
      */
     public function __construct(
+        /** @var class-string */
         private string $name,
     ) {
     }
@@ -27,6 +28,7 @@ readonly class Middleware
      * Получить имя
      *
      * @psalm-suppress PossiblyUnusedMethod
+     * @return class-string
      */
     public function getName(): string
     {

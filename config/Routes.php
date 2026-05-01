@@ -7,7 +7,6 @@ namespace config;
 use Simpledynamic\Integrations\Twig\TwigView;
 use Sympledynamic\Base\Controller\Route;
 use Sympledynamic\Services\Arrays\NotationManager;
-use Sympledynamic\Services\Routing\RouterInterface;
 use Uri\Rfc3986\Uri;
 
 /**
@@ -59,12 +58,14 @@ class Routes extends Config
 
         if (self::$routers !== []) {
             foreach (self::$routers as $router) {
-                if (is_subclass_of($router, RouterInterface::class)) {
-                    $group = $router::getRoutes();
-
+                if (class_exists($router) && method_exists($router, 'getRoutes')) {
+                    /**
+                     * @psalm-suppress MixedArgument
+                     * @psalm-suppress MixedMethodCall
+                     */
                     $routes = array_merge(
                         $routes,
-                        $group,
+                        $router::getRoutes(),
                     );
                 }
             }

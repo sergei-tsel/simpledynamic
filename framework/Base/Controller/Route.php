@@ -15,12 +15,12 @@ use Closure;
 readonly class Route
 {
     public function __construct(
-        private string   $method,
-        private string   $path,
-        private string   $name,
-        private ?Closure $action         = null,
-        private ?string  $controllerName = null,
-        private ?string  $actionName     = null,
+        private Closure|string $action,
+        private string         $method,
+        private string         $path,
+        private string         $name,
+        /** @var class-string|null */
+        private ?string        $controllerName = null,
     ) {
     }
 
@@ -47,23 +47,34 @@ readonly class Route
                 $callableAction = is_a($value['action'], Closure::class) ? $value['action'] : ($value['action'])(...);
 
                 $routes[$key] = new self(
+                    action: $callableAction,
                     method: (string) $value['method'],
                     path: (string) $value['path'],
                     name: (string) $key,
-                    action: $callableAction,
                 );
             } elseif (is_array($value['action'])) {
+                /** @var class-string $controllerName */
+                $controllerName = $value['action'][0];
+
                 $routes[$key] = new self(
+                    action: (string) $value['action'][1],
                     method: (string) $value['method'],
                     path: (string) $value['path'],
                     name: (string) $key,
-                    controllerName: (string) $value['action'][0],
-                    actionName: (string) $value['action'][1],
+                    controllerName: $controllerName,
                 );
             }
         }
 
         return $routes;
+    }
+
+    /**
+     * Получить экшен
+     */
+    public function getAction(): Closure|string
+    {
+        return $this->action;
     }
 
     /**
@@ -93,26 +104,12 @@ readonly class Route
     }
 
     /**
-     * Получить экшен
-     */
-    public function getAction(): ?Closure
-    {
-        return $this->action;
-    }
-
-    /**
      * Получить имя контроллера
+     *
+     * @return class-string|null
      */
     public function getControllerName(): ?string
     {
         return $this->controllerName;
-    }
-
-    /**
-     * Получить имя экшена
-     */
-    public function getActionName(): ?string
-    {
-        return $this->actionName;
     }
 }
