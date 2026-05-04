@@ -115,7 +115,7 @@ readonly class FilterArgument
         }
 
         if ($this->options !== [] && isset($map['options'])) {
-            $flagOptions['options'] = array_filter($this->options, fn (string $key): bool => in_array($key, $map['options'], true), ARRAY_FILTER_USE_KEY, );
+            $flagOptions['options'] = array_filter($this->options, fn (string $key): bool => in_array($key, $map['options'], true), ARRAY_FILTER_USE_KEY);
         }
 
         return $flagOptions;

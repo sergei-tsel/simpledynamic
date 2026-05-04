@@ -28,6 +28,19 @@ final class Filter
         }
 
         /**
+         * @psalm-suppress PossiblyNullArgument
+         */
+        if (!$this->inputVarExists(type: $arg->getInputType(), name: $arg->getVarName())) {
+            $value = $this->getInputValue(type: $arg->getInputType(), name: $arg->getVarName());
+
+            if ($value === (null)) {
+                return null;
+            }
+
+            return $this->varValue($value, $arg);
+        }
+
+        /**
          * @psalm-suppress PossiblyNullPropertyFetch
          * @psalm-suppress NoValue
          * @psalm-suppress InvalidArgument
@@ -71,9 +84,32 @@ final class Filter
             ];
         }
 
-        $options = array_map(fn (FilterArgument $arg): array => $arg->getFlagOptions(), $args);
+        $inputArgs = [];
+        $varsValues = [];
+        $varsArgs = [];
 
-        return filter_input_array(type: $type->value, options: $options, add_empty: $addEmpty);
+        foreach ($args as $name => $arg) {
+            /**
+             * @psalm-suppress PossiblyNullArgument
+             */
+            if (!$this->inputVarExists(type: $arg->getInputType(), name: $arg->getVarName())) {
+                $varsValues[$name] = $this->getInputValue(type: $arg->getInputType(), name: $arg->getVarName());
+                $varsArgs[$name] = $arg;
+            } else {
+                $inputArgs[] = $arg;
+            }
+        }
+
+        $filterVars = $varsValues !== [] ? $this->vars(vars: $varsValues, args: $varsArgs, addEmpty: $addEmpty) : [];
+
+        if ($inputArgs !== []) {
+            $options = array_map(fn (FilterArgument $arg): array => $arg->getFlagOptions(), $args);
+            $filterInput = filter_input_array(type: $type->value, options: $options, add_empty: $addEmpty);
+        } else {
+            return $filterVars;
+        }
+
+        return ($filterVars !== [] && is_array($filterInput) && is_array($filterVars)) ? array_merge($filterInput, $filterVars) : $filterInput;
     }
 
     /**
@@ -107,5 +143,19 @@ final class Filter
         $options = array_map(fn (FilterArgument $arg): array => $arg->getFlagOptions(), $args);
 
         return filter_var_array(array: $vars, options: $options, add_empty: $addEmpty);
+    }
+
+    /**
+     * Получить значение внешней переменной из глобального массива
+     */
+    protected function getInputValue(InputType $type, string $name): array|string|float|int|bool|null
+    {
+        return match ($type) {
+            InputType::POST   => $_POST[$name] ?? null,
+            InputType::GET    => $_GET[$name] ?? null,
+            InputType::COOKIE => $_COOKIE[$name] ?? null,
+            InputType::ENV    => $_ENV[$name] ?? null,
+            InputType::SERVER => $_SERVER[$name] ?? null,
+        };
     }
 }

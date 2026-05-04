@@ -5,8 +5,14 @@ declare(strict_types=1);
 namespace config;
 
 use Simpledynamic\Integrations\Twig\TwigView;
+use Simpledynamic\Services\Filtration\Sanitization\SanitizationFilter;
+use Simpledynamic\Services\Filtration\Validation\ValidationFilter;
 use Sympledynamic\Base\Controller\Route;
 use Sympledynamic\Services\Arrays\NotationManager;
+use Sympledynamic\Services\Filtration\Filter;
+use Sympledynamic\Services\Filtration\FilterArgument;
+use Sympledynamic\Services\Filtration\FilterParam;
+use Sympledynamic\Services\Routing\InputType;
 use Uri\Rfc3986\Uri;
 
 /**
@@ -84,7 +90,20 @@ class Routes extends Config
         /** @var string $base */
         $base = self::getConfigPart('base');
 
-        return self::$uri ??= new Uri(uri: $_SERVER['REQUEST_URI'] ?? '/', baseUrl: new Uri($base));
+        $filter = new Filter();
+
+        $sanitizedUrl = $filter->inputVarValue(
+            arg: new FilterParam(type: InputType::SERVER, varName: 'REQUEST_URI', filter: SanitizationFilter::URL),
+        );
+
+        $validatedUrl = is_string($sanitizedUrl)
+             ? $filter->varValue(
+                 value: $base . $sanitizedUrl,
+                 arg: new FilterArgument(filter: ValidationFilter::URL),
+             )
+             : null;
+
+        return self::$uri ??= new Uri(uri: is_string($validatedUrl) ? $validatedUrl : '/', baseUrl: new Uri($base));
     }
 
     /**
@@ -136,7 +155,11 @@ class Routes extends Config
 
             $path = self::getUri()->getPath();
 
-            return mb_ereg_match($routePath, $path) && $route->getMethod() === ($_SERVER['REQUEST_METHOD'] ?? 'GET');
+            $requestMethod = new Filter()->inputVarValue(
+                arg: new FilterParam(type: InputType::SERVER, varName: 'REQUEST_METHOD', filter: SanitizationFilter::FULL_SPECIAL_CHARS),
+            );
+
+            return mb_ereg_match($routePath, $path) && $route->getMethod() === (is_string($requestMethod) ? $requestMethod : 'GET');
         });
 
         $route = array_first($filteredRoutes);
