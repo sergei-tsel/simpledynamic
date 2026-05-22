@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Container;
+namespace Simpledynamic\Container;
 
 use config\App;
-use Sympledynamic\Providers\ServiceProvider;
+use Simpledynamic\Providers\ServiceProvider;
 
 /**
  * Компонент для управления процессом регистрации и инициализации сервис-провайдеров

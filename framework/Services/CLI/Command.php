@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Services\CLI;
+namespace Simpledynamic\Services\CLI;
 
-use Sympledynamic\Container\ProviderManager;
+use Simpledynamic\Container\ProviderManager;
 
 /**
  * Базовая консольная команда

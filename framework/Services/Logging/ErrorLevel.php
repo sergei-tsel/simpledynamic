@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Services\Logging;
+namespace Simpledynamic\Services\Logging;
 
 /**
  * Уровень ошибки

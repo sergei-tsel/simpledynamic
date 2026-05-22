@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Providers;
+namespace Simpledynamic\Providers;
 
 use config\ODM;
 use config\ORM;

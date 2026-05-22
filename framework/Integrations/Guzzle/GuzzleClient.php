@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Integrations\Guzzle;
+namespace Simpledynamic\Integrations\Guzzle;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;

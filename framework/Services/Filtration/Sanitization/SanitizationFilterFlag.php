@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Services\Filtration\Sanitization;
+namespace Simpledynamic\Services\Filtration\Sanitization;
 
 /**
  * Флаг, совместимый с фильтрами для санитизации данных

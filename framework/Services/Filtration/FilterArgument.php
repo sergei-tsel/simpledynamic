@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Services\Filtration;
+namespace Simpledynamic\Services\Filtration;
 
 use Closure;
 use Simpledynamic\Services\Filtration\Sanitization\NumberFloatFilterFlag;
@@ -18,8 +18,8 @@ use Simpledynamic\Services\Filtration\Validation\RegexpFilterOption;
 use Simpledynamic\Services\Filtration\Validation\UrlFilterFlag;
 use Simpledynamic\Services\Filtration\Validation\ValidationFilter;
 use Simpledynamic\Services\Filtration\Validation\ValidationFilterOption;
-use Sympledynamic\Services\Filtration\Sanitization\SanitizationFilterFlag;
-use Sympledynamic\Services\Routing\InputType;
+use Simpledynamic\Services\Filtration\Sanitization\SanitizationFilterFlag;
+use Simpledynamic\Services\Routing\InputType;
 
 /**
  * Аргумент фильтра

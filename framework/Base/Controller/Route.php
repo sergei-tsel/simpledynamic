@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Base\Controller;
+namespace Simpledynamic\Base\Controller;
 
 use Closure;
 

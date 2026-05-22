@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Services\Filtration;
+namespace Simpledynamic\Services\Filtration;
 
-use Sympledynamic\Services\Routing\InputType;
+use Simpledynamic\Services\Routing\InputType;
 
 final class Filter
 {

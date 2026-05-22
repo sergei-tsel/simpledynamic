@@ -7,12 +7,12 @@ namespace config;
 use Simpledynamic\Integrations\Twig\TwigView;
 use Simpledynamic\Services\Filtration\Sanitization\SanitizationFilter;
 use Simpledynamic\Services\Filtration\Validation\ValidationFilter;
-use Sympledynamic\Base\Controller\Route;
-use Sympledynamic\Services\Arrays\NotationManager;
-use Sympledynamic\Services\Filtration\Filter;
-use Sympledynamic\Services\Filtration\FilterArgument;
-use Sympledynamic\Services\Filtration\FilterParam;
-use Sympledynamic\Services\Routing\InputType;
+use Simpledynamic\Base\Controller\Route;
+use Simpledynamic\Services\Arrays\NotationManager;
+use Simpledynamic\Services\Filtration\Filter;
+use Simpledynamic\Services\Filtration\FilterArgument;
+use Simpledynamic\Services\Filtration\FilterParam;
+use Simpledynamic\Services\Routing\InputType;
 use Uri\Rfc3986\Uri;
 
 /**

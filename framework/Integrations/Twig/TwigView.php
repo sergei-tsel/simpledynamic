@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Simpledynamic\Integrations\Twig;
 
 use config\App;
-use Sympledynamic\Base\View\View;
+use Simpledynamic\Base\View\View;
 use Twig\Environment;
 use Twig\Extension\ExtensionInterface;
 use Twig\Loader\FilesystemLoader;

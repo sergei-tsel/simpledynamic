@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Services\Routing;
+namespace Simpledynamic\Services\Routing;
 
 /**
  * Тип внешних переменных

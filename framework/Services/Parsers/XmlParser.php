@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Simpledynamic\Services\Parsers;
 
 use SimpleXMLElement;
-use Sympledynamic\Base\View\ParserInterface;
+use Simpledynamic\Base\View\ParserInterface;
 
 /**
  * Парсер XML

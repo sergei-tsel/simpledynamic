@@ -14,8 +14,8 @@ require __DIR__ . '/../vendor/autoload.php';
 use config\Env;
 use config\Headers;
 use config\Routes;
-use Sympledynamic\Services\Logging\Logger;
-use Sympledynamic\Services\Routing\Router;
+use Simpledynamic\Services\Logging\Logger;
+use Simpledynamic\Services\Routing\Router;
 
 new Logger(__DIR__ . '/../logs/');
 

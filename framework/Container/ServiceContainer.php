@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Container;
+namespace Simpledynamic\Container;
 
-use Sympledynamic\Services\Reflection\MethodReflectionManager;
+use Simpledynamic\Services\Reflection\MethodReflectionManager;
 
 /**
  * Сервис-контейнер

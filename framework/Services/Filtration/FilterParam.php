@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Services\Filtration;
+namespace Simpledynamic\Services\Filtration;
 
 use Attribute;
 use Closure;
 use Simpledynamic\Services\Filtration\Sanitization\SanitizationFilter;
 use Simpledynamic\Services\Filtration\Validation\ValidationFilter;
-use Sympledynamic\Services\Routing\GlobalArray;
-use Sympledynamic\Services\Routing\InputType;
+use Simpledynamic\Services\Routing\GlobalArray;
+use Simpledynamic\Services\Routing\InputType;
 
 /**
  * Фильтруемый параметр

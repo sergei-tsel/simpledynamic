@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Services\Auth;
+namespace Simpledynamic\Services\Auth;
 
 use config\Auth;
 use config\Cookies;

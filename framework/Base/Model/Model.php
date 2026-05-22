@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Base\Model;
+namespace Simpledynamic\Base\Model;
 
 /**
  * Модель

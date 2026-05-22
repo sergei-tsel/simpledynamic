@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Services\Filtration;
+namespace Simpledynamic\Services\Filtration;
 
 /**
  * Общий флаг, применимый ко всем фильтрам

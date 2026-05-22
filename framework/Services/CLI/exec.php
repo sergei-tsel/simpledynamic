@@ -5,7 +5,7 @@ declare(strict_types=1);
 require __DIR__ . '/../../../vendor/autoload.php';
 
 use config\App;
-use Sympledynamic\Services\CLI\Command;
+use Simpledynamic\Services\CLI\Command;
 
 if (PHP_SAPI !== 'cli' || !isset($_SERVER['argv'])) {
     exit(1);

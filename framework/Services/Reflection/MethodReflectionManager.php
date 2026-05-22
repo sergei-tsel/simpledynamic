@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sympledynamic\Services\Reflection;
+namespace Simpledynamic\Services\Reflection;
 
 use ReflectionClass;
 use ReflectionException;
