@@ -67,6 +67,7 @@ final class Filter
     /**
      * Получить массив внешних переменных и отфильтровать их при необходимости
      *
+     * @psalm-suppress PossiblyUnusedMethod
      * @param FilterArgument[] $args
      */
     public function inputVars(InputType $type, array $args, bool $addEmpty = true): array|false|null

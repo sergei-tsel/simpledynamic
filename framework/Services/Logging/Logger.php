@@ -6,6 +6,8 @@ namespace Simpledynamic\Services\Logging;
 
 /**
  * Логгер
+ *
+ * @psalm-suppress UnusedClass
  */
 final readonly class Logger
 {

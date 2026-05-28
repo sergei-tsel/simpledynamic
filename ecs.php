@@ -10,9 +10,7 @@ use Symplify\EasyCodingStandard\Config\ECSConfig;
 
 return ECSConfig::configure()
     ->withPaths([
-        __DIR__ . '/config',
         __DIR__ . '/framework',
-        __DIR__ . '/public',
     ])->withPhpCsFixerSets(
         doctrineAnnotation: true,
         php83Migration: true,

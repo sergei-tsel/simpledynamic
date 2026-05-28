@@ -23,9 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-            "config\\": "config/",
-            "Simpledynamic\\": "framework/",
-            "public\\": "public/"
+            "Simpledynamic\\": "framework/"
         }
     }
 }

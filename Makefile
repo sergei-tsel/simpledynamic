@@ -1,15 +1,3 @@
-start:
-	php -S localhost:8000 public/index.php
-
-migrate:
-	php framework/DB/Eloquent/Migrations/run_migrations.php
-
-rollback:
-	php framework/DB/Eloquent/Migrations/rollback_all_migrations.php
-
-test:
-	php framework/Services/CLI/exec.php test
-
 ecs:
 	vendor/bin/ecs check --fix
 

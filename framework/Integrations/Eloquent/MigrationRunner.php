@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Simpledynamic\Integrations\Eloquent\Migrations;
+namespace Simpledynamic\Integrations\Eloquent;
 
-use config\ORM;
+use Simpledynamic\Services\Configuration\ORM;
 use Illuminate\Database\Capsule\Manager;
 
 /**
  * Сервис для запуска миграций
+ * @psalm-suppress UnusedClass
  */
 final class MigrationRunner
 {
@@ -22,6 +23,11 @@ final class MigrationRunner
      */
     public function load(Manager $capsule): void
     {
+        
+        /** 
+         * @psalm-suppress UndefinedMagicMethod 
+         * @var array $migrationDirectories 
+         */
         $migrationDirectories = ORM::getMigrationDirectories();
 
         if ($migrationDirectories === []) {
@@ -43,6 +49,10 @@ final class MigrationRunner
     public function loadByDirectory(string $directory, ?Manager $capsule = null): void
     {
         if ($capsule === null) {
+            /** 
+             * @psalm-suppress UndefinedMagicMethod 
+             * @var Manager $capsule
+             */
             $capsule = ORM::createEloquent();
         }
 
@@ -84,6 +94,10 @@ final class MigrationRunner
     public function getMaxBatch(?Manager $capsule = null): int
     {
         if ($capsule === null) {
+            /** 
+             * @psalm-suppress UndefinedMagicMethod 
+             * @var Manager $capsule
+             */
             $capsule = ORM::createEloquent();
         }
 
@@ -99,6 +113,10 @@ final class MigrationRunner
      */
     public function run(): void
     {
+        /** 
+         * @psalm-suppress UndefinedMagicMethod 
+         * @var Manager $capsule
+         */
         $capsule = ORM::createEloquent();
 
         foreach ($this->newMigrations as $migration) {
@@ -121,6 +139,10 @@ final class MigrationRunner
      */
     public function rollbackAll(): void
     {
+        /** 
+         * @psalm-suppress UndefinedMagicMethod 
+         * @var Manager $capsule
+         */
         $capsule = ORM::createEloquent();
 
         /** @var array<array-key, class-string> $migrationsToRollback */

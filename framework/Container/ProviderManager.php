@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Simpledynamic\Container;
 
-use config\App;
 use Simpledynamic\Providers\ServiceProvider;
+use Simpledynamic\Services\Configuration\App;
 
 /**
  * Компонент для управления процессом регистрации и инициализации сервис-провайдеров
@@ -23,6 +23,11 @@ class ProviderManager
     public function buildContainer(): ServiceContainer
     {
         $container = new ServiceContainer();
+
+        /**
+         * @psalm-suppress UndefinedMagicMethod
+         * @var array<int, class-string> $routes
+         */
         $providers = App::getConfigPart('providers') ?? [];
 
         if (!is_array($providers)) {

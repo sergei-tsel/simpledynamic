@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Simpledynamic\Services\CLI;
 
-use Simpledynamic\Container\ProviderManager;
+use Simpledynamic\Container\ServiceContainer;
 
 /**
  * Базовая консольная команда
@@ -29,7 +29,7 @@ class Command
      */
     public static function run(): void
     {
-        $container = new ProviderManager()->buildContainer();
+        $container = ServiceContainer::getInstance();
 
         /** @var Command $command */
         $command = $container->resolve(static::class);

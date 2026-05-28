@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Simpledynamic\Integrations\Twig;
 
-use config\App;
+use Simpledynamic\Services\Configuration\App;
 use Simpledynamic\Base\View\View;
 use Twig\Environment;
 use Twig\Extension\ExtensionInterface;
@@ -13,6 +13,7 @@ use Twig\Loader\FilesystemLoader;
 /**
  * Представление с шаблоном Twig
  *
+ * @psalm-suppress UnusedClass
  * @psalm-suppress UnusedProperty
  */
 final class TwigView extends View
@@ -22,10 +23,14 @@ final class TwigView extends View
     public function __construct(
         protected string $template,
         protected array  $options   = [],
-        protected string $path      = __DIR__ . '/../../../public/twig',
+        protected string $path      = __DIR__ . '/../../../../../../public/twig',
     ) {
         $this->twig = new Environment(new FilesystemLoader($path), $options);
 
+        /**
+         * @psalm-suppress UndefinedMagicMethod
+         * @var array<int, class-string|mixed>|mixed $extensions
+         */
         $extensions = App::getConfigPart('twig_extensions') ?? [];
 
         if (!is_array($extensions)) {
@@ -56,7 +61,12 @@ final class TwigView extends View
      */
     public function render(array $data = [], ?string $blockName = null): string
     {
-        $data['locale'] = App::getConfigPart('locale') ?? 'ru';
+        /**
+         * @psalm-suppress UndefinedMagicMethod
+         * @var string $locale
+         */
+        $locale = App::getConfigPart('locale') ?? 'ru';
+        array_push($data, $locale);
 
         try {
             $template = $this->twig->load($this->template);

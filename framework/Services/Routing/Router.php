@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Simpledynamic\Services\Routing;
 
-use config\Routes;
 use Simpledynamic\Base\Controller\Middleware;
 use Simpledynamic\Base\Controller\Route;
-use Simpledynamic\Container\ProviderManager;
+use Simpledynamic\Container\ServiceContainer;
 use Simpledynamic\Services\Filtration\Filter;
 use Simpledynamic\Services\Filtration\FilterParam;
 use Simpledynamic\Services\Reflection\ClassReflectionManager;
@@ -15,6 +14,9 @@ use Simpledynamic\Services\Reflection\MethodReflectionManager;
 
 /**
  * Роутер
+ *
+ * @psalm-suppress UnusedClass
+ * @psalm-suppress PossiblyUnusedMethod
  */
 final class Router
 {
@@ -27,7 +29,7 @@ final class Router
      */
     public static function handle(): mixed
     {
-        $route = Routes::getByPath();
+        $route = Route::getByPath();
 
         if (!$route instanceof Route) {
             return null;
@@ -106,7 +108,7 @@ final class Router
         $params = self::filterInputParams(filterParams: $params['member'][FilterParam::class]);
         $params['handled'] = $handledParams;
 
-        $container = new ProviderManager()->buildContainer();
+        $container = ServiceContainer::getInstance();
         $dependencies = $container->resolveMethodDependencies(className: $name, methodName: 'handle');
 
         /** @psalm-suppress MixedMethodCall */
@@ -129,7 +131,7 @@ final class Router
      */
     private static function callControllerMethod(string $controllerName, string $methodName, array $handledParams = []): mixed
     {
-        $params = Routes::getPathParams() ?? [];
+        $params = Route::getPathParams() ?? [];
 
         $methodReflectionManager = new MethodReflectionManager();
 
@@ -148,7 +150,7 @@ final class Router
             $params['request'] = array_merge($handledParams, self::filterInputParams(filterParams: $inputParams['member'][FilterParam::class]));
         }
 
-        $container = new ProviderManager()->buildContainer();
+        $container = ServiceContainer::getInstance();
 
         return $methodReflectionManager->invoke(methodName: $methodName, class: $container->resolve($controllerName), args: $params);
     }

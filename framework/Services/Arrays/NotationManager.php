@@ -18,6 +18,7 @@ final readonly class NotationManager
     /**
      * Создать сервис для управления нотацией с переданным сепаратором
      *
+     * @psalm-suppress PossiblyUnusedMethod
      * @param non-empty-string $separator
      */
     public static function instanceOne(string $separator = '.'): NotationManager
@@ -77,6 +78,8 @@ final readonly class NotationManager
 
     /**
      * Перевести многомерный массив в нотацию
+     *
+     * @psalm-suppress PossiblyUnusedMethod
      */
     public function fromMdsArray(array $data): array
     {

@@ -106,7 +106,7 @@ final class MethodReflectionManager
                     return null;
                 }
 
-                return new ReflectionMethod($methodName);
+                return ReflectionMethod::createFromMethodName($methodName);
             }
 
             $reflectionClass = new ReflectionClass($class);

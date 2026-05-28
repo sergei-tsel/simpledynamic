@@ -2,17 +2,19 @@
 
 declare(strict_types=1);
 
-namespace config;
+namespace Simpledynamic\Services\Configuration;
 
 /**
- * Базовая конфигурация
+ * Конфигурация
+ * 
+ * @psalm-suppress UnusedClass
  */
 abstract class Config
 {
     /**
      * @var array<string, array<array-key, mixed>|scalar|null>
      */
-    protected static array $local = [];
+    protected static array $local     = [];
 
     /**
      * @var array<string, array<array-key, mixed>|scalar|null>
@@ -62,6 +64,7 @@ abstract class Config
     /**
      * Получить часть конфигурации
      *
+     * @psalm-suppress PossiblyUnusedMethod
      * @return array|scalar|null
      */
     public static function getConfigPart(string $name): array|string|int|float|bool|null
@@ -77,6 +80,8 @@ abstract class Config
 
     /**
      * Установить конфигурацию
+     * 
+     * @psalm-suppress PossiblyUnusedMethod
      */
     protected static function setConfig(
         callable $setter,
@@ -93,6 +98,7 @@ abstract class Config
     /**
      * Установить часть конфигурации
      *
+     * @psalm-suppress PossiblyUnusedMethod
      * @param array<string, callable> $parts
      */
     protected static function setConfigParts(array $parts): void

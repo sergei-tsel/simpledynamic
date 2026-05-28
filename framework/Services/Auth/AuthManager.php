@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Simpledynamic\Services\Auth;
 
-use config\Auth;
-use config\Cookies;
-use config\Routes;
-use config\Session;
+use Simpledynamic\Base\Controller\Route;
+use Simpledynamic\Services\Configuration\Auth;
+use Simpledynamic\Services\Configuration\Cookies;
+use Simpledynamic\Services\Configuration\Session;
 
 /**
  * Сервис для управления авторизацией
@@ -23,11 +23,14 @@ final class AuthManager
      */
     public function browse(array $params, string $hashedPassword): array
     {
-        $path = explode('/', Routes::getUri()->getPath());
+        $path = explode('/', Route::getUri()->getPath());
 
         $clientRealm = mb_ucfirst($path[1]);
 
-        /** @var string[] $realms */
+        /**
+         * @psalm-suppress UndefinedMagicMethod
+         * @var string[] $realms
+         */
         $realms = Auth::getConfigPart('realms');
 
         if (!isset($params['SERVER']['PHP_AUTH_USER']) || !in_array($clientRealm, $realms)) {
@@ -55,9 +58,16 @@ final class AuthManager
      */
     public function form(array $params, string $hashedPassword): array
     {
+        /**
+         * @psalm-suppress UndefinedMagicMethod
+         * @var string $hash
+         */
         $hash = Auth::hash('base', $this->getSessionId());
 
-        /** @var array{hash: string, login: string} $sessionCookies */
+        /**
+         * @psalm-suppress UndefinedMagicMethod
+         * @var array{hash: string, login: string} $sessionCookies
+         */
         $sessionCookies = Session::getConfigPart('cookies');
 
         if (hash_equals($hash, $sessionCookies['hash'])) {
@@ -70,7 +80,14 @@ final class AuthManager
             $this->tryThrow("403" . PHP_EOL . "Логин или пароль неправильный");
         }
 
+        /**
+         * @psalm-suppress UndefinedMagicMethod
+         */
         Session::set();
+
+        /**
+         * @psalm-suppress UndefinedMagicMethod
+         */
         Cookies::set($this->getSessionId());
 
         return [
@@ -85,7 +102,10 @@ final class AuthManager
      */
     public function digest(array $params): array
     {
-        /** @var string[] $secrets */
+        /**
+         * @psalm-suppress UndefinedMagicMethod
+         * @var string[] $secrets
+         */
         $secrets = Auth::getConfigPart('secrets');
 
         if (!hash_equals($secrets[$params['POST']['secret']], $params['POST']['key'])) {

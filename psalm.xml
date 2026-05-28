@@ -7,10 +7,8 @@
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
     findUnusedCode="true"
 >
-<projectFiles>
-        <directory name="config" />
+    <projectFiles>
         <directory name="framework" />
-        <directory name="public" />
         <ignoreFiles>
             <directory name="hooks" />
             <directory name="logs" />

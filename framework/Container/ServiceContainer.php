@@ -22,6 +22,20 @@ final class ServiceContainer
     /** @var array<int, class-string>|null[] */
     protected array $stack = [];
 
+    protected static ?ServiceContainer $instance = null;
+
+    /**
+     * Получить экземпляр контейнера
+     */
+    public static function getInstance(): ServiceContainer
+    {
+        if (static::$instance === null) {
+            static::$instance = new ProviderManager()->buildContainer();
+        }
+
+        return static::$instance;
+    }
+
     /**
      * Зарегистрировать новый биндинг
      *
@@ -58,6 +72,17 @@ final class ServiceContainer
     public function bound(string $abstract): bool
     {
         return isset($this->bindings[$abstract]) || isset($this->instances[$abstract]);
+    }
+
+    /**
+     * Получить объект по ключу биндинга
+     *
+     * @param class-string $className
+     * @return object
+     */
+    public function make(string $className): object
+    {
+        return $this->resolveDependency($className);
     }
 
     /**
@@ -105,7 +130,11 @@ final class ServiceContainer
 
         $this->stack[] = $className;
 
-        return $this->build($className);
+        try {
+            return $this->build($className);
+        } finally {
+            array_pop($this->stack);
+        }
     }
 
     /**
@@ -139,28 +168,28 @@ final class ServiceContainer
     /**
      * Разрешить зависимость
      *
-     * @param class-string $name
-     * @return object|null
+     * @param class-string $className
+     * @return object
      */
-    protected function resolveDependency(string $name): ?object
+    protected function resolveDependency(string $className): object
     {
-        if (!isset($this->bindings[$name])) {
-            return $this->resolve($name);
+        if (!isset($this->bindings[$className])) {
+            return $this->resolve($className);
         }
 
-        $binding = $this->bindings[$name];
+        $binding = $this->bindings[$className];
 
-        if ($binding['shared'] && isset($this->instances[$name])) {
-            return $this->instances[$name];
+        if ($binding['shared'] && isset($this->instances[$className])) {
+            return $this->instances[$className];
         }
 
-        /** @var object|null $instance */
+        /** @var object $instance */
         $instance = is_callable($binding['concrete'])
             ? $binding['concrete']($this)
             : $this->resolve($binding['concrete']);
 
         if ($binding['shared']) {
-            $this->instances[$name] = $instance;
+            $this->instances[$className] = $instance;
         }
 
         /** @psalm-suppress MixedReturnStatement */
