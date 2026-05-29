@@ -24,7 +24,7 @@ class ProviderManager
     {
         $container = new ServiceContainer();
 
-        $path = __DIR__ . "/../../../../../config/Config.php";
+        $path = __DIR__ . "/../../../../../config/bootstrap.php";
 
         /** @var Config|null $config */
         $config = file_exists($path) ? require $path : null;

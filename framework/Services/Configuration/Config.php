@@ -6,7 +6,7 @@ namespace Simpledynamic\Services\Configuration;
 
 /**
  * Конфигурация
- * 
+ *
  * @psalm-suppress UnusedClass
  */
 abstract class Config
@@ -30,7 +30,7 @@ abstract class Config
      */
     public static function getConfig(): array
     {
-        if (static::$cache !== []) {
+        if (static::$cache !== [] && array_diff(array_keys(static::$cache), array_keys(static::$local)) === array_keys(static::$local)) {
             return static::$cache;
         }
 
@@ -80,7 +80,7 @@ abstract class Config
 
     /**
      * Установить конфигурацию
-     * 
+     *
      * @psalm-suppress PossiblyUnusedMethod
      */
     protected static function setConfig(
