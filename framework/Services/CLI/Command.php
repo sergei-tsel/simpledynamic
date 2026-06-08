@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Simpledynamic\Services\CLI;
 
 use Simpledynamic\Container\ServiceContainer;
+use Simpledynamic\Services\Reflection\ClassReflectionManager;
 
 /**
  * Базовая консольная команда
@@ -14,14 +15,12 @@ use Simpledynamic\Container\ServiceContainer;
  */
 class Command
 {
-    protected string $signature = '';
-
     /**
      * @psalm-suppress PossiblyUnusedProperty
      */
-    protected string $description = '';
+    protected static string $description = '';
 
-    /** @var array<array-key, array<int, bool>|string|bool> */
+    /** @var array<array-key, array<array-key, bool>|string|bool|null> */
     protected array $arguments = [];
 
     /**
@@ -38,57 +37,44 @@ class Command
             return;
         }
 
-        $command->parseCliArguments();
-
         $dependencies = $container->resolveMethodDependencies(static::class, 'handle');
+
+        $args = new CommandLineManager()->getArgs(options: static::getOptions());
+
+        if (array_key_exists('message', $args) && is_string($args['message'])) {
+            echo $args['message'];
+            exit(1);
+        }
+
+        $command->arguments = $args;
 
         /** @psalm-suppress UndefinedMethod */
         $command->handle(...array_values($dependencies));
     }
 
     /**
-     * Распарсить аргументы командной строки
+     * Получить ожидаемые опции
+     *
+     * @return Option[]
      */
-    protected function parseCliArguments(): void
+    public static function getOptions(): array
     {
-        if ($this->signature === '') {
-            return;
-        }
+        /** @var array<string, array<class-string<Option>, list<Option>>> $commandAttributes */
+        $commandAttributes = new ClassReflectionManager()->readAttributes(class: static::class, attributesNames: [
+            'class'  => [
+                Option::class,
+            ],
+        ]);
 
-        preg_match_all('/(-\w+)|(--\w+)/', $this->signature, $matches);
+        return $commandAttributes['class'][Option::class];
+    }
 
-        $shortOpts = '';
-        $longOpts = [];
-        $optsWithoutValues = [];
-
-        foreach ($matches[0] as $match) {
-            $opt = trim($match, "{}");
-
-            if (str_starts_with($opt, '--')) {
-                $longOpts[] = substr($opt, 2);
-            } elseif (str_starts_with($opt, '-')) {
-                $shortOpts .= substr($opt, 1);
-            }
-
-            if (!str_ends_with($opt, ':')) {
-                $optsWithoutValues[] = $opt;
-            }
-        }
-
-        /** @var array<array-key, array<int, bool>|string|bool> $parsedOptions */
-        $parsedOptions = getopt($shortOpts, $longOpts);
-
-        foreach ($parsedOptions as $key => $value) {
-            $hasNoValue = in_array($key, $optsWithoutValues);
-
-            if ($hasNoValue && is_array($value)) {
-                $this->arguments[$key] = array_fill(0, count($value), true);
-            } elseif ($hasNoValue) {
-                $this->arguments[$key] = isset($this->arguments[$key]);
-            } else {
-                $this->arguments[$key] = $value;
-            }
-        }
+    /**
+     * Получить описание
+     */
+    public static function getDescription(): string
+    {
+        return static::$description;
     }
 
     /**
