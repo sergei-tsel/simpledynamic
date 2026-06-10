@@ -12,6 +12,6 @@ namespace Simpledynamic\Base\Model;
 interface RepositoryInterface
 {
     public function __construct(
-        Mapper $mapper,
+        Builder $builder,
     );
 }
