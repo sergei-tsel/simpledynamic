@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace Simpledynamic\Integrations\Guzzle;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\Client as GazzleHttpClient;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
+use Simpledynamic\Base\View\Client;
 
 /**
  * Клиент для отправки представления с помощью Guzzle
  *
  * @psalm-suppress UnusedClass
  */
-final class GuzzleClient
+final class GuzzleClient extends Client
 {
     public function __construct(
-        public Client $client = new Client(),
+        public GazzleHttpClient $client = new GazzleHttpClient(),
     ) {
     }
 
