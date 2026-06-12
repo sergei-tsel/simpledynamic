@@ -103,7 +103,7 @@ final readonly class NotationManager
 
                 /** @var array|scalar|null $item */
                 foreach ($value as $key => $item) {
-                    $groups[++$i][$path . $this->separator . $key] = $item;
+                    $groups[$i + 1][$path . $this->separator . $key] = $item;
                 }
             }
         }

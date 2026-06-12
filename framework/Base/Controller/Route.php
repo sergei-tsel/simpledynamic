@@ -52,7 +52,9 @@ readonly class Route
 
             if (is_callable($value['action'])) {
                 /** @var Closure $callableAction */
-                $callableAction = is_a($value['action'], Closure::class) ? $value['action'] : ($value['action'])(...);
+                $callableAction = is_a($value['action'], Closure::class)
+                    ? $value['action']
+                    : ($value['action'])(...);
 
                 $routes[$key] = new self(
                     action: $callableAction,
@@ -61,15 +63,15 @@ readonly class Route
                     name: (string) $key,
                 );
             } elseif (is_array($value['action'])) {
-                /** @var class-string $controllerName */
-                $controllerName = $value['action'][0];
+                /** @var array{0: class-string, 1: string} */
+                $action = $value['action'];
 
                 $routes[$key] = new self(
-                    action: (string) $value['action'][1],
+                    action: $action[1],
                     method: (string) $value['method'],
                     path: (string) $value['path'],
                     name: (string) $key,
-                    controllerName: $controllerName,
+                    controllerName: $action[0],
                 );
             }
         }
@@ -159,20 +161,21 @@ readonly class Route
             return null;
         }
 
-        $routePath = preg_filter(['#\{/u', '/}#u'], ['(?P<', '>\d+)'], $route->getPath());
+        $routePath = preg_filter(['#\{#u', '#\}#u'], ['(?P<', '>\d+)'], $route->getPath());
 
         if (!is_string($routePath)) {
             return null;
         }
 
-        $routePath = '^' . $routePath . '$';
+        $routePath = '#^' . $routePath . '$#u';
 
         $params = [];
 
         $path = self::getUri()->getPath();
-        mb_ereg($routePath, $path, $params);
 
-        return $params;
+        preg_match($routePath, $path, $params);
+
+        return array_filter($params, is_string(...), ARRAY_FILTER_USE_KEY);
     }
 
     /**
@@ -191,7 +194,7 @@ readonly class Route
         }
 
         $filteredRoutes = array_filter($routes, function (Route $route): bool {
-            $routePath = preg_replace('#\{/d+}#u', '\d+', $route->getPath());
+            $routePath = preg_replace('#\{\w+}#u', '\d+', $route->getPath());
 
             if (!is_string($routePath)) {
                 return false;
