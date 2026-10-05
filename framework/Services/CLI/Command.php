@@ -4,20 +4,16 @@ declare(strict_types=1);
 
 namespace Simpledynamic\Services\CLI;
 
+use ReflectionClass;
 use Simpledynamic\Container\ServiceContainer;
-use Simpledynamic\Services\Reflection\ClassReflectionManager;
+use Simpledynamic\Services\Configuration\Config;
+use Simpledynamic\Services\Reflection\ClassReflectionBuilder;
 
 /**
  * Базовая консольная команда
- *
- * @api
- * @psalm-suppress ClassCanBeFinal
  */
 class Command
 {
-    /**
-     * @psalm-suppress PossiblyUnusedProperty
-     */
     protected static string $description = '';
 
     /** @var array<array-key, array<array-key, bool>|string|bool|null> */
@@ -25,10 +21,13 @@ class Command
 
     /**
      * Выполнить команду
+     *
+     * @throws \Exception
+     * @throws \ReflectionException
      */
-    public static function run(): void
+    public static function run(?Config $config = null): void
     {
-        $container = ServiceContainer::getInstance();
+        $container = ServiceContainer::getInstance($config);
 
         /** @var Command $command */
         $command = $container->resolve(static::class);
@@ -37,34 +36,41 @@ class Command
             return;
         }
 
-        $dependencies = $container->resolveMethodDependencies(static::class, 'handle');
-
         $args = new CommandLineManager()->getArgs(options: static::getOptions());
 
         if (array_key_exists('message', $args) && is_string($args['message'])) {
-            echo $args['message'];
+            echo $args['message'] . PHP_EOL;
             exit(1);
         }
 
         $command->arguments = $args;
 
-        /** @psalm-suppress UndefinedMethod */
-        $command->handle(...array_values($dependencies));
+        $container->executeOn(object: $command, className: static::class, methodName: 'handle');
     }
 
     /**
      * Получить ожидаемые опции
      *
-     * @return Option[]
+     * @return list<Option>
+     * @throws \ReflectionException
      */
     public static function getOptions(): array
     {
+        $classBuilder = new ClassReflectionBuilder(reflectionClass: new ReflectionClass(static::class));
+
         /** @var array<string, array<class-string<Option>, list<Option>>> $commandAttributes */
-        $commandAttributes = new ClassReflectionManager()->readAttributes(class: static::class, attributesNames: [
-            'class'  => [
+        $commandAttributes = $classBuilder->readAttributes(attributesNames: [
+            'class' => [
                 Option::class,
             ],
         ]);
+
+        if (
+            !array_key_exists('class', $commandAttributes)
+            || !array_key_exists(Option::class, $commandAttributes['class'])
+        ) {
+            return [];
+        }
 
         return $commandAttributes['class'][Option::class];
     }
@@ -80,7 +86,7 @@ class Command
     /**
      * Получить аргумент
      *
-     * @psalm-suppress PossiblyUnusedMethod
+     * @return array<array-key, bool>|string|bool|null
      */
     protected function getArgument(string $name): array|string|bool|null
     {

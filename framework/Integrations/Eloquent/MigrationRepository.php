@@ -5,70 +5,30 @@ declare(strict_types=1);
 namespace Simpledynamic\Integrations\Eloquent;
 
 use Illuminate\Support\Collection;
-use Simpledynamic\Services\Configuration\ORM;
+use Simpledynamic\Base\Model\RepositoryInterface;
 
 /**
- * Сервис для запуска миграций
+ * Репозиторий миграций
  *
- * @psalm-suppress UnusedClass
+ * Поиск файлов миграций делегирован {@see MigrationLocator} — единый механизм
+ * используется и при прокатке (run), и при откате (rollback).
  */
-final class MigrationRepository
+final class MigrationRepository implements RepositoryInterface
 {
     private ?Collection $migrations = null;
 
     /** @var array<int, array{instance: object, name: string, batch: int}> */
     private array $newMigrations = [];
 
+    private MigrationLocator $locator;
+
     public function __construct(
         public MigrationBuilder $builder,
     ) {
-        $tableExits = $builder->tableExists();
+        $this->locator = new MigrationLocator();
 
-        if ($tableExits) {
+        if ($builder->tableExists()) {
             $this->migrations = $builder->getAll();
-        }
-    }
-
-    /**
-     * Загрузить миграции из директории
-     */
-    public function load(string $directory): void
-    {
-        /** @var array|false $files */
-        $files = scandir($directory);
-        $realDir = realpath($directory);
-
-        if (!is_array($files) || !is_string($realDir)) {
-            return;
-        }
-
-        foreach ($files as $file) {
-            $matches = [];
-
-            if (!is_string($file) || !preg_match('/^(\d{4}_\d{2}_\d{2}_\d{6})_(.*)_table\.php$/', $file, $matches)) {
-                continue;
-            }
-
-            $name = basename($file, '.php');
-            $path = realpath($directory . '/' . $file);
-
-            if (!is_string($path) || !str_starts_with($path, $realDir) || ($this->migrations !== null && $this->migrations->contains('name', $name))) {
-                continue;
-            }
-
-            /**
-             * @psalm-suppress UnresolvableInclude
-             * @var object $migration
-             */
-            $migration = include_once $path;
-
-            $sortable = str_replace('_', '', substr($matches[1], 0, 10)) . substr($matches[1], 11);
-
-            $this->newMigrations[(int) $sortable] = [
-                'instance' => $migration,
-                'name'     => $name,
-                'batch'    => $this->migrations === null ? 1 : (int) $this->migrations->max('batch') + 1,
-            ];
         }
     }
 
@@ -77,29 +37,13 @@ final class MigrationRepository
      */
     public function run(): void
     {
-        /**
-         * @psalm-suppress UndefinedMagicMethod
-         * @var array $directories
-         */
-        $directories = ORM::getMigrationDirectories();
-
-        if ($directories === []) {
-            return;
-        }
-
-        foreach ($directories as $directory) {
-            if (!is_string($directory)) {
-                continue;
-            }
-
-            $this->load(directory: $directory);
-        }
+        $this->collectNewMigrations();
 
         if ($this->newMigrations === []) {
             return;
         }
 
-        uksort($this->newMigrations, fn (int $a, int $b): int => $a <=> $b);
+        uksort($this->newMigrations, static fn(int $a, int $b): int => $a <=> $b);
 
         foreach ($this->newMigrations as $newMigration) {
             $this->builder->create(newMigration: $newMigration);
@@ -107,39 +51,78 @@ final class MigrationRepository
     }
 
     /**
-     * Откатить все миграции
+     * Откатить миграции
      */
-    public function rollback(?int $lastCount = null, bool $hasMaxBatch = false): void
+    public function rollback(?int $lastCount = null): void
     {
         if ($this->migrations === null) {
             return;
         }
 
-        $migrations = $hasMaxBatch
-            ? $this->migrations->where('batch', $this->migrations->max('batch'))
-            : $this->migrations;
+        $names = $this->migrations->sortByDesc('name')->pluck('name');
+        $count = $names->count();
+        $slice = $names->slice(0, $lastCount ?? $count)->all();
 
-        /** @var Collection<array-key, string> $names */
-        $names = $migrations
-            ->sortByDesc('name')
-            ->pluck('name');
+        /** @var string[] $slice */
+        $this->deleteMigrations($slice);
+    }
 
-        if ($names->count() === 0 || ($lastCount !== null && ($lastCount < 1 || $lastCount > $names->count()))) {
-            return;
+    /**
+     * Удалить миграции с указанными именами
+     *
+     * @param string[] $names
+     */
+    private function deleteMigrations(array $names): void
+    {
+        foreach ($names as $name) {
+            $this->locator->each(function (string $directory, string $fileName) use ($name): void {
+                if ($fileName !== $name) {
+                    return;
+                }
+
+                $this->builder->delete(directory: $directory, name: $name);
+            });
         }
+    }
 
-        $count = $lastCount ?? $names->count();
-
-        /**
-         * @psalm-suppress UndefinedMagicMethod
-         * @var string[] $directories
-         */
-        $directories = ORM::getMigrationDirectories();
-
-        for ($i = 0; $i < $count; $i++) {
-            foreach ($directories as $directory) {
-                $this->builder->delete(directory: $directory, name: $names[$i]);
+    /**
+     * Собрать новые миграции из директорий
+     */
+    private function collectNewMigrations(): void
+    {
+        $this->locator->each(function (string $directory, string $name): void {
+            if ($this->migrations !== null && $this->migrations->contains('name', $name)) {
+                return;
             }
+
+            /** @var object $migration */
+            $migration = include_once $directory . '/' . $name . '.php';
+
+            $this->newMigrations[$this->sortableKey($name)] = [
+                'instance' => $migration,
+                'name' => $name,
+                'batch' => $this->nextBatch(),
+            ];
+        });
+    }
+
+    /**
+     * Получить целочисленный ключ сортировки из имени миграции
+     */
+    private function sortableKey(string $name): int
+    {
+        return (int) (str_replace('_', '', substr($name, 0, 10)) . substr($name, 11));
+    }
+
+    /**
+     * Получить номер следующего батча
+     */
+    private function nextBatch(): int
+    {
+        if ($this->migrations === null) {
+            return 1;
         }
+
+        return (int) $this->migrations->max('batch') + 1;
     }
 }

@@ -6,22 +6,19 @@ namespace Simpledynamic\Integrations\Eloquent;
 
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Collection;
+use Simpledynamic\Base\Model\BuilderInterface;
 
 /**
  * Создатель запросов для запуска миграций
- *
- * @psalm-suppress UnusedClass
  */
-final class MigrationBuilder
+final class MigrationBuilder implements BuilderInterface
 {
     /**
-     * @psalm-suppress PossiblyUnusedMethod
      * @param DatabaseManager $manager
      */
     public function __construct(
         public DatabaseManager $manager,
-    ) {
-    }
+    ) {}
 
     /**
      * Получить миграции
@@ -30,9 +27,7 @@ final class MigrationBuilder
      */
     public function getAll(): Collection
     {
-        return $this->manager->query()
-            ->from('migrations')
-            ->get();
+        return $this->manager->query()->from('migrations')->get();
     }
 
     /**
@@ -46,20 +41,20 @@ final class MigrationBuilder
             return;
         }
 
-        /** @psalm-suppress MixedMethodCall */
         $newMigration['instance']->up($this->manager->getSchemaBuilder());
 
-        $this->manager->query()
+        $this->manager
+            ->query()
             ->from('migrations')
             ->insert([
-                'name'  => $newMigration['name'],
+                'name' => $newMigration['name'],
                 'batch' => $newMigration['batch'],
             ]);
     }
 
     /**
-    * Удалить миграцию
-    */
+     * Удалить миграцию
+     */
     public function delete(string $directory, string $name): void
     {
         $filePath = $directory . '/' . $name . '.php';
@@ -75,17 +70,13 @@ final class MigrationBuilder
             return;
         }
 
-        /** @psalm-suppress MixedMethodCall */
         $migration->down($this->manager->getSchemaBuilder());
 
         if (str_contains($name, 'create_migrations_table')) {
             return;
         }
 
-        $this->manager->query()
-            ->from('migrations')
-            ->where('name', $name)
-            ->delete();
+        $this->manager->query()->from('migrations')->where('name', $name)->delete();
     }
 
     /**
@@ -93,8 +84,12 @@ final class MigrationBuilder
      */
     public function tableExists(): bool
     {
-        return (bool) $this->manager->query()
+        /** @var mixed $value */
+        $value = $this->manager
+            ->query()
             ->selectRaw("to_regclass('public.migrations') IS NOT NULL AS exists")
             ->value('exists');
+
+        return is_bool($value) && $value;
     }
 }

@@ -9,41 +9,40 @@ if [ -z "$FILES" ]; then
   exit 0
 fi
 
-# Проверка с помощью Rector
-echo "🔹 Rector Check:"
-/usr/bin/php vendor/bin/rector process --dry-run --config=rector.php $FILES
+# Исправление стиля с помощью Mago
+echo "🔹 Mago format:"
+/usr/bin/php vendor/bin/mago format $FILES
 if [ $? -ne 0 ]; then
-  echo "🔴 Ошибка при проверке Rector!"
-  exit 1
-else
-  echo "🟢 Rector OK"
-fi
-
-# Проверка с помощью Psalm
-echo "🔸 Psalm Check:"
-git add .psalm/baseline.xml
-/usr/bin/php vendor/bin/psalm --config=psalm.xml --output-format=github $FILES
-if [ $? -ne 0 ]; then
-  echo "🔴 Ошибка при проверке Psalm!"
-  exit 1
-else
-  echo "🟢 Psalm OK"
-fi
-
-# Проверка с помощью ECS
-echo "🔹 ECS Check:"
-/usr/bin/php vendor/bin/ecs check --fix --config=ecs.php $FILES
-if [ $? -ne 0 ]; then
-  echo "🔴 Ошибка при проверке ECS!"
+  echo "🔴 Ошибка при перезаписи format!"
   exit 1
 else
   MODIFIED_FILES=$(git diff --name-only --diff-filter=M)
 
   if [[ ! -z "${MODIFIED_FILES}" ]]; then
-    git add ${MODIFIED_FILES}
+      git add ${MODIFIED_FILES}
   fi
 
-  echo "🟢 ECS OK"
+  echo "🟢 Mago format OK"
+fi
+
+# Проверка стиля с помощью Mago
+echo "🔹 Mago lint:"
+/usr/bin/php vendor/bin/mago lint $FILES
+if [ $? -ne 0 ]; then
+  echo "🔴 Ошибка при проверке lint!"
+  exit 1
+else
+  echo "🟢 Mago lint OK"
+fi
+
+# Проверка синтаксиса с помощью Mago
+echo "🔸 Mago analyze:"
+/usr/bin/php vendor/bin/mago analyze $FILES
+if [ $? -ne 0 ]; then
+  echo "🔴 Ошибка при проверке analyze!"
+  exit 1
+else
+  echo "🟢 Mago analyze OK"
 fi
 
 exit 0

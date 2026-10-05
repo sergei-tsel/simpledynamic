@@ -8,6 +8,8 @@ use Simpledynamic\Providers\Facade;
 
 /**
  * Фасад конфигураци приложения
+ *
+ * @method static mixed getConfigPart(string $argName)
  */
 final class App extends Facade
 {

@@ -1,19 +1,20 @@
-ecs:
-	vendor/bin/ecs check --fix
+mago:
+	vendor/bin/mago lint --fix --unsafe --potentially-unsafe --dry-run
+	vendor/bin/mago analyze --fix --unsafe --potentially-unsafe --dry-run
 
-psalm:
-	vendor/bin/psalm
+test-start:
+	php -S localhost:8000 tests/public/main.php
 
-rector:
-	vendor/bin/rector process --config=rector.php
+test-cli-list:
+	php tests/public/main.php list
 
-rector-dry-run:
-	vendor/bin/rector process --dry-run --config=rector.
+test-cli-greet:
+	php tests/public/main.php greet --text=ok
 
 pre-commit:
 	 ln -s ../../hooks/pre-commit .git/hooks/pre-commit
 	 chmod +x .git/hooks/pre-commit
 
-clear-logs:
-	 @find ./logs -name "error_*.log" -type f -mtime +7 -delete
-	 @find ./logs -name "php_errors_*.log" -type f -mtime +7 -delete
+clear-test-logs:
+	 @find ./tests/logs -name "error_*.log" -type f -mtime +7 -delete
+	 @find ./tests/logs -name "php_errors_*.log" -type f -mtime +7 -delete

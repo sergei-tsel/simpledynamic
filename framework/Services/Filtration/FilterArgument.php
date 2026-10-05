@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Simpledynamic\Services\Filtration;
 
+use BackedEnum;
 use Closure;
 use Simpledynamic\Services\Filtration\Sanitization\NumberFloatFilterFlag;
 use Simpledynamic\Services\Filtration\Sanitization\SanitizationFilter;
+use Simpledynamic\Services\Filtration\Sanitization\SanitizationFilterFlag;
 use Simpledynamic\Services\Filtration\Validation\DomainFilterFlag;
 use Simpledynamic\Services\Filtration\Validation\EmailFilterFlag;
 use Simpledynamic\Services\Filtration\Validation\FloatFilterFlag;
@@ -18,35 +20,54 @@ use Simpledynamic\Services\Filtration\Validation\RegexpFilterOption;
 use Simpledynamic\Services\Filtration\Validation\UrlFilterFlag;
 use Simpledynamic\Services\Filtration\Validation\ValidationFilter;
 use Simpledynamic\Services\Filtration\Validation\ValidationFilterOption;
-use Simpledynamic\Services\Filtration\Sanitization\SanitizationFilterFlag;
 use Simpledynamic\Services\Routing\InputType;
 
 /**
  * Аргумент фильтра
+ *
+ * Описывает, каким фильтром и с какими флагами и опциями обрабатывается значение
+ * внешней переменной. Флаги и опции, не поддерживаемые выбранным фильтром, отбрасываются,
+ * чтобы filter_var() и filter_input() никогда не получали недопустимые аргументы
  */
 readonly class FilterArgument
 {
+    /**
+     * @param AlternativeFilter|SanitizationFilter|ValidationFilter $filter Фильтр значения
+     * @param list<BackedEnum> $flags Флаги, совместимые с выбранным фильтром,
+     *        собираются в битовую маску
+     * @param array<string, mixed>|Closure $options Опции, совместимые с выбранным фильтром;
+     *        для AlternativeFilter::CALLBACK здесь передаётся замыкание-фильтр
+     * @param ?InputType $inputType Тип внешних переменных, из которых берётся значение;
+     *        null, если аргумент не привязан к входным данным
+     * @param ?string $varName Название внешней переменной; null, если аргумент не привязан к входным данным
+     */
     public function __construct(
         private AlternativeFilter|SanitizationFilter|ValidationFilter $filter,
-        private array                                                 $flags     = [],
-        /** @var array<string, mixed> */
-        private array                                                 $options   = [],
-        private ?InputType                                            $inputType = null,
-        private ?string                                               $varName   = null,
-        private ?Closure                                              $callback  = null,
-    ) {
-    }
+        private array $flags = [],
+        private array|Closure $options = [],
+        private ?InputType $inputType = null,
+        private ?string $varName = null,
+    ) {}
 
+    /**
+     * Получить фильтр значения
+     */
     public function getFilter(): AlternativeFilter|SanitizationFilter|ValidationFilter
     {
         return $this->filter;
     }
 
+    /**
+     * Получить тип внешних переменных, из которых берётся значение
+     */
     public function getInputType(): ?InputType
     {
         return $this->inputType;
     }
 
+    /**
+     * Получить название внешней переменной
+     */
     public function getVarName(): ?string
     {
         return $this->varName;
@@ -55,153 +76,153 @@ readonly class FilterArgument
     /**
      * Получить опции фильтра
      *
-     * @return Closure|array|null
+     * Для AlternativeFilter::CALLBACK возвращается замыкание-фильтр, для остальных
+     * фильтров — массив с совместимыми флагами и опциями. Флаги собираются в битовую
+     * маску, потому что filter_var() и filter_input() принимают только целое число.
+     * Пустые флаги и опции в массив не попадают: filter_var_array() отбрасывает
+     * переменные, описанные пустыми флагами, а filter_var() для фильтров с обязательной
+     * опцией, например FILTER_VALIDATE_REGEXP, выбрасывает ValueError на пустых опциях
+     *
+     * @return Closure|array{flags?: int, options?: array<string, mixed>}|null
+     *         null, если применять к значению нечего
      */
     public function getOptions(): Closure|array|null
     {
-        return $this->filter === AlternativeFilter::CALLBACK
-            ? $this->callback
-            : $this->validateFlagOptions();
+        if ($this->filter === AlternativeFilter::CALLBACK) {
+            return $this->options instanceof Closure ? $this->options : null;
+        }
+
+        return $this->validateFlagOptions();
     }
 
     /**
-     * Получить ассоциативный массив с фильтром, флагами и опциями
+     * Получить определение фильтра для filter_input_array() и filter_var_array()
      *
-     * @return array{filter: 514|515|516|517|518|519|520|522|523|1024, flags?: array<array-key, int>, options?: Closure|array<array-key, mixed>|null}
+     * Определение содержит обязательный фильтр и, если они есть, совместимые
+     * с ним флаги и опции
+     *
+     * @return array{filter: int, flags?: int, options?: array<string, mixed>|Closure}
      */
     public function getFlagOptions(): array
     {
-        if ($this->filter === AlternativeFilter::CALLBACK) {
-            return [
-                'filter'  => $this->filter->value,
-                'options' => $this->callback,
-            ];
+        $filter = ['filter' => $this->filter->value];
+        $options = $this->getOptions();
+
+        if ($options instanceof Closure) {
+            return ['filter' => $filter['filter'], 'options' => $options];
         }
 
-        $validated = $this->validateFlagOptions();
-
-        $flagOptions = [
-            'filter'  => $this->filter->value,
-        ];
-
-        if (isset($validated['flags'])) {
-            $flagOptions['flags'] = $validated['flags'];
-        }
-
-        if (isset($validated['options'])) {
-            $flagOptions['options'] = $validated['options'];
-        }
-
-        return $flagOptions;
+        return $options === null ? $filter : $filter + $options;
     }
 
     /**
-     * Получить ассоциативный массив с флагами и опциями
+     * Получить совместимые с фильтром флаги и опции
      *
-     * @return array{flags?: array<array-key, int>, options?: array<string, mixed>}
+     * Флаги, не поддерживаемые фильтром, отбрасываются, остальные собираются
+     * в битовую маску: filter_var() и filter_input() принимают флаги только
+     * как целое число, а массив флагов PHP игнорирует
+     *
+     * @return array{flags?: int, options?: array<string, mixed>}
      */
     protected function validateFlagOptions(): array
     {
-        if ($this->flags === [] && $this->options === []) {
-            return [];
-        }
-
         $map = $this->getFilterMap();
 
-        $flagOptions = [];
+        $mask = 0;
 
-        if ($this->flags !== []) {
-            $flagOptions['flags'] = array_filter(array_map(fn (\BackedEnum $flag): int => (int) $flag->value, $this->flags), fn (int $flag): bool => in_array($flag, $map['flags']));
+        foreach ($this->flags as $flag) {
+            $value = (int) $flag->value;
+
+            if (in_array($value, $map['flags'], true)) {
+                $mask |= $value;
+            }
         }
 
-        if ($this->options !== [] && isset($map['options'])) {
-            $flagOptions['options'] = array_filter($this->options, fn (string $key): bool => in_array($key, $map['options'], true), ARRAY_FILTER_USE_KEY);
+        $flagOptions = $mask === 0 ? [] : ['flags' => $mask];
+
+        if ($this->options instanceof Closure) {
+            return $flagOptions;
         }
 
-        return $flagOptions;
+        $options = array_filter(
+            $this->options,
+            static fn(string|int $key): bool => in_array($key, $map['options'], true),
+            ARRAY_FILTER_USE_KEY,
+        );
+
+        return $options === [] ? $flagOptions : $flagOptions + ['options' => $options];
     }
 
     /**
-     * Получить карту поддерживаемых флагов и опций фильтра
+     * Получить карту флагов и опций, поддерживаемых выбранным фильтром
      *
-     * @return array<'flags'|'options', list{0?: GenericFilterFlag::FLAG_NONE|int|string,...}>
+     * @return array{flags: list<int>, options: list<string>}
      */
     protected function getFilterMap(): array
     {
         $map = [
-            'flags' => GenericFilterFlag::cases(),
+            'flags' => array_map(static fn(BackedEnum $flag): int => (int) $flag->value, GenericFilterFlag::cases()),
+            'options' => [],
         ];
 
-        if (in_array($this->filter, SanitizationFilter::cases())) {
-            $map = array_merge_recursive($map, $this->getSanitizationMap());
-        } elseif (in_array($this->filter, ValidationFilter::cases())) {
-            $map = array_merge_recursive($map, $this->getValidationMap());
+        if ($this->filter instanceof SanitizationFilter) {
+            $map['flags'] = array_merge($map['flags'], $this->getSanitizationMap()['flags']);
+
+            return $map;
+        }
+
+        if ($this->filter instanceof ValidationFilter) {
+            $validationMap = $this->getValidationMap();
+
+            return [
+                'flags' => array_merge($map['flags'], $validationMap['flags']),
+                'options' => $validationMap['options'],
+            ];
         }
 
         return $map;
     }
 
     /**
-     * Получить карту поддерживаемых флагов и опций для санитизации данных
+     * Получить карту флагов и опций, поддерживаемых фильтрами санитизации данных
      *
-     * @return array{flags: list<int>}
+     * @return array{flags: list<int>, options: list<string>}
      */
     protected function getSanitizationMap(): array
     {
-        $flags = SanitizationFilterFlag::cases();
-
-        if ($this->filter === SanitizationFilter::NUMBER_FLOAT) {
-            $flags = array_merge($flags, NumberFloatFilterFlag::cases());
-        }
+        $flags = $this->filter === SanitizationFilter::NUMBER_FLOAT
+            ? array_merge(SanitizationFilterFlag::cases(), NumberFloatFilterFlag::cases())
+            : SanitizationFilterFlag::cases();
 
         return [
-            'flags' => array_map(fn (SanitizationFilterFlag|SanitizationFilter|NumberFloatFilterFlag $flag): int => $flag->value, $flags),
+            'flags' => array_map(static fn(BackedEnum $flag): int => (int) $flag->value, $flags),
+            'options' => [],
         ];
     }
 
     /**
-     * Получить карту поддерживаемых флагов и опций для валидации данных
+     * Получить карту флагов и опций, поддерживаемых фильтрами валидации данных
      *
-     * @return array{flags?: list<int>, options?: list<string>}
+     * @return array{flags: list<int>, options: list<string>}
      */
     protected function getValidationMap(): array
     {
-        $options = ValidationFilterOption::cases();
-
-        $flagOptions = match ($this->filter) {
-            ValidationFilter::INT    => [
-                'flags'  => IntFilterFlag::cases(),
-                'options' => IntFilterOption::cases(),
-            ],
-            ValidationFilter::FLOAT  => [
-                'flags'   => FloatFilterFlag::cases(),
-                'options' => FloatFilterOption::cases(),
-            ],
-            ValidationFilter::REGEXP => [
-                'options' => RegexpFilterOption::cases(),
-            ],
-            ValidationFilter::URL    => [
-                'flags' => UrlFilterFlag::cases(),
-            ],
-            ValidationFilter::DOMAIN => [
-                'flags' => DomainFilterFlag::cases(),
-            ],
-            ValidationFilter::EMAIL  => [
-                'flags' => EmailFilterFlag::cases(),
-            ],
-            ValidationFilter::IP     => [
-                'flags' => IpFilterFlag::cases(),
-            ],
-            default                  => [],
+        $filterMap = match ($this->filter) {
+            ValidationFilter::INT => ['flags' => IntFilterFlag::cases(), 'options' => IntFilterOption::cases()],
+            ValidationFilter::FLOAT => ['flags' => FloatFilterFlag::cases(), 'options' => FloatFilterOption::cases()],
+            ValidationFilter::REGEXP => ['flags' => [], 'options' => RegexpFilterOption::cases()],
+            ValidationFilter::URL => ['flags' => UrlFilterFlag::cases(), 'options' => []],
+            ValidationFilter::DOMAIN => ['flags' => DomainFilterFlag::cases(), 'options' => []],
+            ValidationFilter::EMAIL => ['flags' => EmailFilterFlag::cases(), 'options' => []],
+            ValidationFilter::IP => ['flags' => IpFilterFlag::cases(), 'options' => []],
+            default => ['flags' => [], 'options' => []],
         };
 
-        if (array_key_exists('options', $flagOptions)) {
-            $options = array_merge($options, $flagOptions['options']);
-        }
+        $options = array_merge(ValidationFilterOption::cases(), $filterMap['options']);
 
         return [
-            'flags'   => array_map(fn (IntFilterFlag|FloatFilterFlag|UrlFilterFlag|DomainFilterFlag|EmailFilterFlag|IpFilterFlag $flag): int => $flag->value, $flagOptions['flags'] ?? []),
-            'options' => array_map(fn (ValidationFilterOption|IntFilterOption|FloatFilterOption|RegexpFilterOption $option): string => $option->value, $options),
+            'flags' => array_map(static fn(BackedEnum $flag): int => (int) $flag->value, $filterMap['flags']),
+            'options' => array_map(static fn(BackedEnum $option): string => (string) $option->value, $options),
         ];
     }
 }

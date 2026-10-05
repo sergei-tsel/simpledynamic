@@ -8,6 +8,9 @@ use Simpledynamic\Providers\Facade;
 
 /**
  * Фасад конфигурации авторизации
+ *
+ * @method static mixed hash(string $argName, string $argValue)
+ * @method static mixed getConfigPart(string $argName)
  */
 final class Auth extends Facade
 {

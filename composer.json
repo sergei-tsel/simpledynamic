@@ -5,9 +5,7 @@
     "keywords": ["simple", "dynamic", "framework"],
     "license": "MIT",
     "require-dev": {
-        "vimeo/psalm": "^6.16.1",
-        "symplify/easy-coding-standard": "^13.0.4",
-        "rector/rector": "^2.3.9"
+        "carthage-software/mago": "^1.51"
     },
     "require": {
         "php": "^8.5",
@@ -16,14 +14,15 @@
         "ext-mbstring": "*",
         "ext-fileinfo": "*",
         "ext-uri": "*",
-        "illuminate/database": "^13.1.1",
-        "doctrine/mongodb-odm": "^2.16.1",
-        "twig/twig": "^3.24",
-        "guzzlehttp/guzzle": "^7.10"
+        "illuminate/database": "^13.34",
+        "doctrine/mongodb-odm": "^2.17",
+        "twig/twig": "^3.30",
+        "guzzlehttp/guzzle": "^7.15"
     },
     "autoload": {
         "psr-4": {
-            "Simpledynamic\\": "framework/"
+            "Simpledynamic\\": "framework/",
+            "Test\\": "tests/"
         }
     }
 }

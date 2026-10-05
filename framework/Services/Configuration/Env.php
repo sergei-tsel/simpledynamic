@@ -8,6 +8,9 @@ use Simpledynamic\Providers\Facade;
 
 /**
  * Фасад конфигурации переменных среды
+ *
+ * @method static mixed set()
+ * @method static mixed getConfigPart(string $argName)
  */
 final class Env extends Facade
 {

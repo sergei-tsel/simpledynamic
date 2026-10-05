@@ -8,6 +8,9 @@ use Simpledynamic\Providers\Facade;
 
 /**
  * Фасад конфигурации заголовков
+ *
+ * @method static mixed set()
+ * @method static mixed getConfigPart(string $argName)
  */
 final class Headers extends Facade
 {

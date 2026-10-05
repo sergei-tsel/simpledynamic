@@ -4,192 +4,208 @@ declare(strict_types=1);
 
 namespace Simpledynamic\Services\Routing;
 
-use Simpledynamic\Base\Controller\Middleware;
-use Simpledynamic\Base\Controller\Route;
-use Simpledynamic\Container\ServiceContainer;
-use Simpledynamic\Services\Filtration\Filter;
-use Simpledynamic\Services\Filtration\FilterParam;
-use Simpledynamic\Services\Reflection\ClassReflectionManager;
-use Simpledynamic\Services\Reflection\MethodReflectionManager;
+use Simpledynamic\Base\Controller\RouteInterface;
+use Simpledynamic\Services\Configuration\Config;
+use Simpledynamic\Services\Configuration\Routes;
+use Simpledynamic\Services\Logging\Logger;
 
 /**
  * Роутер
  *
- * @psalm-suppress UnusedClass
- * @psalm-suppress PossiblyUnusedMethod
+ * Поиск роута выполняется по схеме:
+ *  1. из пути исключается префикс, назначенный в конфиге ключу base;
+ *  2. по первому фрагменту оставшегося пути определяется группа роутов;
+ *  3. из пути исключается ключ группы, поэтому ключи роутов группы хранят путь
+ *     без этого ключа;
+ *  4. по оставшейся части пути в массиве группы ищется роут, ключ которого —
+ *     шаблон пути, а значение содержит название HTTP-метода и экшен.
+ *
+ * Если группа не определена, но вызван базовый путь, выполняется перенаправление
+ * на путь группы роутов, вызываемой по умолчанию.
  */
 final class Router
 {
-    private static ClassReflectionManager $classReflectionManager;
+    public function __construct(
+        private readonly UriBuilder $uriBuilder = new UriBuilder(),
+        private readonly RouteBuilder $routeBuilder = new RouteBuilder(),
+        private readonly InputResolver $inputResolver = new InputResolver(),
+        private readonly MiddlewaresResolver $middlewaresResolver = new MiddlewaresResolver(
+            inputResolver: new InputResolver(),
+        ),
+    ) {}
+
+    private ?Config $config = null;
 
     /**
-     * Обработать запрос
-     *
-     * @psalm-suppress PossiblyUnusedReturnValue
+     * Установить конфигурацию приложения
      */
-    public static function handle(): mixed
+    public function setConfig(?Config $config): void
     {
-        $route = Route::getByPath();
-
-        if (!$route instanceof Route) {
-            return null;
-        }
-
-        $action = $route->getAction();
-
-        if ($action instanceof \Closure) {
-            return $action->call($route);
-        }
-
-        $controllerName = $route->getControllerName();
-
-        if ($controllerName === null || !class_exists($controllerName) || !method_exists($controllerName, $action)) {
-            return null;
-        }
-
-        /**
-         * @var class-string
-         * @var string $action
-         */
-        return self::call(controllerName: $controllerName, methodName: $action);
+        $this->config = $config;
     }
 
     /**
-     * Вызвать экшен
+     * Обработать запрос к сборке приложения
      *
-     * @param class-string $controllerName
+     * @throws \Exception
+     * @throws \ReflectionException
      */
-    private static function call(string $controllerName, string $methodName): mixed
+    public function handle(): mixed
     {
-        self::$classReflectionManager = new ClassReflectionManager();
+        $path = $this->stripBase(path: $this->uriBuilder->buildRequestUri()->getPath());
+        $groupKey = Routes::getGroupKey(path: $path);
+        $group = Routes::getGroup(path: $path);
 
-        /** @var array<string, array<class-string<Middleware>, list<Middleware>>> $actionAttributes */
-        $actionAttributes = self::$classReflectionManager->readAttributes(class: $controllerName, memberName: $methodName, attributesNames: [
-            'class'  => [
-                Middleware::class,
-            ],
-            'member' => [
-                Middleware::class,
-            ],
-        ]);
-
-        $handledParams = [];
-
-        foreach ($actionAttributes['class'][Middleware::class] as $attribute) {
-            $handledParams = self::callMiddleware(name: $attribute->getName(), handledParams: $handledParams);
+        if ($group === null || $groupKey === null) {
+            return $this->redirectFromBase(path: $path);
         }
 
-        foreach ($actionAttributes['member'][Middleware::class] as $attribute) {
-            $handledParams = self::callMiddleware(name: $attribute->getName(), handledParams: $handledParams);
+        $this->middlewaresResolver->processAttributeFor(className: $group, config: $this->config);
+
+        $route = $this->getRoute(group: $group, path: $this->stripGroup(path: $path, groupKey: $groupKey));
+
+        if ($route === null) {
+            return null;
         }
 
-        return self::callControllerMethod(controllerName: $controllerName, methodName: $methodName, handledParams: $handledParams);
+        return $this->call($route);
     }
 
+    /**
+     * Перенаправить с базового пути на путь группы роутов по умолчанию
+     *
+     * @return null Редирект отправляется клиенту, поэтому возвращается пустое значение
+     */
+    private function redirectFromBase(string $path): null
+    {
+        if (trim($path, '/') !== '') {
+            return null;
+        }
+
+        $target = Routes::getDefaultGroupPath();
+        $base = rtrim((string) parse_url(Routes::getBase(), PHP_URL_PATH), '/');
+
+        header('Location: ' . $base . $target, true, 302);
+
+        return null;
+    }
 
     /**
-     * Вызвать мидлвар
+     * Исключить из пути ключ группы роутов
      *
-     * @param class-string $name
+     * Ключи роутов группы хранят путь без ключа группы, поэтому '/test/welcome'
+     * при группе 'test' сопоставляется с ключом '/welcome'.
      */
-    private static function callMiddleware(string $name, array $handledParams = []): array
+    private function stripGroup(string $path, string $groupKey): string
     {
-        /** @var array<string, array<class-string<FilterParam>, list<FilterParam>>> $params */
-        $params = self::$classReflectionManager->readAttributes(
-            class: $name,
-            memberName: 'handle',
-            attributesNames: [
-                'member' => [
-                    FilterParam::class,
-                ],
-            ],
+        $stripped = preg_replace('#^/' . preg_quote($groupKey, '#') . '#u', '', $path);
+
+        return '/' . trim(is_string($stripped) ? $stripped : $path, '/');
+    }
+
+    /**
+     * Получить роут группы по шаблону пути
+     *
+     * Переданный путь уже должен быть лишён префикса base и ключа группы.
+     *
+     * @param class-string $group
+     * @throws \Exception
+     * @throws \ReflectionException
+     */
+    public function getRoute(string $group, ?string $path = null): ?RouteInterface
+    {
+        if (!method_exists($group, 'getRoutes')) {
+            return null;
+        }
+
+        /** @var array<string, array{method: string, action: mixed}> $groupRoutes */
+        $groupRoutes = $group::getRoutes();
+
+        if ($groupRoutes === []) {
+            return null;
+        }
+
+        $path ??= $this->uriBuilder->buildRequestUri()->getPath();
+
+        $pattern = $this->uriBuilder->findPattern(routes: $groupRoutes, uriPath: $path);
+
+        if ($pattern === null) {
+            return null;
+        }
+
+        $route = $groupRoutes[$pattern] ?? null;
+
+        if ($route === null || $route['method'] !== $this->inputResolver->getRequestMethod()) {
+            return null;
+        }
+
+        return $this->routeBuilder->buildRoute(
+            route: $route,
+            name: $pattern,
+            pathParams: $this->uriBuilder->getPathParams(routePath: $pattern, uriPath: $path),
         );
-
-        $params = self::filterInputParams(filterParams: $params['member'][FilterParam::class]);
-        $params['handled'] = $handledParams;
-
-        $container = ServiceContainer::getInstance();
-        $dependencies = $container->resolveMethodDependencies(className: $name, methodName: 'handle');
-
-        /** @psalm-suppress MixedMethodCall */
-        $middleware = new $name();
-
-        /** @psalm-suppress MixedMethodCall */
-        $middlewareHandledParams = $middleware->handle($params, ...$dependencies);
-
-        if (!is_array($middlewareHandledParams)) {
-            return [];
-        }
-
-        return array_merge($handledParams, $middlewareHandledParams);
     }
 
     /**
-     * Вызвать метод контроллера
+     * Исключить из пути префикс, назначенный в конфиге ключу base
      *
-     * @param class-string $controllerName
+     * Префикс берётся из пути базового адреса, поэтому ключ base может содержать
+     * полный URL: '/base/test/welcome' при base 'http://localhost:8000/base'.
      */
-    private static function callControllerMethod(string $controllerName, string $methodName, array $handledParams = []): mixed
+    private function stripBase(string $path): string
     {
-        $params = Route::getPathParams() ?? [];
+        $basePath = trim((string) parse_url(Routes::getBase(), PHP_URL_PATH), '/');
 
-        $methodReflectionManager = new MethodReflectionManager();
-
-        if (in_array('request', $methodReflectionManager->getParamsNames($methodName, $controllerName))) {
-            /** @var array<string, array<class-string<FilterParam>, list<FilterParam>>> $inputParams */
-            $inputParams = self::$classReflectionManager->readAttributes(
-                class: $controllerName,
-                memberName: $methodName,
-                attributesNames: [
-                    'member' => [
-                        FilterParam::class,
-                    ],
-                ],
-            );
-
-            $params['request'] = array_merge($handledParams, self::filterInputParams(filterParams: $inputParams['member'][FilterParam::class]));
+        if ($basePath === '') {
+            return $path;
         }
 
-        $container = ServiceContainer::getInstance();
+        $stripped = preg_replace('#^/' . preg_quote($basePath, '#') . '#u', '', $path);
 
-        return $methodReflectionManager->invoke(methodName: $methodName, class: $container->resolve($controllerName), args: $params);
+        return '/' . trim(is_string($stripped) ? $stripped : $path, '/');
     }
 
     /**
-     * Отфильтровать внешние параметры
+     * Разрешить список внешних параметров роута
      *
-     * @param array<int, FilterParam> $filterParams
+     * @return array<string, mixed> Список внешних параметров
+     * @throws \Exception
+     * @throws \ReflectionException
      */
-    private static function filterInputParams(array $filterParams): array
+    private function getParams(ControllerRoute $route): array
     {
-        if ($filterParams === []) {
-            return [];
-        }
+        $controllerName = $route->getControllerName();
+        $methodName = $route->getAction();
 
-        $filter = new Filter();
-        $params = [];
+        $params = $this->inputResolver->applyAttributeTo(className: $controllerName, methodName: $methodName);
 
-        foreach ($filterParams as $filterParam) {
-            $inputType = $filterParam->getInputType();
+        // Мидлвары класса и его метода разрешаются одним вызовом: отдельный вызов для
+        // класса и ещё один для метода выполнял бы мидлвары класса дважды
+        return $this->middlewaresResolver->processAttributeFor(
+            className: $controllerName,
+            methodName: $methodName,
+            params: $params,
+            config: $this->config,
+        );
+    }
 
-            if ($inputType === null) {
-                $varName = $filterParam->getVarName();
-
-                if ($varName === null) {
-                    continue;
-                }
-
-                $params[$filterParam->getType()->name][] = match ($filterParam->getType()) {
-                    GlobalArray::FILES   => isset($_FILES[$varName]) ? $filter->varValue(value: $_FILES[$varName], arg: $filterParam) : null,
-                    GlobalArray::SESSION => isset($_SESSION[$varName]) && (is_array($_SESSION[$varName]) || is_scalar($_SESSION[$varName]))
-                        ? $filter->varValue(value: $_SESSION[$varName], arg: $filterParam)
-                        : null,
-                };
-            } else {
-                $params[$inputType->name][] = $filter->inputVarValue(arg: $filterParam);
+    /**
+     * Вызвать роут
+     */
+    private function call(RouteInterface $route): mixed
+    {
+        try {
+            if ($route instanceof ControllerRoute) {
+                return $route->call(params: $this->getParams(route: $route), config: $this->config);
             }
-        }
 
-        return $params;
+            return $route->call([]);
+        } catch (\Throwable $exception) {
+            // Роут возвращает void и заменяется пустым ответом, поэтому без записи
+            // в лог сбой контроллера выглядел бы как пустая страница с кодом 200
+            Logger::report($exception);
+
+            return null;
+        }
     }
 }

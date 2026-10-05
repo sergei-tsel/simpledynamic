@@ -6,20 +6,18 @@ namespace Simpledynamic\Services\Configuration;
 
 /**
  * Конфигурация
- *
- * @psalm-suppress UnusedClass
  */
 abstract class Config
 {
     /**
      * @var array<string, array<array-key, mixed>|scalar|null>
      */
-    protected static array $local     = [];
+    protected static array $local = [];
 
     /**
      * @var array<string, array<array-key, mixed>|scalar|null>
      */
-    protected static array $cache     = [];
+    protected static array $cache = [];
 
     protected static string $filename = '';
 
@@ -30,11 +28,15 @@ abstract class Config
      */
     public static function getConfig(): array
     {
-        if (static::$cache !== [] && array_diff(array_keys(static::$cache), array_keys(static::$local)) === array_keys(static::$local)) {
+        if (
+            static::$cache !== []
+            && array_diff(array_keys(static::$cache), array_keys(static::$local)) === array_keys(static::$local)
+        ) {
             return static::$cache;
         }
 
         if (static::$filename !== '') {
+            /** @var mixed $parsedYaml */
             $parsedYaml = yaml_parse_file(static::$filename);
 
             if (!is_array($parsedYaml)) {
@@ -44,15 +46,19 @@ abstract class Config
 
             $filteredYaml = array_filter(
                 $parsedYaml,
-                fn ($value): bool => is_array($value) || is_scalar($value) || $value === null
+                static fn($value): bool => is_array($value) || is_scalar($value) || $value === null,
             );
 
             $stringKeysYaml = [];
+
+            /** @var mixed $value */
             foreach ($filteredYaml as $key => $value) {
-                $stringKeysYaml[(string)$key] = $value;
+                $stringKeysYaml[(string) $key] = $value;
             }
 
+            /** @var array<string, array<array-key, mixed>> $stringKeysYaml */
             static::$cache = array_merge(static::$local, $stringKeysYaml);
+
             return static::$cache;
         }
 
@@ -64,7 +70,6 @@ abstract class Config
     /**
      * Получить часть конфигурации
      *
-     * @psalm-suppress PossiblyUnusedMethod
      * @return array|scalar|null
      */
     public static function getConfigPart(string $name): array|string|int|float|bool|null
@@ -80,12 +85,9 @@ abstract class Config
 
     /**
      * Установить конфигурацию
-     *
-     * @psalm-suppress PossiblyUnusedMethod
      */
-    protected static function setConfig(
-        callable $setter,
-    ): void {
+    protected static function setConfig(callable $setter): void
+    {
         $local = static::getConfig();
 
         if ($local === []) {
@@ -98,7 +100,6 @@ abstract class Config
     /**
      * Установить часть конфигурации
      *
-     * @psalm-suppress PossiblyUnusedMethod
      * @param array<string, callable> $parts
      */
     protected static function setConfigParts(array $parts): void
@@ -110,9 +111,11 @@ abstract class Config
         }
 
         foreach ($parts as $name => $setter) {
-            if (array_key_exists($name, $local)) {
-                $setter($local[$name]);
+            if (!array_key_exists($name, $local)) {
+                continue;
             }
+
+            $setter($local[$name]);
         }
     }
 }

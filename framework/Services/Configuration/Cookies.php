@@ -8,6 +8,9 @@ use Simpledynamic\Providers\Facade;
 
 /**
  * Фасад конфигурации куки
+ *
+ * @method static mixed set(string $sessionId)
+ * @method static mixed getConfigPart(string $argName)
  */
 final class Cookies extends Facade
 {

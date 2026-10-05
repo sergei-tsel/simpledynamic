@@ -6,18 +6,22 @@ namespace Simpledynamic\Base\View;
 
 /**
  * Парсер
- *
- * @psalm-suppress PossiblyUnusedMethod
  */
 interface ParserInterface
 {
     /**
-     * @psalm-suppress PossiblyUnusedMethod
+     * Сериализовать данные
+     *
+     * @param array $data Данные
+     * @return object|array|string|false|null Результат сериализации
      */
-    public function serialize(string $data): object|string|false;
+    public function serialize(array $data): object|array|string|false|null;
 
     /**
-     * @psalm-suppress PossiblyUnusedMethod
+     * Десериализовать данные
+     *
+     * @param array $data Данные
+     * @return mixed Результат десериализации
      */
-    public function embed(string $resourceData, array $data): array;
+    public function deserialize(array $data): mixed;
 }

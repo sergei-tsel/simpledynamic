@@ -4,159 +4,156 @@ declare(strict_types=1);
 
 namespace Simpledynamic\Services\Filtration;
 
+use Closure;
 use Simpledynamic\Services\Routing\InputType;
 
+/**
+ * Фильтр
+ *
+ * Получает значения внешних переменных и произвольных значений, применяя к ним
+ * фильтр, описанный аргументом фильтра
+ */
 final class Filter
 {
     /**
+     * Фильтр внешних переменных
+     */
+    private readonly InputFilter $inputFilter;
+
+    public function __construct(
+        private readonly InputGlobals $inputGlobals = new InputGlobals(),
+        private readonly ValueFilter $valueFilter = new ValueFilter(),
+        ?InputFilter $inputFilter = null,
+    ) {
+        $this->inputFilter = $inputFilter ?? new InputFilter(
+            inputGlobals: $this->inputGlobals,
+            valueFilter: $this->valueFilter,
+        );
+    }
+
+    /**
      * Проверить, что внешняя переменная существует
      *
-     * @psalm-suppress PossiblyUnusedMethod
+     * @param InputType $type Тип внешних переменных
+     * @param string $name Название внешней переменной
      */
     public function inputVarExists(InputType $type, string $name): bool
     {
-        return filter_has_var($type->value, $name);
+        return $this->inputGlobals->inputVarExists(type: $type, name: $name);
     }
 
     /**
      * Получить внешнюю переменную и отфильтровать её при необходимости
+     *
+     * Значение читается из исходных данных запроса. Если переменной там нет, но она
+     * присутствует в глобальном массиве (например, в CLI-режиме), значение читается
+     * из глобального массива
+     *
+     * @param FilterArgument $arg Аргумент фильтра
+     * @return array<array-key, mixed>|string|float|int|bool|null
      */
     public function inputVarValue(FilterArgument $arg): array|string|float|int|bool|null
     {
-        if ($arg->getInputType() === null || $arg->getVarName() === null || $arg->getOptions() === null) {
+        $type = $arg->getInputType();
+        $name = $arg->getVarName();
+
+        if ($type === null || $name === null) {
             return null;
         }
 
-        /**
-         * @psalm-suppress PossiblyNullArgument
-         */
-        if (!$this->inputVarExists(type: $arg->getInputType(), name: $arg->getVarName())) {
-            $value = $this->getInputValue(type: $arg->getInputType(), name: $arg->getVarName());
-
-            if ($value === (null)) {
-                return null;
-            }
-
-            return $this->varValue($value, $arg);
-        }
-
-        /**
-         * @psalm-suppress PossiblyNullPropertyFetch
-         * @psalm-suppress NoValue
-         * @psalm-suppress InvalidArgument
-         */
-        return filter_input(type: $arg->getInputType()->value, var_name: $arg->getVarName(), filter: $arg->getFilter()->value, options: $arg->getOptions());
+        return $this->inputVarExists(type: $type, name: $name)
+            ? $this->originalVarValue(type: $type, name: $name, arg: $arg)
+            : $this->globalVarValue(type: $type, name: $name, arg: $arg);
     }
 
     /**
-     * Отфильтровать переменную при необходимости
+     * Отфильтровать значение переменной при необходимости
+     *
+     * @param array<array-key, mixed>|string|float|int|bool|null $value Значение переменной
+     * @param FilterArgument $arg Аргумент фильтра
+     * @return array<array-key, mixed>|string|float|int|bool|null
      */
-    public function varValue(array|string|float|int|bool|null $value, FilterArgument $arg): array|string|float|int|bool|null
-    {
-        if ($arg->getOptions() === null) {
-            return $value;
-        }
-
-        /**
-         * @psalm-suppress NoValue
-         * @psalm-suppress InvalidArgument
-         */
-        return filter_var(value: $value, filter: $arg->getFilter()->value, options: $arg->getOptions());
+    public function varValue(
+        array|string|float|int|bool|null $value,
+        FilterArgument $arg,
+    ): array|string|float|int|bool|null {
+        return $this->valueFilter->value(value: $value, arg: $arg);
     }
 
     /**
      * Получить массив внешних переменных и отфильтровать их при необходимости
      *
-     * @psalm-suppress PossiblyUnusedMethod
-     * @param FilterArgument[] $args
+     * Все аргументы читаются из типа внешних переменных $type
+     *
+     * @param InputType $type Тип внешних переменных
+     * @param array<string, FilterArgument> $args Аргументы фильтра по названиям переменных
+     * @param bool $addEmpty Добавлять отсутствующие переменные с пустым значением
+     * @return array<array-key, mixed>|false|null Значения по названиям переменных
      */
     public function inputVars(InputType $type, array $args, bool $addEmpty = true): array|false|null
     {
-        if ($args === []) {
-            return [];
-        }
-
-        if (count($args) === 1) {
-            /** @var FilterArgument $arg */
-            $arg = array_first($args);
-
-            return [
-                array_key_first($args) => $this->inputVarValue(arg: $arg),
-            ];
-        }
-
-        $inputArgs = [];
-        $varsValues = [];
-        $varsArgs = [];
-
-        foreach ($args as $name => $arg) {
-            /**
-             * @psalm-suppress PossiblyNullArgument
-             */
-            if (!$this->inputVarExists(type: $arg->getInputType(), name: $arg->getVarName())) {
-                $varsValues[$name] = $this->getInputValue(type: $arg->getInputType(), name: $arg->getVarName());
-                $varsArgs[$name] = $arg;
-            } else {
-                $inputArgs[] = $arg;
-            }
-        }
-
-        $filterVars = $varsValues !== [] ? $this->vars(vars: $varsValues, args: $varsArgs, addEmpty: $addEmpty) : [];
-
-        if ($inputArgs !== []) {
-            $options = array_map(fn (FilterArgument $arg): array => $arg->getFlagOptions(), $args);
-            $filterInput = filter_input_array(type: $type->value, options: $options, add_empty: $addEmpty);
-        } else {
-            return $filterVars;
-        }
-
-        return ($filterVars !== [] && is_array($filterInput) && is_array($filterVars)) ? array_merge($filterInput, $filterVars) : $filterInput;
+        return $this->inputFilter->inputVars(type: $type, args: $args, addEmpty: $addEmpty);
     }
 
     /**
      * Отфильтровать массив переменных при необходимости
      *
-     * @param array<array-key, array|string|float|int|bool|null> $vars
-     * @param FilterArgument[] $args
+     * @param array<array-key, mixed> $vars Значения по названиям переменных
+     * @param array<string, FilterArgument> $args Аргументы фильтра по названиям переменных
+     * @param bool $addEmpty Добавлять отсутствующие переменные с пустым значением
+     * @return array<array-key, mixed> Отфильтрованные значения по названиям переменных
      */
-    public function vars(array $vars, array $args, bool $addEmpty = true): array|false|null
+    public function vars(array $vars, array $args, bool $addEmpty = true): array
     {
-        if ($vars === []) {
-            return [];
-        }
-
-        if ($args === []) {
-            return $vars;
-        }
-
-        if (count($vars) === 1) {
-            /** @var array|string|float|int|bool|null $var */
-            $var = array_first($vars);
-
-            /** @var FilterArgument $arg */
-            $arg = array_first($args);
-
-            return [
-                array_key_first($args) => $this->varValue(value: $var, arg: $arg),
-            ];
-        }
-
-        $options = array_map(fn (FilterArgument $arg): array => $arg->getFlagOptions(), $args);
-
-        return filter_var_array(array: $vars, options: $options, add_empty: $addEmpty);
+        return $this->inputFilter->values(vars: $vars, args: $args, addEmpty: $addEmpty);
     }
 
     /**
-     * Получить значение внешней переменной из глобального массива
+     * Получить и отфильтровать внешнюю переменную из исходных данных запроса
+     *
+     * @param InputType $type Тип внешних переменных
+     * @param string $name Название внешней переменной
+     * @param FilterArgument $arg Аргумент фильтра
+     * @return array<array-key, mixed>|string|float|int|bool|null
      */
-    protected function getInputValue(InputType $type, string $name): array|string|float|int|bool|null
-    {
-        return match ($type) {
-            InputType::POST   => $_POST[$name] ?? null,
-            InputType::GET    => $_GET[$name] ?? null,
-            InputType::COOKIE => $_COOKIE[$name] ?? null,
-            InputType::ENV    => $_ENV[$name] ?? null,
-            InputType::SERVER => $_SERVER[$name] ?? null,
-        };
+    private function originalVarValue(
+        InputType $type,
+        string $name,
+        FilterArgument $arg,
+    ): array|string|float|int|bool|null {
+        $options = $arg->getOptions();
+
+        if ($options === null) {
+            return null;
+        }
+
+        if ($options instanceof Closure) {
+            return $this->valueFilter->value(value: filter_input(type: $type->value, var_name: $name), arg: $arg);
+        }
+
+        return $this->valueFilter->normalize(filter_input(
+            type: $type->value,
+            var_name: $name,
+            filter: $arg->getFilter()->value,
+            options: $options,
+        ));
+    }
+
+    /**
+     * Получить и отфильтровать внешнюю переменную из глобального массива
+     *
+     * @param InputType $type Тип внешних переменных
+     * @param string $name Название внешней переменной
+     * @param FilterArgument $arg Аргумент фильтра
+     * @return array<array-key, mixed>|string|float|int|bool|null
+     */
+    private function globalVarValue(
+        InputType $type,
+        string $name,
+        FilterArgument $arg,
+    ): array|string|float|int|bool|null {
+        $value = $this->inputGlobals->inputVarValue(type: $type, name: $name);
+
+        return $value === null ? null : $this->valueFilter->value(value: $value, arg: $arg);
     }
 }

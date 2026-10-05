@@ -15,9 +15,28 @@ enum GenericFilterFlag: int
     private const int FILTER_FORCE_ARRAY = FILTER_FORCE_ARRAY;
     private const int FILTER_NULL_ON_FAILURE = FILTER_NULL_ON_FAILURE;
 
+    /**
+     * Фильтр не изменяет значение
+     */
     case FLAG_NONE = self::FILTER_FLAG_NONE;
+
+    /**
+     * Значение должно быть скалярным
+     */
     case REQUIRE_SCALAR = self::FILTER_REQUIRE_SCALAR;
+
+    /**
+     * Значение должно быть массивом
+     */
     case REQUIRE_ARRAY = self::FILTER_REQUIRE_ARRAY;
+
+    /**
+     * Скалярное значение оборачивается в массив
+     */
     case FORCE_ARRAY = self::FILTER_FORCE_ARRAY;
+
+    /**
+     * Вместо признака неудачной фильтрации возвращается null
+     */
     case NULL_ON_FAILURE = self::FILTER_NULL_ON_FAILURE;
 }

@@ -9,7 +9,7 @@ use Simpledynamic\Container\ServiceContainer;
 /**
  * Базовый сервис-провайдер
  *
- * @api
+ * @consistent-constructor
  */
 abstract class ServiceProvider
 {
@@ -18,24 +18,15 @@ abstract class ServiceProvider
      */
     public function __construct(
         protected ServiceContainer $app,
-    ) {
-    }
+    ) {}
 
     /**
      * Зарегистрировать биндинги
-     *
-     * @psalm-suppress PossiblyUnusedMethod
      */
-    public function register(): void
-    {
-    }
+    public function register(): void {}
 
     /**
      * Выполнить действия после регистрации биндингов
-     *
-     * @psalm-suppress PossiblyUnusedMethod
      */
-    public function boot(): void
-    {
-    }
+    public function boot(): void {}
 }

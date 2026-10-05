@@ -6,9 +6,5 @@ namespace Simpledynamic\Base\Model;
 
 /**
  * Репозиторий
- *
- * @psalm-suppress UnusedClass
  */
-interface RepositoryInterface
-{
-}
+interface RepositoryInterface {}

@@ -4,31 +4,33 @@ declare(strict_types=1);
 
 namespace Simpledynamic\Integrations\Twig;
 
+use Simpledynamic\Base\View\ViewInterface;
 use Simpledynamic\Services\Configuration\App;
-use Simpledynamic\Base\View\View;
+use Simpledynamic\Services\Logging\Logger;
 use Twig\Environment;
 use Twig\Extension\ExtensionInterface;
 use Twig\Loader\FilesystemLoader;
 
 /**
  * Представление с шаблоном Twig
- *
- * @psalm-suppress UnusedClass
- * @psalm-suppress UnusedProperty
  */
-final class TwigView extends View
+final class TwigView implements ViewInterface
 {
     protected Environment $twig;
 
+    /**
+     * @param array<string, mixed> $options Настройки Twig
+     * @param string|null $path Каталог шаблонов, если не задан в конфигурации
+     * @throws \ReflectionException
+     */
     public function __construct(
         protected string $template,
-        protected array  $options   = [],
-        protected string $path      = __DIR__ . '/../../../../../../public/twig',
+        array $options = [],
+        ?string $path = null,
     ) {
-        $this->twig = new Environment(new FilesystemLoader($path), $options);
+        $this->twig = new Environment(new FilesystemLoader($path ?? self::getPath()), $options);
 
         /**
-         * @psalm-suppress UndefinedMagicMethod
          * @var array<int, class-string|mixed>|mixed $extensions
          */
         $extensions = App::getConfigPart('twig_extensions') ?? [];
@@ -42,16 +44,34 @@ final class TwigView extends View
                 continue;
             }
 
-            $this->twig->addExtension(new $extension());
+            $reflection = new \ReflectionClass($extension);
+
+            if (!$reflection->isInstantiable()) {
+                continue;
+            }
+
+            $this->twig->addExtension($reflection->newInstance());
         }
     }
 
     /**
-     * Проверить существование шаблона Twig
-     *
-     * @psalm-suppress PossiblyUnusedMethod
+     * Получить каталог шаблонов из конфигурации
      */
-    public function exists(): ?View
+    private static function getPath(): string
+    {
+        /**
+         * @var string $path
+         */
+        $path = App::getConfigPart('twig_path') ?? '';
+
+        return $path !== '' ? $path : __DIR__ . '/../../../../../../public/twig';
+    }
+
+    /**
+     * Проверить существование шаблона Twig
+     */
+    #[\Override]
+    public function exists(): ?TwigView
     {
         return $this->twig->getLoader()->exists($this->template) ? $this : null;
     }
@@ -59,10 +79,10 @@ final class TwigView extends View
     /**
      * Загрузить и интерполировать шаблон Twig
      */
+    #[\Override]
     public function render(array $data = [], ?string $blockName = null): string
     {
         /**
-         * @psalm-suppress UndefinedMagicMethod
          * @var string $locale
          */
         $locale = App::getConfigPart('locale') ?? 'ru';
@@ -71,12 +91,16 @@ final class TwigView extends View
         try {
             $template = $this->twig->load($this->template);
 
-            if ($blockName === null) {
-                return $template->render($data);
-            } else {
+            if ($blockName !== null) {
                 return $template->renderBlock($blockName, $data);
             }
-        } catch (\Throwable) {
+
+            return $template->render($data);
+        } catch (\Throwable $exception) {
+            // Метод возвращает string, поэтому сбой шаблона иначе выглядел бы как
+            // пустая страница: синтаксическая ошибка в шаблоне осталась бы незаметной
+            Logger::report($exception);
+
             return '';
         }
     }
